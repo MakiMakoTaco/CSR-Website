@@ -1,0 +1,57 @@
+body {
+	font-family: Arial, sans-serif;
+}
+
+table {
+	width: 80%;
+	margin: auto;
+	table-layout: fixed;
+	/* align-items: center; */
+}
+
+th,
+td {
+	padding: 10px;
+	text-align: center;
+	border-bottom: 1px solid #ddd;
+}
+
+.side-tracker {
+	margin: 20px auto;
+	display: flexbox;
+	flex-direction: column;
+	justify-content: center;
+}
+
+.tier-header {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: left;
+	margin-bottom: 20px;
+}
+
+.download-link {
+	width: 10%;
+}
+
+.clear-count {
+	width: 5%;
+}
+
+.media-items {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-items: center;
+	margin-top: 20px;
+}
+
+.media-item {
+	align-self: flex-start;
+}
+
+.media-image {
+	max-width: 20%;
+	margin: auto;
+}
