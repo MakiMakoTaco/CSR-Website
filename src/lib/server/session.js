@@ -12,7 +12,8 @@ export function deleteSessionTokenCookie(event) {
 		httpOnly: true,
 		path: '/',
 		sameSite: 'lax',
-		maxAge: 0
+		maxAge: 0,
+		secure: false
 	});
 }
 
@@ -31,7 +32,8 @@ export function setSessionTokenCookie(event, token, expiresAt) {
 		httpOnly: true,
 		path: '/',
 		sameSite: 'lax',
-		expires: expiresAt
+		expires: expiresAt,
+		secure: false
 	});
 }
 

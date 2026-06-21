@@ -10,7 +10,8 @@ export async function GET({ cookies }) {
 		path: '/',
 		httpOnly: true,
 		maxAge: 60 * 10,
-		sameSite: 'lax'
+		sameSite: 'lax',
+		secure: false
 	});
 
 	return new Response(null, {
