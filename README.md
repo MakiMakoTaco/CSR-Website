@@ -21,7 +21,7 @@ http://185.230.217.233:5173/ or http://185.230.217.233:5174/
 > [!NOTE]
 > This project uses [SvelteKit](https://svelte.dev/docs/kit/introduction 'SvelteKit Documentation')
 
-Once you've created a project, installed dependencies with `npm install` (or `pnpm install` or `yarn`), set up your Postgres server and suitably edited [example.env] and [src/lib/database/example.db.js] (make sure to remove "example." from the filename), start a development server:
+Once you've created a project, installed dependencies with `npm install` (or `pnpm install` or `yarn`), set up your Postgres server and suitably edited [example.env](example.env) and [example.db.js](src/lib/database/example.db.js) (make sure to remove "example." from the filename), start a development server:
 
 ```sh
 npm run dev
