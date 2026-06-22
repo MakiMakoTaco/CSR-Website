@@ -35,7 +35,7 @@
 				target="_blank">CSR Spreadsheet</a
 			>
 		</li>
-		<li><a href="https://discord.gg/3A65eGSy3n" target="_blank">Discord Server</a></li>
+		<li><a href="https://discord.gg/rVYhpeRX2u" target="_blank">Discord Server</a></li>
 	</ul>
 	<ul class="nav-right">
 		<li><a href="/claim-player">Claim Player</a></li>
