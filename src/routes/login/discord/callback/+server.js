@@ -1,4 +1,5 @@
 import { CLIENT_ID, CLIENT_SECRET, REDIRECT_URI } from '$env/static/private';
+import sql from '$lib/database/db.js';
 import { createPlayer, getPlayerFromDiscordId } from '$lib/database/functions/user.js';
 import { createSession, generateSessionToken, setSessionTokenCookie } from '$lib/server/session.js';
 
@@ -49,6 +50,16 @@ export async function GET(event) {
 	const existingPlayer = await getPlayerFromDiscordId(discordUser.id);
 
 	if (existingPlayer) {
+		if (!existingPlayer.avatar) {
+			const avatar = `https://cdn.discordapp.com/avatars/${discordUser.id}/${discordUser.avatar}`;
+
+			await sql`
+			UPDATE players
+			SET avatar = ${avatar}
+			WHERE id = ${existingPlayer.id}
+			`;
+		}
+
 		const sessionToken = generateSessionToken();
 		const session = await createSession(sessionToken, existingPlayer.id);
 
@@ -57,7 +68,7 @@ export async function GET(event) {
 		return new Response(null, {
 			status: 302,
 			headers: {
-				Location: '/'
+				Location: '/profile'
 			}
 		});
 	}
@@ -77,7 +88,7 @@ export async function GET(event) {
 	return new Response(null, {
 		status: 302,
 		headers: {
-			Location: '/'
+			Location: '/profile'
 		}
 	});
 }
