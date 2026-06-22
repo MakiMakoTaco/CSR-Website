@@ -8,16 +8,23 @@
 	});
 </script>
 
+<p>There is currently no backend for this page so none of these fields will get updated</p>
+
 <div>
-	<img class="profile-pic" alt="player" src={avatar} />
-	<h1 style="color: {color};">Name: {name}</h1>
+	<label for="player-color">Color:</label>
+	<input name="player-color" type="color" bind:value={color} />
+	<br />
+	<label for="player-name">Name:</label> <input name="player-name" bind:value={name} />
+	<br />
+	<label for="player-about">About Me:</label>
+	<input name="player-about" bind:value={about} />
 </div>
 
 <div>
-	<form method="POST">
-		<label for="about-me">About Me:</label>
-		<input id="about-me" name="about" value={about} />
-	</form>
+	<img class="profile-pic" alt="player" src={avatar} />
+	<form action="/login/discord"><button>Reset avatar</button></form>
+	<h1 style="color: {color};">{name}</h1>
+	<p>{@html about}</p>
 </div>
 
 <form method="POST">
