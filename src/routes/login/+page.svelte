@@ -9,20 +9,3 @@
 	<a href="/claim-player">Click here if you mean to claim a player</a>
 	<small> this can only be done without being logged in</small>
 </div>
-
-<style>
-	.discord-login {
-		display: grid;
-		grid-auto-flow: column;
-		gap: 5px;
-		justify-items: center;
-
-		background-color: blue;
-		border-radius: 3px;
-		border-color: transparent;
-
-		&:hover {
-			cursor: pointer;
-		}
-	}
-</style>
