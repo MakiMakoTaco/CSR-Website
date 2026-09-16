@@ -72,15 +72,19 @@
 		<li><a href="https://discord.gg/rVYhpeRX2u" target="_blank">Discord Server</a></li>
 	</ul>
 	<ul class="nav-right">
+		<li>
+			<a href="/submit">Submit Maps</a>
+		</li>
 		{#if data?.player?.name}
 			{#if data.player.role}
 				<li>
 					<a href="/admin">Admin Panel</a>
 				</li>
 			{/if}
-			<li>
-				<a href="/submit">Submit Maps</a>
-			</li>
+			{console.log(data.player)}
+			{#if !data.player.claimed}
+				<li><a href="/claim-player">Claim Player</a></li>
+			{/if}
 			<li>
 				<a href="/profile">
 					<img src={data.player.avatar} alt="profile" class="profile-pic-nav" /><span
@@ -89,7 +93,6 @@
 				</a>
 			</li>
 		{:else}
-			<li><a href="/claim-player">Claim Player</a></li>
 			<li><a href="/login">Login</a></li>
 		{/if}
 		<!-- check if player is logged in -->

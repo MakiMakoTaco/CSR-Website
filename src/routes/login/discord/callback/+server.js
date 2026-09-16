@@ -78,7 +78,6 @@ export async function GET(event) {
 	let attempts = 1;
 	let name = discordUser.global_name;
 
-	console.log(discordUser);
 	while (playerExists) {
 		try {
 			newPlayer = await createPlayer({

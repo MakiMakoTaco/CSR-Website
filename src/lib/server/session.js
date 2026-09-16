@@ -80,7 +80,7 @@ async function getSession(sessionId) {
 
 	const result = (
 		await sql`
-    SELECT session.id, session.player_id, session.expires_at, players.id as player_id, players.name, players.about, players.discord_id, players.avatar, name_color, admins.role
+    SELECT session.id, session.player_id, session.expires_at, players.id as player_id, players.name, players.about, players.discord_id, players.avatar, name_color, claimed, admins.role
     FROM session
 		INNER JOIN players ON session.player_id = players.id
 		LEFT JOIN admins ON admins.player_id = players.id
@@ -104,7 +104,8 @@ async function getSession(sessionId) {
 		about: result.about,
 		avatar: result.avatar,
 		nameColor: result.name_color,
-		role: result.role
+		role: result.role,
+		claimed: result.claimed
 	};
 
 	// Check expiration
