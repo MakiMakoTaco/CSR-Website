@@ -33,13 +33,15 @@
 	<div class="content">
 		<h1>
 			{data.side.name}
-			<small>
-				{data.side.tiers
-					.map((tier) => Number(tier.clears) ?? 0)
-					.reduce((previous, current) => previous + current, 0)}/{data.side.tiers
-					.map((tier) => tier.mods.length ?? 0)
-					.reduce((previous, current) => previous + current, 0)}</small
-			>
+			{#if data.player}
+				<small>
+					{data.side.tiers
+						.map((tier) => Number(tier.clears) ?? 0)
+						.reduce((previous, current) => previous + current, 0)}/{data.side.tiers
+						.map((tier) => tier.mods.length ?? 0)
+						.reduce((previous, current) => previous + current, 0)}</small
+				>
+			{/if}
 		</h1>
 		{#each data.side.tiers as tier}
 			<div id={tier.name} class="tier-name">
