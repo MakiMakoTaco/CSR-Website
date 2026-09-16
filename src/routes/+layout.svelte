@@ -1,15 +1,15 @@
 <script>
 	let { data, children } = $props();
 
-	function postitionDropdown(event, id) {
+	function postitionDropdown(id) {
+		const anchor = event.currentTarget;
 		const menu = document.getElementById(id);
-		const button = event.currentTarget;
 
 		if (!menu) return;
 
 		requestAnimationFrame(() => {
-			menu.style.left = `${button.offsetLeft + button.offsetWidth / 2 - menu.offsetWidth / 2}px`;
-			menu.style.top = `${button.offsetTop + button.offsetHeight}px`;
+			menu.style.left = `${anchor.offsetLeft + anchor.offsetWidth / 2 - menu.offsetWidth / 2}px`;
+			menu.style.top = `${anchor.offsetTop + anchor.offsetHeight}px`;
 		});
 	}
 </script>
@@ -18,8 +18,16 @@
 	<ul class="nav-left">
 		<li><a href="/">Home</a></li>
 		<li>
-			<button popovertarget="sides" onclick={(event) => postitionDropdown(event, 'sides')}
-				>Sides</button
+			<button
+				onmouseenter={() => {
+					postitionDropdown('sides');
+					sides.showPopover();
+				}}
+				onmouseleave={() => {
+					if (event.relatedTarget !== sides) {
+						sides.hidePopover();
+					}
+				}}>Sides</button
 			>
 		</li>
 		<li>
@@ -27,14 +35,30 @@
 		</li>
 		{#if data.sides.filter((side) => side.type === 'dlc' && side.archived).length > 0}
 			<li>
-				<button popovertarget="dlc" onclick={(event) => postitionDropdown(event, 'dlc')}
-					>Active DLC</button
+				<button
+					onmouseenter={() => {
+						postitionDropdown('dlc');
+						dlc.showPopover();
+					}}
+					onmouseleave={() => {
+						if (event.relatedTarget !== dlc) {
+							dlc.hidePopover();
+						}
+					}}>Active DLC</button
 				>
 			</li>
 		{/if}
 		<li>
-			<button popovertarget="archived" onclick={(event) => postitionDropdown(event, 'archived')}
-				>Archived</button
+			<button
+				onmouseenter={() => {
+					postitionDropdown('archived');
+					archived.showPopover();
+				}}
+				onmouseleave={() => {
+					if (event.relatedTarget !== archived) {
+						archived.hidePopover();
+					}
+				}}>Archived</button
 			>
 		</li>
 	</ul>
@@ -74,15 +98,29 @@
 	</ul>
 </nav>
 
-<div popover id="sides" class="dropdown-menu" role="menu">
+<div
+	popover
+	id="sides"
+	class="dropdown-menu sides-dropdown"
+	role="menu"
+	tabindex="0"
+	onmouseleave={() => sides.hidePopover()}
+>
 	{#each data.sides.filter((side) => side.type === 'standard') as side}
 		<li class="dropdown-items">
-			<a href="/sides/{side.name}" onclick={() => sides.togglePopover()}>{side.name}</a>
+			<a href="/sides/{side.name}">{side.name}</a>
 		</li>
 	{/each}
 </div>
 
-<div popover id="dlc" class="dropdown-menu" role="menu">
+<div
+	popover
+	id="dlc"
+	class="dropdown-menu"
+	role="menu"
+	tabindex="0"
+	onmouseleave={() => dlc.hidePopover()}
+>
 	{#each data.sides.filter((side) => side.type === 'dlc' && !side.archived) as side}
 		<li class="dropdown-items">
 			<a
@@ -94,12 +132,21 @@
 	{/each}
 </div>
 
-<div popover id="archived" class="dropdown-menu" role="menu">
-	{#each data.sides.filter((side) => side.type === 'dlc' && side.archived) as side}
-		<li class="dropdown-items">
-			<a href="/sides/{side.name}" onclick={archived.togglePopover()}>{side.name}</a>
-		</li>
-	{/each}
+<div
+	popover
+	id="archived"
+	class="dropdown-menu"
+	role="menu"
+	tabindex="0"
+	onmouseleave={() => archived.hidePopover()}
+>
+	<div class="side-container">
+		{#each data.sides.filter((side) => side.type === 'dlc' && side.archived) as side}
+			<li class="dropdown-items">
+				<a href="/sides/{side.name}" onclick={archived.togglePopover()}>{side.name}</a>
+			</li>
+		{/each}
+	</div>
 </div>
 
 {@render children()}
@@ -134,7 +181,7 @@
 	}
 
 	.dropdown-menu {
-		position: fixed;
+		inset: 0;
 		margin: 0;
 		justify-items: center;
 
