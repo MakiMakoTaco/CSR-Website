@@ -4,10 +4,14 @@ import { getTiers } from '$lib/database/functions/getTiers.js';
 import { getModNames, getMods } from '$lib/database/functions/getMods.js';
 
 import { writeFileSync, readdirSync, existsSync, mkdirSync } from 'node:fs';
-import { fail } from '@sveltejs/kit';
+import { fail, redirect } from '@sveltejs/kit';
 import { randomUUID } from 'node:crypto';
 
-export async function load() {
+export async function load({ locals }) {
+	if (locals.session === null) {
+		redirect(302, '/login');
+	}
+
 	let sides = await getSides();
 	const mods = [];
 

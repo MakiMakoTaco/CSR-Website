@@ -4,7 +4,7 @@ import { fail, redirect } from '@sveltejs/kit';
 
 export function load({ locals }) {
 	if (!locals.session) {
-		return redirect(302, '/login');
+		redirect(302, '/login');
 	}
 }
 

@@ -1,4 +1,3 @@
-import { goto } from '$app/navigation';
 import sql from '$lib/database/db';
 import { createSession } from '$lib/server/session';
 import { setSessionTokenCookie } from '$lib/server/session';
@@ -7,6 +6,10 @@ import { deleteSessionTokenCookie, invalidateSession } from '$lib/server/session
 import { fail, redirect } from '@sveltejs/kit';
 
 export async function load({ locals }) {
+	if (locals.session === null) {
+		redirect(302, '/');
+	}
+
 	const playerList = await sql`
     SELECT id, name
     FROM players
