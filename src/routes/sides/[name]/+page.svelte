@@ -31,16 +31,17 @@
 
 <main>
 	<div class="content">
-		<h1>
+		<h1 style="color: #{data.side.color ?? 'ffffff'};">
 			{data.side.name}
 			{#if data.player}
-				<small>
-					{data.side.tiers
-						.map((tier) => Number(tier.clears) ?? 0)
-						.reduce((previous, current) => previous + current, 0)}/{data.side.tiers
-						.map((tier) => tier.mods.length ?? 0)
-						.reduce((previous, current) => previous + current, 0)}</small
-				>
+				{data.side.tiers
+					.map((tier) => Number(tier.clears) ?? 0)
+					.reduce((previous, current) => previous + current, 0)}/{data.side.tiers
+					.map((tier) => tier.mods.length ?? 0)
+					.reduce((previous, current) => previous + current, 0)}
+			{/if}
+			{#if data.side.clears_for_rank}
+				<small>({data.side.clears_for_rank ?? 0} needed for role)</small>
 			{/if}
 		</h1>
 		{#each data.side.tiers as tier}
