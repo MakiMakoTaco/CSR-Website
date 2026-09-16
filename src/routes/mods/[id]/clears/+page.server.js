@@ -1,8 +1,6 @@
 import { getClearedPlayers } from '$lib/database/functions/getMods.js';
 
 export async function load({ url, params }) {
-	console.log(url);
-
 	const players = await getClearedPlayers(params.id);
 	players.forEach((player) => {
 		if (new RegExp(['youtube.com', 'youtu.be', 'twitch.tv'].join('|')).test(player.proof)) {

@@ -1,33 +1,41 @@
 <script>
-	let { data } = $props();
+	let { data, form } = $props();
 	let { name, color, avatar, about } = $derived({
 		name: data.player.name,
-		color: data.player.nameColor,
+		color: `#${data.player.nameColor}`,
 		avatar: data.player.avatar,
 		about: data.player.about
 	});
 </script>
 
-<p>There is currently no backend for this page so none of these fields will get updated</p>
+{#if form?.success}
+	<dialog class="toast">Successfully updated player info</dialog>
+{:else if form?.error}
+	<div>Failed to update player data: {form?.message ?? 'Unable to find reason'}</div>
+{/if}
 
-<div>
-	<label for="player-color">Color:</label>
-	<input name="player-color" type="color" bind:value={color} />
-	<br />
-	<label for="player-name">Name:</label> <input name="player-name" bind:value={name} />
-	<br />
-	<label for="player-about">About Me:</label>
-	<input name="player-about" bind:value={about} />
+<div id="update-player">
+	<form method="POST" action="?/update">
+		<label for="nameColor">Color:</label>
+		<input name="nameColor" type="color" bind:value={color} />
+		<br />
+		<label for="name">Name:</label> <input name="name" bind:value={name} />
+		<br />
+		<label for="about">About Me:</label>
+		<textarea name="about" bind:value={about}></textarea>
+
+		<button>Update Profile</button>
+	</form>
 </div>
 
 <div>
 	<img class="profile-pic" alt="player" src={avatar} />
 	<form action="/login/discord"><button>Reset avatar</button></form>
 	<h1 style="color: {color};">{name}</h1>
-	<p>{@html about}</p>
+	<p style="white-space: pre-wrap;">{about}</p>
 </div>
 
-<form method="POST">
+<form method="POST" action="?/logout">
 	<button>Sign out</button>
 </form>
 
@@ -37,5 +45,19 @@
 		height: 100px;
 		border-radius: 50%;
 		margin-top: 1%;
+	}
+
+	.toast {
+		opacity: 0;
+		display: grid;
+
+		transition: opacity;
+		transition-behavior: allow-discrete;
+		transition-delay: 5s;
+		transition-duration: 1s;
+
+		@starting-style {
+			opacity: 1;
+		}
 	}
 </style>

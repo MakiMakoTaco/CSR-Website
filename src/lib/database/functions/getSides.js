@@ -37,9 +37,8 @@ export async function getSideData(sideId) {
 	const modIds = (
 		await sql`
 		select
-			m.id
-		from mods m
-		join mod_tiers mt on mt.mod_id = m.id
+			id
+		from mods
 		where tier_id in ${sql(tierIds)}
 	`
 	).map((mod) => mod.id);

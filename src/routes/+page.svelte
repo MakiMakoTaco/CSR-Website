@@ -2,94 +2,120 @@
 	let { data } = $props();
 </script>
 
-<title>Welcome! - CSR</title>
+<svelte:head>
+	<title>Welcome! - CSR</title>
+</svelte:head>
 
-<div><p>Welcome to the Celeste Skill Rating!</p></div>
-<div>
-	<table class="sides-info">
-		<thead>
-			<tr>
-				<th>Side</th>
-				<th>Total Clears</th>
-				<th>Unique Players</th>
-			</tr>
-		</thead>
-		<tbody>
-			{#each data.sides as side}
-				{#if side.type === 'standard'}
-					<tr>
-						<td><a href="/sides/{side.name}">{side.name}</a></td>
-						<td>{side.clearCount}</td>
-						<td>{side.uniquePlayers}</td>
-					</tr>
-				{/if}
-			{/each}
-		</tbody>
-		<thead><tr><th>DLC & Catstare</th></tr></thead>
-		<tbody>
-			{#each data.sides as side}
-				{#if (side.type === 'catstare' || side.type === 'dlc') && !side.archived}
-					<tr>
-						<td><a href="/sides/{side.name}">{side.name}</a></td>
-						<td>{side.clearCount}</td>
-						<td>{side.uniquePlayers}</td>
-					</tr>
-				{/if}
-			{/each}
-		</tbody>
-		<thead><tr><th>Archived</th></tr></thead>
-		<tbody>
-			{#each data.sides as side}
-				{#if side.archived}
-					<tr>
-						<td><a href="/sides/{side.name}">{side.name}</a></td>
-						<td>{side.clearCount}</td>
-						<td>{side.uniquePlayers}</td>
-					</tr>
-				{/if}
-			{/each}
-		</tbody>
-	</table>
-</div>
-<div>
-	<a href="/feedback">Leave Feedback</a>
-	<br />
-	<h2>Recent Feedback</h2>
-	<table>
-		<thead>
-			<tr>
-				<th>Feedback</th>
-				<th>Player</th>
-			</tr>
-		</thead>
-		<tbody>
-			<!-- <?php foreach ($recentFeedback as $feedback): ?>
-                    <tr>
-                        <td><?= htmlspecialchars($feedback['content']) ?></td>
-                        <td><?= htmlspecialchars($feedback['player_name']); ?></td>
-                    </tr>
-                <?php endforeach; ?> -->
-		</tbody>
-	</table>
-</div>
-<div>
-	<h2>
-		Recent Changes
-		<table>
+<main>
+	<div class="title">
+		<h1>Welcome to the Celeste Skill Rating!</h1>
+	</div>
+	<div class="sides-info">
+		<table class="sides-info">
 			<thead>
 				<tr>
-					<th>Change</th>
-					<th>Created At</th>
+					<th scope="col">Side</th>
+					<th scope="col">Total Clears</th>
+					<th scope="col">Unique Players</th>
 				</tr>
 			</thead>
 			<tbody>
-				<!-- <?php foreach ($recentChanges as $change): ?>
-                    <tr>
-                        <td><?= htmlspecialchars($change['content']) ?></td>
-                        <td><?= htmlspecialchars($change['created_at']) ?></td>
-                    </tr>
-                <?php endforeach; ?> -->
+				{#each data.sides as side}
+					{#if side.type === 'standard'}
+						<tr>
+							<th scope="row"><a href="/sides/{side.name}">{side.name}</a></th>
+							<td>{side.clearCount}</td>
+							<td>{side.uniquePlayers}</td>
+						</tr>
+					{/if}
+				{/each}
+			</tbody>
+			<thead><tr><th colspan="3">DLC & Catstare</th></tr></thead>
+			<tbody>
+				{#each data.sides as side}
+					{#if (side.type === 'catstare' || side.type === 'dlc') && !side.archived}
+						<tr>
+							<th scope="row"><a href="/sides/{side.name}">{side.name}</a></th>
+							<td>{side.clearCount}</td>
+							<td>{side.uniquePlayers}</td>
+						</tr>
+					{/if}
+				{/each}
+			</tbody>
+			<thead><tr><th colspan="3">Archived</th></tr></thead>
+			<tbody>
+				{#each data.sides as side}
+					{#if side.archived}
+						<tr>
+							<th scope="row"><a href="/sides/{side.name}">{side.name}</a></th>
+							<td>{side.clearCount}</td>
+							<td>{side.uniquePlayers}</td>
+						</tr>
+					{/if}
+				{/each}
 			</tbody>
 		</table>
-	</h2>
-</div>
+	</div>
+	<div class="what-is">
+		<h2>What is CSR?</h2>
+		<p>
+			CSR is a list of Celeste maps, collabs and contests that you can play through at your own
+			pace, & feel a sense of accomplishment once you beat them! Have you just started playing and
+			want to see how far you can get? Or are you a veteran celeste player and want to show off?
+			There's something for every player in CSR!
+		</p>
+	</div>
+</main>
+
+<style>
+	main {
+		display: grid;
+		grid: auto-flow / repeat(2, 1fr);
+		gap: 10px;
+
+		@media (width < 1130px) {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	div {
+		text-align: center;
+	}
+
+	.title {
+		@media (width >= 1130px) {
+			grid-column: span 2;
+		}
+	}
+
+	.sides-info {
+		float: left;
+
+		table-layout: fixed;
+		width: 70vw;
+		margin: 10px auto;
+		border-collapse: collapse;
+		text-align: center;
+
+		@media (width < 1130px) {
+			width: 100vw;
+		}
+	}
+	thead {
+		font-size: 20px;
+	}
+
+	th,
+	td {
+		padding: 0.5em;
+
+		@media (width < 1130px) {
+			padding: 0.3em;
+		}
+	}
+
+	.what-is {
+		width: 80%;
+		justify-self: center;
+	}
+</style>

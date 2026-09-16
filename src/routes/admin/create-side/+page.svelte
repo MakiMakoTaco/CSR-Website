@@ -14,7 +14,6 @@
 	let count = $derived(tierData.reduce((total, tier) => total + tier.mods.length, 0));
 
 	$effect(() => {
-		console.log('Mounted/Changed');
 		sideName;
 		tierData;
 
@@ -30,7 +29,7 @@
 			const jsonResult = await result.json();
 
 			if (jsonResult._aGame._sName !== 'Celeste') {
-				return fail(406, { error: `${value} is not a valid Celeste mod` });
+				return { name: value, index };
 			}
 
 			console.log(jsonResult);

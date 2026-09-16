@@ -1,4 +1,7 @@
 <script>
+	import { page } from '$app/state';
+	const id = page.params.id;
+
 	function formatBytes(bytes, decimals = 2) {
 		if (!+bytes) return '0 Bytes';
 
@@ -12,50 +15,75 @@
 	}
 
 	let { data } = $props();
+	let submitter = $derived(data.mod.submitter);
 </script>
 
 <svelte:head>
 	<title>{data.mod.name} - CSR</title>
 </svelte:head>
 
-<h1>{data.mod.name}</h1>
+<div>
+	<h1>
+		<a href={data.mod.page} target="_blank">
+			{data.mod.name}
+		</a>
+		{#if submitter}
+			<small
+				>by
+				{#if submitter.profile_url}
+					<a href="/contributors/{submitter.id}">{submitter.name}</a>
+				{:else}
+					{submitter.name}
+				{/if}
+			</small>
+		{/if}
+	</h1>
+	<small><a href="{id}/clears">view clears</a></small>
+</div>
+<br />
 <header>{data.mod.description}</header>
 
 <br />
 
-<div class="download-links">
-	<table>
-		<caption>Download Links</caption>
-		<thead>
-			<tr>
-				<th>Everest</th>
-				<th>Manual</th>
-				<th>File Size</th>
-			</tr>
-		</thead>
-		<tbody>
-			{#each data.mod.downloads as download}
+{#if !data.mod.children || data.mod.children.length === 0}
+	<div class="download-links">
+		<table>
+			<caption>Download Links</caption>
+			<thead>
 				<tr>
-					<td>
-						{#if download.everest_url}
-							<a href={download.everest_url}>Download</a>
-						{:else}
-							No link available
-						{/if}
-					</td>
-					<td>
-						{#if download.manual_url}
-							<a href={download.manual_url}>{download.file_name}</a>
-						{:else}
-							No Everest link available
-						{/if}
-					</td>
-					<td>{formatBytes(download.file_size)}</td>
+					<th>Everest</th>
+					<th>Manual</th>
+					<th>File Size</th>
 				</tr>
-			{/each}
-		</tbody>
-	</table>
-</div>
+			</thead>
+			<tbody>
+				{#each data.mod.downloads as download}
+					<tr>
+						<td>
+							{#if download.everest_url}
+								<a href={download.everest_url}>Download</a>
+							{:else}
+								No link available
+							{/if}
+						</td>
+						<td>
+							{#if download.manual_url}
+								<a href={download.manual_url}>{download.file_name}</a>
+							{:else}
+								No Everest link available
+							{/if}
+						</td>
+						<td>{formatBytes(download.file_size)}</td>
+					</tr>
+				{/each}
+			</tbody>
+		</table>
+	</div>
+{:else}
+	{#each data.mod.children as child}
+		<a href="/mod-data/{child.id}">{child.gb_name}</a><br />
+	{/each}
+{/if}
 
 <br />
 

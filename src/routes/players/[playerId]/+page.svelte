@@ -13,9 +13,9 @@
 		{data.player.name}
 	</h1>
 
-	{#if data.player.about_me}
+	{#if data.player.about}
 		<p>
-			About me: {data.player.about_me}
+			About me: {data.player.about}
 		</p>
 	{/if}
 </div>

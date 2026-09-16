@@ -80,7 +80,7 @@ async function getSession(sessionId) {
 
 	const result = (
 		await sql`
-    SELECT session.id, session.player_id, session.expires_at, players.id as player_id, players.name, players.about_me, players.discord_id, players.avatar, players.name_color, admins.role
+    SELECT session.id, session.player_id, session.expires_at, players.id as player_id, players.name, players.about, players.discord_id, players.avatar, name_color, admins.role
     FROM session
 		INNER JOIN players ON session.player_id = players.id
 		LEFT JOIN admins ON admins.player_id = players.id
@@ -101,7 +101,7 @@ async function getSession(sessionId) {
 		id: result.player_id,
 		discordId: result.discord_id,
 		name: result.name,
-		about: result.about_me,
+		about: result.about,
 		avatar: result.avatar,
 		nameColor: result.name_color,
 		role: result.role

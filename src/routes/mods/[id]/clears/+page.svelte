@@ -1,22 +1,17 @@
 <script>
-	let { data = $bindable() } = $props();
+	let { data } = $props();
+	// svelte-ignore state_referenced_locally
+	let players = $state([...data.players]);
 
-	function updatePlayerSort(players) {
-		const playerSort = data.players.sort((a, b) => b.is_video - a.is_video);
-
-		return playerSort;
+	function updatePlayerSort() {
+		players = players.toSorted((a, b) => b.is_video - a.is_video);
 	}
 </script>
 
-<button onclick={updatePlayerSort(data.players)}>Button</button>
-{#key data.players}
-	{#each data.players as player}
-		{#if player.id < 15}
-			<p>{player.name}: {player.is_video}</p>
-		{/if}
-	{/each}
-{/key}
+<a href="./">back to mod</a>
+<br />
 
+<button onclick={updatePlayerSort}>Button</button>
 <table>
 	<thead>
 		<tr>
@@ -28,7 +23,7 @@
 		</tr>
 	</thead>
 	<tbody>
-		{#each data.players as player}
+		{#each players as player}
 			<tr>
 				<td>{player.name}</td>
 				<td

@@ -73,12 +73,38 @@ export async function GET(event) {
 		});
 	}
 
-	const newPlayer = await createPlayer({
-		name: discordUser.global_name,
-		discord_id: discordUser.id,
-		avatar: `https://cdn.discordapp.com/avatars/${discordUser.id}/${discordUser.avatar}`,
-		name_color: discordUser.banner_color
-	});
+	let newPlayer;
+	let playerExists = true;
+	let attempts = 1;
+	let name = discordUser.global_name;
+
+	console.log(discordUser);
+	while (playerExists) {
+		try {
+			newPlayer = await createPlayer({
+				name,
+				discord_id: discordUser.id,
+				avatar: `https://cdn.discordapp.com/avatars/${discordUser.id}/${discordUser.avatar}`,
+				name_color: discordUser.banner_color.substring(1)
+			});
+
+			playerExists = false;
+		} catch (error) {
+			console.log(error);
+			switch (attempts) {
+				case 1:
+					name = discordUser.username;
+					attempts++;
+					break;
+				case 2:
+					name = `${discordUser.username}_${discordUser.id}`;
+					attempts++;
+					break;
+				case 3:
+					throw new Error(`Unable to create new player info: ${error}`);
+			}
+		}
+	}
 
 	const sessionToken = generateSessionToken();
 	const session = await createSession(sessionToken, newPlayer.id);
