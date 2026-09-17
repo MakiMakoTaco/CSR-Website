@@ -15,88 +15,142 @@
 	}
 
 	let { data } = $props();
-	let submitter = $derived(data.mod.submitter);
+	let mod = $derived(data.mod);
+	let submitter = $derived(mod.submitter);
 </script>
 
 <svelte:head>
-	<title>{data.mod.name} - CSR</title>
+	<title>{mod.name} - CSR</title>
 </svelte:head>
 
-<div>
-	<h1>
-		<a href={data.mod.page} target="_blank">
-			{data.mod.name}
-		</a>
-		{#if submitter}
-			<small
-				>by
-				{#if submitter.profile_url}
-					<a href="/contributors/{submitter.id}">{submitter.name}</a>
-				{:else}
-					{submitter.name}
-				{/if}
-			</small>
-		{/if}
-	</h1>
-	<small><a href="{id}/clears">view clears</a></small>
-</div>
-<br />
-<header>{data.mod.description}</header>
-
-<br />
-
-{#if !data.mod.children || data.mod.children.length === 0}
-	<div class="download-links">
-		<table>
-			<caption>Download Links</caption>
-			<thead>
-				<tr>
-					<th>Everest</th>
-					<th>Manual</th>
-					<th>File Size</th>
-				</tr>
-			</thead>
-			<tbody>
-				{#each data.mod.downloads as download}
-					<tr>
-						<td>
-							{#if download.everest_url}
-								<a href={download.everest_url}>Download</a>
-							{:else}
-								No link available
-							{/if}
-						</td>
-						<td>
-							{#if download.manual_url}
-								<a href={download.manual_url}>{download.file_name}</a>
-							{:else}
-								No Everest link available
-							{/if}
-						</td>
-						<td>{formatBytes(download.file_size)}</td>
-					</tr>
-				{/each}
-			</tbody>
-		</table>
+<main class="content">
+	<div class="title">
+		<h1>
+			<a href={mod.page} target="_blank">
+				{mod.name}
+			</a>
+			{#if submitter}
+				<small
+					>by
+					{#if submitter.profile_url}
+						<a href="/contributors/{submitter.id}">{submitter.name}</a>
+					{:else}
+						{submitter.name}
+					{/if}
+				</small>
+			{/if}
+			<small style="font-size: 16px;"
+				><a href="/mod-data/{mod.mod_data_id}" style="text-decoration: none;">data</a></small
+			>
+		</h1>
+		<div class="clears">
+			<a href="{id}/clears">view {data.clears} clears</a>
+		</div>
 	</div>
-{:else}
-	{#each data.mod.children as child}
-		<a href="/mod-data/{child.id}">{child.gb_name}</a><br />
-	{/each}
-{/if}
 
-<br />
+	<div class="downloads">
+		{#if mod.children && mod.children.length > 0}
+			<div class="children">
+				{#each mod.children as child}
+					<span>
+						{console.log(child.download)}
+						<a href="/mod-data/{child.id}">{child.gb_name}</a>
+						<a href={child.download?.everest.everest_url}>Quick Install</a>
+					</span>
+				{/each}
+			</div>
+		{:else}
+			<div class="download-links">
+				<table>
+					<caption>Download Links</caption>
+					<thead>
+						<tr>
+							<th>Everest</th>
+							<th>Manual</th>
+							<th>File Size</th>
+						</tr>
+					</thead>
+					<tbody>
+						{#each mod.downloads as download}
+							<tr>
+								<td>
+									{#if download.everest_url}
+										<a href={download.everest_url}>Download</a>
+									{:else}
+										No link available
+									{/if}
+								</td>
+								<td>
+									{#if download.manual_url}
+										<a href={download.manual_url}>{download.file_name}</a>
+									{:else}
+										No Everest link available
+									{/if}
+								</td>
+								<td>{formatBytes(download.file_size)}</td>
+							</tr>
+						{/each}
+					</tbody>
+				</table>
+			</div>
+		{/if}
+	</div>
+	<div class="description">{data.mod.description}</div>
+</main>
 
-<div>
-	<h3>Tags:</h3>
-	{#each data.mod.tags as tag}
-		<p>{tag}</p>
-	{/each}
-</div>
+<style>
+	main {
+		display: grid;
+		justify-content: center;
+		gap: 1rem;
 
-<br />
+		> * {
+			place-self: center;
+			text-align: center;
+		}
+	}
 
-<div>
-	<h3>About the mod:</h3>
-	<p>{@html data.mod.text}</p>
-</div>
+	table {
+		table-layout: fixed;
+		border-collapse: collapse;
+		margin: 10px auto;
+	}
+
+	caption {
+		font-size: 18px;
+	}
+
+	th,
+	td {
+		padding: 0.4em;
+	}
+
+	.clears {
+		font-size: 24px;
+	}
+
+	.children {
+		display: grid;
+		padding: 2rem;
+		gap: 0.5rem;
+
+		a {
+			text-decoration: none;
+		}
+
+		span {
+			display: grid;
+			width: 100%;
+			gap: 2rem;
+			grid-auto-flow: column;
+
+			> :first-child {
+				text-align: start;
+			}
+
+			> :last-child {
+				text-align: end;
+			}
+		}
+	}
+</style>

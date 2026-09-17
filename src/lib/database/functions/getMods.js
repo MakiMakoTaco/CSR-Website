@@ -36,14 +36,7 @@ export async function getModData(modId) {
 	`
 	)[0];
 
-	const download_links = await sql`
-		select
-			*
-		from download_links
-		where mod_data_id = ${mod.mod_data_id}
-	`;
-
-	const submitter = (
+	mod.submitter = (
 		await sql`
 		select *
 		from contributors
@@ -52,14 +45,36 @@ export async function getModData(modId) {
 	)[0];
 
 	mod.children = await sql`
-		select *
+		select id, gb_name
 		from mod_data
 		where parent_id = ${mod.mod_data_id}
+		ORDER BY gb_name ASC
 		`;
 
-	const modData = { ...mod, submitter, downloads: [...download_links] };
+	if (mod.children.length > 0) {
+		console.log(true);
 
-	return modData;
+		for (let i = 0; i < mod.children.length; i++) {
+			mod.children[i].download = {
+				everest: (
+					await sql`
+				SELECT *
+				FROM download_links
+				WHERE mod_data_id = ${mod.children[i].id}
+				`
+				)[0]
+			};
+		}
+	} else {
+		mod.downloads = await sql`
+		select
+			*
+		from download_links
+		where mod_data_id = ${mod.mod_data_id}
+	`;
+	}
+
+	return mod;
 }
 
 export async function getClearedPlayers(modId) {
