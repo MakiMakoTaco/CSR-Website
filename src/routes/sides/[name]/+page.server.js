@@ -4,6 +4,7 @@ import { getMods } from '$lib/database/functions/getMods.js';
 
 import { error } from '@sveltejs/kit';
 import sql from '$lib/database/db.js';
+import { existsSync } from 'fs';
 
 export async function load({ params, locals }) {
 	let side = (await getSides({ name: params.name }))[0];

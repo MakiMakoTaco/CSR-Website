@@ -52,8 +52,6 @@ export async function getModData(modId) {
 		`;
 
 	if (mod.children.length > 0) {
-		console.log(true);
-
 		for (let i = 0; i < mod.children.length; i++) {
 			mod.children[i].download = {
 				everest: (

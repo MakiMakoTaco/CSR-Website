@@ -1,4 +1,7 @@
 <script>
+	import { page } from '$app/state';
+	import { onMount } from 'svelte';
+
 	let { data } = $props();
 
 	function scroll(id) {
@@ -7,6 +10,11 @@
 
 		scrollTo({ top: tier.offsetTop - navbar.clientHeight });
 	}
+
+	$effect(() => {
+		const sides = document.getElementById('side-cassette');
+		sides.src = `/assets/navbar/cassettes/${page.params?.name}.png`;
+	});
 </script>
 
 <svelte:head>

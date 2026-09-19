@@ -1,3 +1,5 @@
+<!-- use the journal and flip page animation to see stats -->
+
 <script>
 	let { data, form } = $props();
 	let { name, color, avatar, about } = $derived({
