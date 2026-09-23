@@ -17,15 +17,17 @@ export async function load({ params, locals }) {
 		const modIds = tiers[i].mods.map((mod) => mod.id);
 
 		if (locals.player) {
-			tiers[i].clears = (
-				await sql`
+			tiers[i].clears = Number(
+				(
+					await sql`
     SELECT COUNT(*)
     FROM player_progress
     JOIN mods ON player_progress.mod_id = mods.id
     WHERE player_id = ${locals.player.id}
 		AND mods.id IN ${sql(modIds)}
   `
-			)[0]['count'];
+				)[0]['count']
+			);
 		}
 	}
 

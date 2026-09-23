@@ -89,8 +89,6 @@
 	}
 
 	.sides-info {
-		float: left;
-
 		table-layout: fixed;
 		width: 70vw;
 		margin: 10px auto;

@@ -29,9 +29,10 @@ export async function getModData(modId) {
 	const mod = (
 		await sql`
 		select
-			*
+			md.*, m.*, s.name as side_name
 		from mod_data md
 		join mods m on md.id = m.mod_data_id
+		join sides s on s.id = (select side_id from tiers t where t.id = m.tier_id)
 		where m.id = ${modId}
 	`
 	)[0];
@@ -43,6 +44,30 @@ export async function getModData(modId) {
 		where id = ${mod.submitter_id}
 		`
 	)[0];
+
+	mod.credits = (
+		await sql`
+		SELECT json_agg(js) js_final
+		FROM (
+			SELECT json_build_object(
+			'id', cg.id,
+			'name', cg.name,
+			'authors', array_agg(
+				json_build_object(
+					 'id', c.id,
+					 'name', c.name,
+					 'role_name', a.role_name
+					 )
+			)
+			) js
+			FROM credit_groups cg
+			RIGHT JOIN authors a ON a.group_id = cg.id
+			RIGHT JOIN contributors c ON c.id = a.contributor_id
+			WHERE mod_data_id = ${mod.mod_data_id}
+			GROUP BY cg.id
+) t
+				 `
+	)[0].js_final;
 
 	mod.children = await sql`
 		select id, gb_name

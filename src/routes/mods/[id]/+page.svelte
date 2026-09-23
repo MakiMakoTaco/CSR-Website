@@ -23,7 +23,8 @@
 	<title>{mod.name} - CSR</title>
 </svelte:head>
 
-<main class="content">
+<a href="/sides/{mod.side_name}">Back to {mod.side_name}</a>
+<main>
 	<div class="title">
 		<h1>
 			<a href={mod.page} target="_blank">
@@ -47,6 +48,7 @@
 			<a href="{id}/clears">view {data.clears} clears</a>
 		</div>
 	</div>
+	<div class="description">{data.mod.description}</div>
 
 	<div class="downloads">
 		{#if mod.children && mod.children.length > 0}
@@ -95,18 +97,85 @@
 			</div>
 		{/if}
 	</div>
-	<div class="description">{data.mod.description}</div>
+	<div class="credits">
+		{#each mod.credits as creditGroup}
+			<div class="credit-group">
+				<h2 class="credit-group-title">{creditGroup.name}</h2>
+				<div>
+					{#each creditGroup.authors as author}
+						<div>
+							<p>{author.name}</p>
+							{#if author.role_name}
+								<small>{author.role_name}</small>
+							{/if}
+						</div>
+					{/each}
+				</div>
+			</div>
+		{/each}
+	</div>
 </main>
 
 <style>
 	main {
+		padding: 0 10vw;
+		text-align: center;
 		display: grid;
+		grid-template-areas:
+			'title title'
+			'description description'
+			'downloads credits';
+		grid-template-columns: 4fr 3fr;
+
 		justify-content: center;
-		gap: 1rem;
+		gap: 2rem 4rem;
+		margin: auto 15px;
+
+		@media (width < 790px) {
+			grid-template-areas: 'title' 'description' 'downloads' 'credits';
+			grid-template-columns: 1fr;
+		}
 
 		> * {
-			place-self: center;
 			text-align: center;
+		}
+	}
+
+	.title {
+		grid-area: title;
+	}
+
+	.description {
+		grid-area: description;
+	}
+
+	.downloads {
+		grid-area: downloads;
+		align-self: baseline;
+	}
+
+	.credits {
+		grid-area: credits;
+		width: 100%;
+	}
+
+	.credit-group {
+		display: grid;
+
+		.credit-group-title {
+			grid-column: 1 / -1;
+			margin-bottom: 10px;
+		}
+
+		> div {
+			display: grid;
+			gap: 1rem;
+			padding-bottom: 10px;
+			grid-template-columns: repeat(auto-fit, minmax(min(150px, 100%), 1fr));
+		}
+
+		p {
+			margin: 0;
 		}
 	}
 

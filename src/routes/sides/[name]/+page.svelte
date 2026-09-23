@@ -35,8 +35,6 @@
 	{/each}
 </nav>
 
-<!-- center div with border, play around with colours, border edges, font size, font type -->
-
 <main>
 	<div class="content">
 		<h1 style="color: #{data.side.color ?? 'ffffff'};">
@@ -49,7 +47,11 @@
 					.reduce((previous, current) => previous + current, 0)}
 			{/if}
 			{#if data.side.clears_for_rank}
-				<small>({data.side.clears_for_rank ?? 0} needed for role)</small>
+				{#if data.side.clears >= data.side.clears_for_rank}
+					<small>(role achieved!)</small>
+				{:else}
+					<small>({data.side.clears_for_rank ?? 0} needed for role)</small>
+				{/if}
 			{/if}
 		</h1>
 		{#each data.side.tiers as tier}
@@ -59,10 +61,15 @@
 						{tier.name}{#if data.player}:
 							<small>{tier.clears ?? 0}/{tier.mods.filter((mod) => !mod.is_child).length}</small>
 						{/if}
-						<small
-							>({tier.clears_for_rank}
-							needed for role)</small
-						>
+
+						{#if tier.clears >= tier.clears_for_rank}
+							<small>(role achieved!)</small>
+						{:else}
+							<small
+								>({tier.clears_for_rank}
+								needed for role)</small
+							>
+						{/if}
 					</h2>
 				{/if}
 			</div>
@@ -96,7 +103,7 @@
 
 <style>
 	nav {
-		container: nav;
+		/* container: nav; */
 
 		display: grid;
 		position: fixed;
