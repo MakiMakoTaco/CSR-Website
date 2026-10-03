@@ -34,12 +34,16 @@
 					m.name.toLowerCase().includes(filter.toLowerCase().trim()) ||
 					m.fullName.toLowerCase().includes(filter.toLowerCase().trim()) ||
 					m.shorthand.shorthand?.includes(filtered) ||
-					m.shorthand.gb_name?.toLowerCase().includes(filtered)
+					m.shorthand.gbName?.toLowerCase().includes(filtered)
 				);
 			})
 			.sort((a, b) => a.name > b.name));
 	}
 </script>
+
+<svelte:head>
+	<title>Submit - CSR</title>
+</svelte:head>
 
 <main>
 	<input
@@ -193,7 +197,7 @@
 								</span>
 								<span id="date">
 									<label for="{mod.id}-clear-date">Clear Date:</label>
-									<input id="{mod.id}-clear-date" name="{mod.id}-date" type="date" />
+									<input id="{mod.id}-clear-date" name="{mod.id}-clearedDate" type="date" />
 								</span>
 								<!-- <input
 						id="{mod.id}-proof"
@@ -209,7 +213,7 @@
 								</span>
 								<span id="time">
 									<label for="{mod.id}-time-taken">Clear Time:</label>
-									<input id="{mod.id}-time-taken" name="{mod.id}-time" type="text" />
+									<input id="{mod.id}-time-taken" name="{mod.id}-timeTaken" type="text" />
 								</span>
 								<!-- <label for="{mod.id}-full-clear">Full Clear:</label>
 					<input id="{mod.id}-full-clear" name="{mod.id}-fc" type="checkbox" /> -->
@@ -217,7 +221,7 @@
 					<input id="{mod.id}-private" name="{mod.id}-private" type="checkbox" /> -->
 								<span id="notes">
 									<label for="{mod.id}-notes">Notes:</label>
-									<input id="{mod.id}-notes" name="{mod.id}-notes" type="text" />
+									<input id="{mod.id}-notes" name="{mod.id}-publicNotes" type="text" />
 								</span>
 								<!-- <label for="{mod.id}-private-notes">Private Notes:</label>
 					<input id="{mod.id}-private-notes" name="{mod.id}-privateNotes" type="text" />

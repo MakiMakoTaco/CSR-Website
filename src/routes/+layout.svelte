@@ -74,7 +74,7 @@
 	<ul class="nav-center">
 		<li>
 			<a
-				href="https://docs.google.com/spreadsheets/d/1XTAL3kgpX0bG6SBfznPX8z7Qdb7lGnQRuxeUfPZMFoU/edit?gid=0#gid=0"
+				href="https://docs.google.com/spreadsheets/d/1XTAL3kgpX0bG6SBfznPX8z7Qdb7lGnQRuxeUfPZMFoU/edit?usp=sharing"
 				target="_blank">CSR Spreadsheet</a
 			>
 		</li>
@@ -94,9 +94,9 @@
 				<li><a href="/claim-player">Claim Player</a></li>
 			{/if}
 			<li>
-				<a href="/profile">
+				<a href="/profile" style="color: #{data.player.nameColor};">
 					<img src={data.player.avatar} alt="profile" class="profile-pic-nav" /><span
-						style="color: {`#${data.player.nameColor}` ?? 'white'};">{data.player.name}</span
+						>{data.player.name}</span
 					>
 				</a>
 			</li>
@@ -164,7 +164,7 @@
 			<a
 				href="/sides/{side.name}"
 				onclick={dlc.togglePopover()}
-				style="color: #{new TextEncoder().encode(side.color_plus)};">{side.name}</a
+				style="color: #{new TextEncoder().encode(side.colorPlus)};">{side.name}</a
 			>
 		</li>
 	{/each}

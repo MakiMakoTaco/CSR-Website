@@ -1,6 +1,5 @@
 <script>
 	import { page } from '$app/state';
-	import { onMount } from 'svelte';
 
 	let { data } = $props();
 
@@ -24,14 +23,12 @@
 <nav>
 	<button onclick={() => (location = '#')}><h3>{data.side.name}</h3></button>
 	{#each data.side.tiers as tier}
-		<!-- <p style="margin: 0%;"> -->
 		<button
 			style="color: #{tier.color};"
 			onclick={() => {
 				scroll(tier.name);
 			}}>{tier.name}</button
 		>
-		<!-- </p> -->
 	{/each}
 </nav>
 
@@ -46,27 +43,27 @@
 					.map((tier) => tier.mods.length ?? 0)
 					.reduce((previous, current) => previous + current, 0)}
 			{/if}
-			{#if data.side.clears_for_rank}
-				{#if data.side.clears >= data.side.clears_for_rank}
+			{#if data.side.clearsForRank}
+				{#if data.side.clears >= data.side.clearsForRank}
 					<small>(role achieved!)</small>
 				{:else}
-					<small>({data.side.clears_for_rank ?? 0} needed for role)</small>
+					<small>({data.side.clearsForRank ?? 0} needed for role)</small>
 				{/if}
 			{/if}
 		</h1>
 		{#each data.side.tiers as tier}
 			<div id={tier.name} class="tier-name">
-				{#if data.side.show_tier_names}
-					<h2 style="color: #{tier.color_plus};">
+				{#if data.side.showTierNames}
+					<h2 style="color: #{tier.colorPlus};">
 						{tier.name}{#if data.player}:
-							<small>{tier.clears ?? 0}/{tier.mods.filter((mod) => !mod.is_child).length}</small>
+							<small>{tier.clears ?? 0}/{tier.mods.filter((mod) => !mod.isChild).length}</small>
 						{/if}
 
-						{#if tier.clears >= tier.clears_for_rank}
+						{#if tier.clears >= tier.clearsForRank}
 							<small>(role achieved!)</small>
 						{:else}
 							<small
-								>({tier.clears_for_rank}
+								>({tier.clearsForRank}
 								needed for role)</small
 							>
 						{/if}
@@ -79,8 +76,7 @@
 						<a
 							id="mod"
 							href="/mods/{mod.id}"
-							style="text-decoration: none; color: light-dark(#{tier.color}, #{tier.color});"
-							>{mod.name}</a
+							style="text-decoration: none; color: #{tier.color ?? 'ffffff'};">{mod.name}</a
 						>
 						{#if mod.notes}
 							<sup
@@ -103,8 +99,6 @@
 
 <style>
 	nav {
-		/* container: nav; */
-
 		display: grid;
 		position: fixed;
 		right: 10px;

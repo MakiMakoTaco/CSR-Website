@@ -6,6 +6,7 @@ import { getModNames, getMods } from '$lib/database/functions/getMods.js';
 import { writeFileSync, readdirSync, existsSync, mkdirSync } from 'node:fs';
 import { fail, redirect } from '@sveltejs/kit';
 import { randomUUID } from 'node:crypto';
+import { exit } from 'node:process';
 
 export async function load({ locals }) {
 	if (locals.session === null) {
@@ -29,7 +30,7 @@ export async function load({ locals }) {
 						id: mod.id,
 						name: mod.name,
 						fullName: `${mod.name} - ${tiers[j].name} ${sides[i].name}`,
-						shorthand: modNames.find((modData) => modData.id === mod.mod_data_id),
+						shorthand: modNames.find((modData) => modData.id === mod.modDataId),
 						color: tiers[j].color,
 						hidden: false
 					};
@@ -60,9 +61,6 @@ export async function load({ locals }) {
 
 export const actions = {
 	default: async ({ request, url, locals }) => {
-		console.log(true);
-		return;
-
 		const data = await request.formData();
 		const playerId = locals.player.id;
 
@@ -72,17 +70,19 @@ export const actions = {
 			const modId = modData[0];
 			let column = modData[1];
 
-			switch (column) {
-				case 'time':
-					column = 'time_taken';
-					break;
-				case 'date':
-					column = 'cleared_date';
-					break;
-				case 'notes':
-					column = 'public_notes';
-					break;
-			}
+			// switch (column) {
+			// 	case 'time':
+			// 		column = 'timeTaken';
+			// 		break;
+			// 	case 'date':
+			// 		column = 'clearedDate';
+			// 		break;
+			// 	case 'notes':
+			// 		column = 'publicNotes';
+			// 		break;
+			// }
+
+			// https://imgur.com/a/T2nIogH
 
 			modMap[modId] = { ...modMap[modId], [column]: value || null };
 		}
@@ -129,27 +129,31 @@ export const actions = {
 
 			const existingSubmission = (
 				await sql`
-				select exists(
-					select 1
-					from player_progress
-					where player_id = ${playerId} and mod_id = ${modId}
+				SELECT EXISTS (
+					SELECT 1
+					FROM player_progress
+					WHERE
+						player_id = ${playerId}
+						AND mod_id = ${modId}
 				)    
 				`
 			)[0];
 
 			try {
 				if (existingSubmission.exists) {
-					mod.updated_at = new Date();
+					mod.updatedAt = new Date();
 
 					await sql`
 						UPDATE player_progress
 						SET ${sql(mod)}
-						WHERE player_id = ${playerId} AND mod_id = ${modId}
+						WHERE
+							player_id = ${playerId}
+							AND mod_id = ${modId}
 					`;
 				} else if (existingSubmission.exists === false) {
-					mod.player_id = playerId;
-					mod.mod_id = Number(modId);
-					mod.submitted_at = new Date();
+					mod.playerId = playerId;
+					mod.modId = Number(modId);
+					mod.submittedAt = new Date();
 
 					await sql`
 						INSERT INTO	player_progress

@@ -23,7 +23,7 @@
 	<title>{mod.name} - CSR</title>
 </svelte:head>
 
-<a href="/sides/{mod.side_name}">Back to {mod.side_name}</a>
+<a href="/sides/{mod.sideName}">Back to {mod.sideName}</a>
 <main>
 	<div class="title">
 		<h1>
@@ -33,7 +33,7 @@
 			{#if submitter}
 				<small
 					>by
-					{#if submitter.profile_url}
+					{#if submitter.profileUrl}
 						<a href="/contributors/{submitter.id}">{submitter.name}</a>
 					{:else}
 						{submitter.name}
@@ -41,7 +41,7 @@
 				</small>
 			{/if}
 			<small style="font-size: 16px;"
-				><a href="/mod-data/{mod.mod_data_id}" style="text-decoration: none;">data</a></small
+				><a href="/mod-data/{mod.modDataId}" style="text-decoration: none;">data</a></small
 			>
 		</h1>
 		<div class="clears">
@@ -56,8 +56,8 @@
 				{#each mod.children as child}
 					<span>
 						{console.log(child.download)}
-						<a href="/mod-data/{child.id}">{child.gb_name}</a>
-						<a href={child.download?.everest.everest_url}>Quick Install</a>
+						<a href="/mod-data/{child.id}">{child.gbName}</a>
+						<a href={child.download?.everest.everestUrl}>Quick Install</a>
 					</span>
 				{/each}
 			</div>
@@ -76,20 +76,20 @@
 						{#each mod.downloads as download}
 							<tr>
 								<td>
-									{#if download.everest_url}
-										<a href={download.everest_url}>Download</a>
-									{:else}
-										No link available
-									{/if}
-								</td>
-								<td>
-									{#if download.manual_url}
-										<a href={download.manual_url}>{download.file_name}</a>
+									{#if download.everestUrl}
+										<a href={download.everestUrl}>Download</a>
 									{:else}
 										No Everest link available
 									{/if}
 								</td>
-								<td>{formatBytes(download.file_size)}</td>
+								<td>
+									{#if download.manualUrl}
+										<a href={download.manualUrl}>{download.fileName}</a>
+									{:else}
+										No link available
+									{/if}
+								</td>
+								<td>{formatBytes(download.fileSize)}</td>
 							</tr>
 						{/each}
 					</tbody>
@@ -105,8 +105,8 @@
 					{#each creditGroup.authors as author}
 						<div>
 							<p>{author.name}</p>
-							{#if author.role_name}
-								<small>{author.role_name}</small>
+							{#if author.roleName}
+								<small>{author.roleName}</small>
 							{/if}
 						</div>
 					{/each}

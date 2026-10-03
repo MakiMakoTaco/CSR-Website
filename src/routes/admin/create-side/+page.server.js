@@ -3,7 +3,6 @@ import { error, fail } from '@sveltejs/kit';
 export const actions = {
 	submit: async ({ request }) => {
 		const data = await request.formData();
-		return;
 
 		let mods = [];
 
@@ -20,7 +19,7 @@ export const actions = {
 					return fail(406, { error: `${value} is not a valid Celeste mod` });
 				}
 
-				console.log(jsonResult);
+				// console.log(jsonResult);
 
 				// Get data: mod name, author, manual dowload, auto download
 				const modData = {

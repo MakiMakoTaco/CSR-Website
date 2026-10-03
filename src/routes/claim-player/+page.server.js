@@ -16,7 +16,7 @@ export async function load({ locals }) {
     WHERE
       claimed = false
       AND id != ${locals.player.id}
-      ORDER BY id ASC
+    ORDER BY id ASC
       `;
 
 	return { playerList };
@@ -53,10 +53,10 @@ export const actions = {
 				await sql`
         UPDATE players
         SET
-          discord_id = ${player.discord_id},
+          discord_id = ${player.discordId},
           about = ${player.about},
           avatar = ${player.avatar},
-          name_color = ${player.name_color},
+          name_color = ${player.nameColor},
           claimed = true
         WHERE id = ${selectedPlayerId}
         RETURNING id

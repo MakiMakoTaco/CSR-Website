@@ -20,12 +20,14 @@ export async function load({ params, locals }) {
 			tiers[i].clears = Number(
 				(
 					await sql`
-    SELECT COUNT(*)
-    FROM player_progress
-    JOIN mods ON player_progress.mod_id = mods.id
-    WHERE player_id = ${locals.player.id}
-		AND mods.id IN ${sql(modIds)}
-  `
+						SELECT COUNT(*)
+						FROM player_progress pp
+						JOIN mods m
+							ON pp.mod_id = m.id
+						WHERE
+							player_id = ${locals.player.id}
+							AND m.id IN ${sql(modIds)}
+					`
 				)[0]['count']
 			);
 		}

@@ -82,9 +82,9 @@ export async function GET(event) {
 		try {
 			newPlayer = await createPlayer({
 				name,
-				discord_id: discordUser.id,
+				discordId: discordUser.id,
 				avatar: `https://cdn.discordapp.com/avatars/${discordUser.id}/${discordUser.avatar}`,
-				name_color: discordUser.banner_color.substring(1)
+				nameColor: discordUser.banner_color.substring(1)
 			});
 
 			playerExists = false;

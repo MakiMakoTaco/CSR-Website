@@ -2,11 +2,12 @@ import sql from '$lib/database/db';
 
 export async function getTiers(sideId = '') {
 	const tiers = await sql`
-    select
-      tiers.id, clears_for_rank, name, append_side_name, encode(color, 'hex') as color, encode(color_plus, 'hex') as color_plus, side_index
-    from tier_presets
-    join tiers on tiers.preset_id = tier_presets.id
-    ${sideId ? sql`where side_id = ${sideId}` : sql``}
+    SELECT
+      t.id, clears_for_rank, name, append_side_name, color, color_plus, side_index
+    FROM tier_presets tp
+    JOIN tiers t
+      ON t.preset_id = tp.id
+    ${sideId ? sql`WHERE side_id = ${sideId}` : sql``}
     `;
 
 	// make sure there aren't any tier overrides

@@ -99,6 +99,7 @@
 			width: 100vw;
 		}
 	}
+
 	thead {
 		font-size: 20px;
 	}

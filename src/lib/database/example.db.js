@@ -9,7 +9,8 @@ const sql = postgres('postgress://', {
 	user,
 	password,
 	host,
-	database
+	database,
+	transform: postgres.camel
 });
 
 console.log('Connected!');

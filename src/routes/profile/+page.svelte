@@ -10,6 +10,10 @@
 	});
 </script>
 
+<svelte:head>
+	<title>Profile - CSR</title>
+</svelte:head>
+
 {#if form?.success}
 	<dialog class="toast">Successfully updated player info</dialog>
 {:else if form?.error}

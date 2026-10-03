@@ -17,15 +17,12 @@ export const actions = {
 		let update = false;
 		let newData = {};
 		for (let [key, value] of data) {
-			let updateKey = key;
-
 			if (key === 'nameColor') {
-				value = value.slice(1);
-				updateKey = 'name_color';
+				value = value.substring(1);
 			}
 
 			if (value !== (player[key] ?? '')) {
-				newData[updateKey] = value;
+				newData[key] = value;
 				update = true;
 			}
 		}
@@ -34,11 +31,8 @@ export const actions = {
 			try {
 				await updatePlayer(newData, playerId);
 
-				for (const updateKey of Object.keys(newData)) {
-					let key = updateKey;
-					if (updateKey === 'name_color') key = 'nameColor';
-
-					player[key] = newData[updateKey];
+				for (const key of Object.keys(newData)) {
+					player[key] = newData[key];
 				}
 
 				return { success: true };

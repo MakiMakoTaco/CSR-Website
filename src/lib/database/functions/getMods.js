@@ -2,10 +2,9 @@ import sql from '$lib/database/db';
 
 export async function getMods(tierId = '') {
 	const mods = await sql`
-    select
-      *
-    from mods m
-    ${tierId ? sql`where tier_id = ${tierId}` : sql``}
+    SELECT *
+    FROM mods
+    ${tierId ? sql`WHERE tier_id = ${tierId}` : sql``}
     `;
 
 	return mods;
@@ -13,9 +12,8 @@ export async function getMods(tierId = '') {
 
 export async function getModNames() {
 	const names = await sql`
-	select
-		id, gb_name, shorthand
-	from mod_data
+	SELECT id, gb_name, shorthand
+	FROM mod_data
 	`;
 
 	return names;
@@ -28,26 +26,32 @@ export async function getModData(modId) {
 
 	const mod = (
 		await sql`
-		select
-			md.*, m.*, s.name as side_name
-		from mod_data md
-		join mods m on md.id = m.mod_data_id
-		join sides s on s.id = (select side_id from tiers t where t.id = m.tier_id)
-		where m.id = ${modId}
+		SELECT
+			md.*, m.*, s.name AS side_name
+		FROM mod_data md
+		JOIN mods m
+			ON md.id = m.mod_data_id
+		JOIN sides s
+			ON s.id = (
+				SELECT side_id
+				FROM tiers t
+				WHERE t.id = m.tier_id
+			)
+		WHERE m.id = ${modId}
 	`
 	)[0];
 
 	mod.submitter = (
 		await sql`
-		select *
-		from contributors
-		where id = ${mod.submitter_id}
+		SELECT *
+		FROM contributors
+		WHERE id = ${mod.submitterId}
 		`
 	)[0];
 
 	mod.credits = (
 		await sql`
-		SELECT json_agg(js) js_final
+		SELECT json_agg(js) result
 		FROM (
 			SELECT json_build_object(
 			'id', cg.id,
@@ -58,21 +62,23 @@ export async function getModData(modId) {
 					 'name', c.name,
 					 'role_name', a.role_name
 					 )
-			)
+				)
 			) js
 			FROM credit_groups cg
-			RIGHT JOIN authors a ON a.group_id = cg.id
-			RIGHT JOIN contributors c ON c.id = a.contributor_id
-			WHERE mod_data_id = ${mod.mod_data_id}
+			RIGHT JOIN authors a
+				ON a.group_id = cg.id
+			RIGHT JOIN contributors c
+				ON c.id = a.contributor_id
+			WHERE mod_data_id = ${mod.modDataId}
 			GROUP BY cg.id
-) t
-				 `
-	)[0].js_final;
+		) t
+		`
+	)[0].result;
 
 	mod.children = await sql`
-		select id, gb_name
-		from mod_data
-		where parent_id = ${mod.mod_data_id}
+		SELECT id, gb_name
+		FROM mod_data
+		WHERE parent_id = ${mod.modDataId}
 		ORDER BY gb_name ASC
 		`;
 
@@ -81,19 +87,18 @@ export async function getModData(modId) {
 			mod.children[i].download = {
 				everest: (
 					await sql`
-				SELECT *
-				FROM download_links
-				WHERE mod_data_id = ${mod.children[i].id}
+					SELECT *
+					FROM download_links
+					WHERE mod_data_id = ${mod.children[i].id}
 				`
 				)[0]
 			};
 		}
 	} else {
 		mod.downloads = await sql`
-		select
-			*
-		from download_links
-		where mod_data_id = ${mod.mod_data_id}
+		SELECT *
+		FROM download_links
+		WHERE mod_data_id = ${mod.modDataId}
 	`;
 	}
 
@@ -106,11 +111,15 @@ export async function getClearedPlayers(modId) {
 	}
 
 	const clearedPlayers = await sql`
-		select
+		SELECT
 			p.id, name, proof, is_fc, cleared_date, is_private, public_notes, public_mod_notes
-		from player_progress pp
-		join players p on player_id = p.id
-		where mod_id = ${modId} and cleared = true
+		FROM player_progress pp
+		JOIN players p
+			ON player_id = p.id
+		WHERE
+			mod_id = ${modId}
+			AND cleared = true
+		ORDER BY player_id ASC
 	`;
 
 	return clearedPlayers;

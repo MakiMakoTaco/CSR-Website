@@ -1,14 +1,12 @@
 import sql from '$lib/database/db';
 
-export async function createPlayer(
-	data = { name: '', discord_id: '', avatar: '', name_color: '' }
-) {
+export async function createPlayer(data = { name: '', discordId: '', avatar: '', nameColor: '' }) {
 	const existingPlayer = (
 		await sql`
-    select exists(
-      select 1
-      from players
-      where name = ${data.name}
+    SELECT EXISTS(
+      SELECT 1
+      FROM players
+      WHERE name = ${data.name}
     )    
     `
 	)[0];
@@ -19,7 +17,7 @@ export async function createPlayer(
 		await sql`
       INSERT INTO players 
       ${sql(data)}
-      returning id, name, discord_id, avatar, name_color
+      RETURNING id, name, discord_id, avatar, name_color
     `
 	)[0];
 
@@ -27,7 +25,7 @@ export async function createPlayer(
 }
 
 export async function updatePlayer(
-	newData = { name: '', avatar: '', name_color: '', about: '' },
+	newData = { name: '', avatar: '', nameColor: '', about: '' },
 	playerId
 ) {
 	await sql`
@@ -66,8 +64,9 @@ export async function getPlayerFromId(playerId) {
 export async function getPlayerClears(playerId) {
 	const clears = await sql`
     SELECT *
-    FROM player_progress
-    JOIN mods ON player_progress.mod_id = mods.id
+    FROM player_progress pp
+    JOIN mods m
+      ON pp.mod_id = m.id
     WHERE player_id = ${playerId}
   `;
 

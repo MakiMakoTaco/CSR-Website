@@ -2,7 +2,7 @@
 	let { form } = $props();
 
 	let sideName = $state('A-Side');
-	let tierData = $state([{ name: 'Bronze', mods: ['Test'] }]);
+	let tierData = $state([{ name: 'Bronze', mods: ['https://gamebanana.com/mods/332117'] }]);
 
 	let processedMods = $state(0);
 
@@ -21,36 +21,40 @@
 	});
 
 	async function getModData(value, index = 0) {
-		if (value.includes('https://gamebanana.com/')) {
-			const newItem = value.replace('https://gamebanana.com/', '').split('/');
-			console.log(newItem);
+		try {
+			const url = new URL(value);
 
-			const result = await fetch(`https://gamebanana.com/apiv11/Mod/${newItem[1]}/ProfilePage`);
-			const jsonResult = await result.json();
+			if (value.includes('https://gamebanana.com/')) {
+				const newItem = value.replace('https://gamebanana.com/', '').split('/');
 
-			if (jsonResult._aGame._sName !== 'Celeste') {
-				return { name: value, index };
+				const result = await fetch(`https://gamebanana.com/apiv11/Mod/${newItem[1]}/ProfilePage`);
+				const jsonResult = await result.json();
+
+				if (jsonResult._aGame._sName !== 'Celeste') {
+					return { profilePage: value, name: value.replace(/https?:\/\/www./, ''), index };
+				}
+
+				// Get data: mod name, author, manual dowload, auto download
+				const modData = {
+					profilePage: value,
+					index,
+					name: jsonResult._sName,
+					author: jsonResult._aSubmitter._sName,
+					downloads: jsonResult._aFiles.map((file) => {
+						return {
+							name: file._sFile,
+							size: file._nFilesize,
+							manual: file._sDownloadUrl,
+							everest: file._aModManagerIntegrations[0]._sDownloadUrl
+						};
+					})
+				};
+
+				return modData;
+			} else {
+				return { profilePage: value, name: value.replace(/https?:\/\/www./, ''), index };
 			}
-
-			console.log(jsonResult);
-
-			// Get data: mod name, author, manual dowload, auto download
-			const modData = {
-				index,
-				name: jsonResult._sName,
-				author: jsonResult._aSubmitter._sName,
-				downloads: jsonResult._aFiles.map((file) => {
-					return {
-						name: file._sFile,
-						size: file._nFilesize,
-						manual: file._sDownloadUrl,
-						everest: file._aModManagerIntegrations[0]._sDownloadUrl
-					};
-				})
-			};
-
-			return modData;
-		} else {
+		} catch (error) {
 			return { name: value, index };
 		}
 	}
@@ -85,6 +89,11 @@
 	}
 </script>
 
+<noscript>
+	JavaScript must be enabled in order to create a new side. Creating a new side without JS will
+	cause issues</noscript
+>
+
 {#if form?.error}
 	{form.error}
 {:else if form?.success}
@@ -112,11 +121,11 @@
 			}}>Remove Tier</button
 		>
 
-		<label for="mod-data">Mod Data:</label>
+		<label for="mod-links">Mod Links:</label>
 		{#each tierData[i].mods as mod, j}
 			<input
 				name={tierData[i].name}
-				id="mod-data"
+				id="mod-links"
 				placeholder="Gamebanana Link"
 				bind:value={tierName.mods[j]}
 				required
@@ -127,8 +136,6 @@
 				e.preventDefault();
 
 				tierData[i].mods.push('');
-
-				console.log(sideData);
 			}}>Add another mod</button
 		>
 	{/each}
@@ -152,27 +159,47 @@
 		{/if}
 
 		{#if sideData}
-			<input name="side-name" value={sideData.name} hidden="true" />
+			<input name="sideName" value={sideData.name} hidden="true" />
 			<h1>{sideData.name}</h1>
 
 			{#each sideData.tiers as tier, tierIndex}
+				<input type="text" name="tiers" value={tier.name} hidden />
 				<h2>{tierData[tierIndex].name}</h2>
 
 				{#each tier.mods as mod}
-					<input name={tierData[tierIndex].name} value="test" hidden="true" />
-					<p>
-						{mod.name}
-						<button
-							onclick={async (e) => {
-								e.preventDefault();
+					{#if mod.name}
+						<div class="mod-data">
+							<input type="text" name="{tier.name}-profilePage" value={mod.profilePage} hidden />
+							{#if mod.profilePage}
+								<a href={mod.profilePage} target="_blank">{mod.name}</a>
+							{:else}
+								<span style="color: yellow;">Entry is not a valid link</span>
+							{/if}
+							<input type="text" name="{tier.name}-name" value={mod.name} />
+							<button
+								onclick={async (e) => {
+									e.preventDefault();
 
-								tierData[tierIndex].mods.splice(mod.index, 1);
-							}}>Remove Mod</button
-						>
-					</p>
+									tierData[tierIndex].mods.splice(mod.index, 1);
+								}}>Remove Mod</button
+							>
+						</div>
+					{/if}
 				{/each}
 			{/each}
 		{/if}
 		<button disabled={loading}>Create Side</button>
 	</form>
 {/await}
+
+<style>
+	noscript {
+		font-size: 36px;
+		font-weight: bold;
+	}
+
+	.mod-data > input {
+		min-width: 100px;
+		field-sizing: content;
+	}
+</style>

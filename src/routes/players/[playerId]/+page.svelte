@@ -9,7 +9,7 @@
 	{#if data.player.avatar}
 		<img alt="player profile" src={data.player.avatar} />
 	{/if}
-	<h1 style="color: {data.player.name_color ?? 'black'};">
+	<h1 style="color: {data.player.nameColor ?? 'black'};">
 		{data.player.name}
 	</h1>
 
@@ -40,11 +40,11 @@
 					<tr>
 						<td class="mod-name">{clear.name}</td>
 						<td class="proof"><a href={clear.proof}>Proof</a></td>
-						<td class="time">{clear.time_taken ?? 'N/A'}</td>
+						<td class="time">{clear.timeTaken ?? 'N/A'}</td>
 						<td class="deaths">{clear.deaths ?? 'N/A'}</td>
-						<td class="full-clear">{clear.is_fc}</td>
-						<td class="clear-date">{clear.cleared_date ?? 'N/A'}</td>
-						<td class="player-notes">{clear.public_notes}</td>
+						<td class="full-clear">{clear.isFc}</td>
+						<td class="clear-date">{clear.clearedDate ?? 'N/A'}</td>
+						<td class="player-notes">{clear.publicNotes}</td>
 					</tr>
 				{/each}
 			</tbody>

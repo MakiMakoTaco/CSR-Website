@@ -2,10 +2,10 @@ import sql from '$lib/database/db';
 
 export async function getSides(data = { select: '', name: '' }) {
 	const query = sql`
-		select
+		SELECT
 			${data.select ? sql(data.select) : sql`*`}
-		from sides
-		${data.name ? sql`where name = ${data.name}` : sql``}
+		FROM sides
+		${data.name ? sql`WHERE name = ${data.name}` : sql``}
 		`;
 
 	const sides = await query;
@@ -19,38 +19,36 @@ export async function getSideData(sideId) {
 	}
 
 	const sideData = await sql`
-		select
-			*
-		from sides
-		where id = ${sideId}
+		SELECT *
+		FROM sides
+		WHERE id = ${sideId}
 	`;
 
 	const tierIds = (
 		await sql`
-		select
-			id
-		from tiers
-		where side_id = ${sideId}
+		SELECT id
+		FROM tiers
+		WHERE side_id = ${sideId}
 	`
 	).map((tier) => tier.id);
 
 	const modIds = (
 		await sql`
-		select
-			id
-		from mods
-		where tier_id in ${sql(tierIds)}
+		SELECT id
+		FROM mods
+		WHERE tier_id IN ${sql(tierIds)}
 	`
 	).map((mod) => mod.id);
 
 	const sideClears = await sql`
-		select
-			player_id
-		from player_progress
-		where mod_id in ${sql(modIds)} and cleared = true
+		SELECT player_id
+		FROM player_progress
+		WHERE mod_id
+			IN ${sql(modIds)}
+			AND cleared = true
 	`;
 
-	const uniquePlayers = [...new Set(sideClears.map((player) => player.player_id))].length;
+	const uniquePlayers = [...new Set(sideClears.map((player) => player.playerId))].length;
 
 	return { clearCount: sideClears.length, uniquePlayers };
 }

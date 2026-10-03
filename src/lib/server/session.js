@@ -80,11 +80,11 @@ async function getSession(sessionId) {
 
 	const result = (
 		await sql`
-    SELECT session.id, session.player_id, session.expires_at, players.id as player_id, players.name, players.about, players.discord_id, players.avatar, name_color, claimed, admins.role
-    FROM session
-		INNER JOIN players ON session.player_id = players.id
-		LEFT JOIN admins ON admins.player_id = players.id
-    WHERE session.id = ${sessionId}
+    SELECT s.id, s.player_id, s.expires_at, p.id AS player_id, p.name, p.about, p.discord_id, p.avatar, name_color, claimed, a.role
+    FROM session s
+		INNER JOIN players p ON s.player_id = p.id
+		LEFT JOIN admins a ON a.player_id = p.id
+    WHERE s.id = ${sessionId}
   `
 	)?.[0];
 
@@ -94,16 +94,16 @@ async function getSession(sessionId) {
 
 	const session = {
 		id: result.id,
-		playerId: result.player_id,
-		expiresAt: new Date(result.expires_at)
+		playerId: result.playerId,
+		expiresAt: new Date(result.expiresAt)
 	};
 	const player = {
-		id: result.player_id,
-		discordId: result.discord_id,
+		id: result.playerId,
+		discordId: result.discordId,
 		name: result.name,
 		about: result.about,
 		avatar: result.avatar,
-		nameColor: result.name_color,
+		nameColor: result.nameColor,
 		role: result.role,
 		claimed: result.claimed
 	};
@@ -117,7 +117,7 @@ async function getSession(sessionId) {
 		session.expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24 * 30);
 		await sql`
 			UPDATE session
-			SET expires_at = ${new Date(Math.floor(session.expiresAt.getTime() / 1000)).toISOString()}
+			SET expires_at = ${session.expiresAt.getTime()}
 			WHERE session.id = ${session.id}
 		`;
 	}
