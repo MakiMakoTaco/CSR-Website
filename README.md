@@ -2,14 +2,7 @@
 
 ## Active version
 
-> [!NOTE]
-> This version should always be online. If it's not, please try again later or a testing version before contacting Zelda on discord
-
-http://185.230.217.233:3000/
-
-## Testing version
-
-http://185.230.217.233:5173/ or http://185.230.217.233:5174/
+There is currently no active version whilst the site gets ready for public use
 
 # Running the website locally
 
@@ -21,7 +14,7 @@ http://185.230.217.233:5173/ or http://185.230.217.233:5174/
 > [!NOTE]
 > This project uses [SvelteKit](https://svelte.dev/docs/kit/introduction 'SvelteKit Documentation')
 
-Once you've created a project, installed dependencies with `npm install` (or `pnpm install` or `yarn`), set up your Postgres server and suitably edited [example.env](example.env) (make sure to remove "example." from the filename), start a development server:
+Once you've created a project, installed dependencies with `npm install` (or `pnpm install` or `yarn`), set up your Postgres server and suitably edited [example.env](example.env) and [example.wrangler.jsonc](example.wrangler.jsonc) (make sure to remove "example." from the filename), start a development server:
 
 ```sh
 npm run dev
