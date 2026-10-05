@@ -101,18 +101,15 @@
 											edit.hidden = false;
 										}}>Edit</button
 									>
-									<button>Replace</button>
-									<button>Remove</button>
+									<!-- <button>Replace</button>
+									<button>Remove</button> -->
 								</div>
 							</div>
 							<div id="{mod.id}-mod-edit" hidden>
-								<div>
-									<div>
-										<input id="{mod.id}-name" type="text" value={mod.name} />
-										<input id="{mod.id}-link" type="text" value={mod.page} />
-									</div>
-
-									<textarea name="{mod.id}-notes" value={mod.notes} id="{mod.id}-notes"></textarea>
+								<form method="POST" action="?/updateMod" onsubmit={(e) => e.requestSubmit()}>
+									<input type="number" name="id" value={mod.id} hidden />
+									<input id="{mod.id}-name" type="text" name="name" value={mod.name} />
+									<textarea name="notes" value={mod.notes ?? ''} id="{mod.id}-notes"></textarea>
 									<button
 										onclick={(e) => {
 											e.preventDefault();
@@ -125,13 +122,8 @@
 											name.value = mod.name;
 										}}>Cancel</button
 									>
-									<button
-										onclick={(e) => {
-											e.preventDefault();
-											console.log('Saving name');
-										}}>Save</button
-									>
-								</div>
+									<button>Save</button>
+								</form>
 							</div>
 						</div>
 					{/await}

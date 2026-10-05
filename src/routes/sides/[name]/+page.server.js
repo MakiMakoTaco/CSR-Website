@@ -30,8 +30,6 @@ async function getData(locals, id) {
 		}
 	}
 
-	console.log(tiers);
-
 	return tiers;
 }
 

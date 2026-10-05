@@ -109,7 +109,7 @@
 	</div>
 </main>
 
-<div role="note" popover="manual" id="note"></div>
+<div role="note" popover="manual" id="note" style="white-space: pre-wrap;"></div>
 
 <style>
 	nav {

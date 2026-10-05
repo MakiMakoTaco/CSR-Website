@@ -3,6 +3,7 @@ export async function getMods(sql, tierId = '') {
     SELECT *
     FROM mods
     ${tierId ? sql`WHERE tier_id = ${tierId}` : sql``}
+		ORDER BY UPPER(name) ASC
     `;
 
 	return mods;
