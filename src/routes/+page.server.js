@@ -1,10 +1,16 @@
-import { getSideData, getSides } from '$lib/database/functions/getSides';
+import { getSideData, getSides } from '$lib/functions/getSides';
 
 export async function load({ locals }) {
-	const sides = await getSides();
-	for (let i = 0; i < sides.length; i++) {
-		sides[i] = { ...sides[i], ...(await getSideData(sides[i].id)) };
-	}
+	const sql = locals.sql;
 
-	return { sides };
+	const sides = await getSides(sql, {
+		select: ['id', 'name', 'type', 'archived', 'colorPlus']
+	});
+
+	return {
+		sides: sides.map((side) => ({
+			...side,
+			data: getSideData(sql, side.id)
+		}))
+	};
 }

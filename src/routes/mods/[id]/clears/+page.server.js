@@ -1,7 +1,9 @@
-import { getClearedPlayers } from '$lib/database/functions/getMods.js';
+import { getClearedPlayers } from '$lib/functions/getMods.js';
 
-export async function load({ url, params }) {
-	const players = await getClearedPlayers(params.id);
+export async function load({ url, params, locals }) {
+	const sql = locals.sql;
+
+	const players = await getClearedPlayers(sql, params.id);
 	players.forEach((player) => {
 		if (new RegExp(['youtube.com', 'youtu.be', 'twitch.tv'].join('|')).test(player.proof)) {
 			player.is_video = true;

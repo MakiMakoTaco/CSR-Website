@@ -1,9 +1,10 @@
 import { CLIENT_ID, CLIENT_SECRET, REDIRECT_URI } from '$env/static/private';
-import sql from '$lib/database/db.js';
-import { createPlayer, getPlayerFromDiscordId } from '$lib/database/functions/user.js';
+import { createPlayer, getPlayerFromDiscordId } from '$lib/functions/user.js';
 import { createSession, generateSessionToken, setSessionTokenCookie } from '$lib/server/session.js';
 
 export async function GET(event) {
+	const sql = event.locals.sql;
+
 	const code = event.url.searchParams.get('code');
 	const state = event.url.searchParams.get('state');
 	const storedState = event.cookies.get('discord_oauth_state') ?? null;
@@ -47,7 +48,7 @@ export async function GET(event) {
 	});
 	const discordUser = await response.json();
 
-	const existingPlayer = await getPlayerFromDiscordId(discordUser.id);
+	const existingPlayer = await getPlayerFromDiscordId(sql, discordUser.id);
 
 	if (existingPlayer) {
 		if (!existingPlayer.avatar) {
@@ -61,7 +62,7 @@ export async function GET(event) {
 		}
 
 		const sessionToken = generateSessionToken();
-		const session = await createSession(sessionToken, existingPlayer.id);
+		const session = await createSession(sql, sessionToken, existingPlayer.id);
 
 		setSessionTokenCookie(event, sessionToken, session.expiresAt);
 
@@ -80,7 +81,7 @@ export async function GET(event) {
 
 	while (playerExists) {
 		try {
-			newPlayer = await createPlayer({
+			newPlayer = await createPlayer(sql, {
 				name,
 				discordId: discordUser.id,
 				avatar: `https://cdn.discordapp.com/avatars/${discordUser.id}/${discordUser.avatar}`,
@@ -106,7 +107,7 @@ export async function GET(event) {
 	}
 
 	const sessionToken = generateSessionToken();
-	const session = await createSession(sessionToken, newPlayer.id);
+	const session = await createSession(sql, sessionToken, newPlayer.id);
 
 	setSessionTokenCookie(event, sessionToken, session.expiresAt);
 

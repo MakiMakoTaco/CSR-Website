@@ -24,8 +24,13 @@
 					{#if side.type === 'standard'}
 						<tr>
 							<th scope="row"><a href="/sides/{side.name}">{side.name}</a></th>
-							<td>{side.clearCount}</td>
-							<td>{side.uniquePlayers}</td>
+							{#await side.data}
+								<td>Loading...</td>
+								<td>Loading...</td>
+							{:then data}
+								<td>{data.clearCount}</td>
+								<td>{data.uniquePlayers}</td>
+							{/await}
 						</tr>
 					{/if}
 				{/each}
@@ -36,8 +41,13 @@
 					{#if (side.type === 'catstare' || side.type === 'dlc') && !side.archived}
 						<tr>
 							<th scope="row"><a href="/sides/{side.name}">{side.name}</a></th>
-							<td>{side.clearCount}</td>
-							<td>{side.uniquePlayers}</td>
+							{#await side.data}
+								<td>Loading...</td>
+								<td>Loading...</td>
+							{:then data}
+								<td>{data.clearCount}</td>
+								<td>{data.uniquePlayers}</td>
+							{/await}
 						</tr>
 					{/if}
 				{/each}
@@ -48,8 +58,13 @@
 					{#if side.archived}
 						<tr>
 							<th scope="row"><a href="/sides/{side.name}">{side.name}</a></th>
-							<td>{side.clearCount}</td>
-							<td>{side.uniquePlayers}</td>
+							{#await side.data}
+								<td>Loading...</td>
+								<td>Loading...</td>
+							{:then data}
+								<td>{data.clearCount}</td>
+								<td>{data.uniquePlayers}</td>
+							{/await}
 						</tr>
 					{/if}
 				{/each}

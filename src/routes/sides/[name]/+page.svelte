@@ -2,6 +2,7 @@
 	import { page } from '$app/state';
 
 	let { data } = $props();
+	let side = $derived(data.side);
 
 	function scroll(id) {
 		const navbar = document.getElementById('navbar');
@@ -10,88 +11,95 @@
 		scrollTo({ top: tier.offsetTop - navbar.clientHeight });
 	}
 
-	$effect(() => {
-		const sides = document.getElementById('side-cassette');
-		sides.src = `/assets/navbar/cassettes/${page.params?.name}.png`;
-	});
+	// $effect(() => {
+	// 	const sides = document.getElementById('side-cassette');
+	// 	sides.src = `/assets/navbar/cassettes/${page.params?.name}.png`;
+	// });
 </script>
 
 <svelte:head>
-	<title>{data.side.name} - CSR</title>
+	<title>{side.name} - CSR</title>
 </svelte:head>
-
-<nav>
-	<button onclick={() => (location = '#')}><h3>{data.side.name}</h3></button>
-	{#each data.side.tiers as tier}
-		<button
-			style="color: #{tier.color};"
-			onclick={() => {
-				scroll(tier.name);
-			}}>{tier.name}</button
-		>
-	{/each}
-</nav>
 
 <main>
 	<div class="content">
-		<h1 style="color: #{data.side.color ?? 'ffffff'};">
-			{data.side.name}
-			{#if data.player}
-				{data.side.tiers
-					.map((tier) => Number(tier.clears) ?? 0)
-					.reduce((previous, current) => previous + current, 0)}/{data.side.tiers
-					.map((tier) => tier.mods.length ?? 0)
-					.reduce((previous, current) => previous + current, 0)}
-			{/if}
-			{#if data.side.clearsForRank}
-				{#if data.side.clears >= data.side.clearsForRank}
-					<small>(role achieved!)</small>
-				{:else}
-					<small>({data.side.clearsForRank ?? 0} needed for role)</small>
+		<nav>
+			<button onclick={() => (location = '#')}><h3>{side.name}</h3></button>
+			{#await side.tiers then tiers}
+				{#each tiers as tier}
+					<button
+						style="color: #{tier.color};"
+						onclick={() => {
+							scroll(tier.name);
+						}}>{tier.name}</button
+					>
+				{/each}
+			{/await}
+		</nav>
+		<h1 style="color: #{side.color ?? 'ffffff'};">
+			{side.name}
+			{#await side.tiers then tiers}
+				{#if data.player}
+					{tiers
+						.map((tier) => Number(tier.clears) ?? 0)
+						.reduce((previous, current) => previous + current, 0)}/{tiers
+						.map((tier) => tier.mods.length ?? 0)
+						.reduce((previous, current) => previous + current, 0)}
 				{/if}
-			{/if}
+				{#if side.clearsForRank}
+					{#if side.clears >= side.clearsForRank}
+						<small>(role achieved!)</small>
+					{:else}
+						<small>({side.clearsForRank ?? 0} needed for role)</small>
+					{/if}
+				{/if}
+			{/await}
 		</h1>
-		{#each data.side.tiers as tier}
-			<div id={tier.name} class="tier-name">
-				{#if data.side.showTierNames}
-					<h2 style="color: #{tier.colorPlus};">
-						{tier.name}{#if data.player}:
-							<small>{tier.clears ?? 0}/{tier.mods.filter((mod) => !mod.isChild).length}</small>
-						{/if}
+		{#await side.tiers then tiers}
+			{console.log(tiers)}
+			{#each tiers as tier}
+				{console.log(tier)}
+				<div id={tier.name} class="tier-name">
+					{#if data.side.showTierNames}
+						<h2 style="color: #{tier.colorPlus};">
+							{tier.name}{#if data.player}:
+								<small>{tier.clears ?? 0}/{tier.mods.filter((mod) => !mod.isChild).length}</small>
+							{/if}
 
-						{#if tier.clears >= tier.clearsForRank}
-							<small>(role achieved!)</small>
-						{:else}
-							<small
-								>({tier.clearsForRank}
-								needed for role)</small
-							>
-						{/if}
-					</h2>
-				{/if}
-			</div>
-			{#each tier.mods as mod}
-				<div class="mod-info">
-					<div>
-						<a
-							id="mod"
-							href="/mods/{mod.id}"
-							style="text-decoration: none; color: #{tier.color ?? 'ffffff'};">{mod.name}</a
-						>
-						{#if mod.notes}
-							<sup
-								id="note-tag"
-								onmouseenter={() => {
-									note.textContent = mod.notes;
-									note.showPopover();
-								}}
-								onmouseleave={() => note.hidePopover()}>notes</sup
-							>
-						{/if}
-					</div>
+							{#if tier.clears >= tier.clearsForRank}
+								<small>(role achieved!)</small>
+							{:else}
+								<small
+									>({tier.clearsForRank}
+									needed for role)</small
+								>
+							{/if}
+						</h2>
+					{/if}
 				</div>
+				{#each tier.mods as mod}
+					<div class="mod-info">
+						<div>
+							<a
+								id="mod"
+								href="/mods/{mod.id}"
+								style="text-decoration: none; color: #{tier.color ?? 'ffffff'};">{mod.name}</a
+							>
+							{#if mod.notes}
+								<sup
+									id="note-tag"
+									onmouseenter={() => {
+										note.textContent = mod.notes;
+										note.showPopover();
+									}}
+									onmouseleave={() => note.hidePopover()}>notes</sup
+								>
+							{/if}
+						</div>
+					</div>
+				{/each}
 			{/each}
-		{/each}
+		{/await}
 	</div>
 </main>
 
@@ -101,12 +109,15 @@
 	nav {
 		display: grid;
 		position: fixed;
-		right: 10px;
 		padding-right: 1rem;
+
+		justify-self: right;
 		justify-items: center;
 
 		> * {
-			font-size: calc(100cqh / 100%);
+			padding: 4px;
+			font-size: 14px;
+			cursor: pointer;
 		}
 	}
 

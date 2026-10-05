@@ -31,13 +31,13 @@
 		<li><a href="/">Home</a></li>
 		<li id="sides-dropdown">
 			<button popovertarget="sides-menu" class="sides-dropdown" tabindex="0" href="/">Sides</button>
-			<img
+			<!-- <img
 				id="side-cassette"
 				class="cassette"
 				alt="cassette tape"
 				onerror={() => (this.src = '/assets/navbar/cassettes/default.png')}
 				style="visibility: {page.url.pathname.startsWith('/sides') ? 'visible' : 'hidden'};"
-			/>
+			/> -->
 		</li>
 		<li>
 			<a href="/sides/Catstare">Catstare</a>
@@ -300,14 +300,6 @@
 		&:popover-open {
 			display: grid;
 		}
-	}
-
-	.cassette {
-		position-anchor: --sides;
-
-		position: absolute;
-		top: anchor(center);
-		z-index: -1;
 	}
 
 	.sides-menu {

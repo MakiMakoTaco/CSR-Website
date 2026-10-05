@@ -122,7 +122,9 @@
 	<br />
 
 	{#if form?.error}
-		<p class="error">{@html form.error}</p>
+		<p class="error">
+			{@html form.error}
+		</p>
 	{/if}
 	{#if submittingMods.length > 0}
 		<form
@@ -193,6 +195,7 @@
 										name="{mod.id}-proof"
 										value={mod.proof}
 										placeholder="https://imgur.com/a/BaxjPdY"
+										required
 									/>
 								</span>
 								<span id="date">

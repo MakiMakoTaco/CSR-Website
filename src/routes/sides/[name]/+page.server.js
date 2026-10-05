@@ -1,21 +1,17 @@
-import { getSides } from '$lib/database/functions/getSides';
-import { getTiers } from '$lib/database/functions/getTiers.js';
-import { getMods } from '$lib/database/functions/getMods.js';
+import { getSides } from '$lib/functions/getSides';
+import { getTiers } from '$lib/functions/getTiers.js';
+import { getMods } from '$lib/functions/getMods.js';
 
 import { error } from '@sveltejs/kit';
-import sql from '$lib/database/db.js';
-import { existsSync } from 'fs';
 
-export async function load({ params, locals }) {
-	let side = (await getSides({ name: params.name }))[0];
+async function getData(locals, id) {
+	const sql = locals.sql;
 
-	const tiers = await getTiers(side.id);
+	const tiers = await getTiers(sql, id);
 
 	for (let i = 0; i < tiers.length; i++) {
-		tiers[i].mods = [...(await getMods(tiers[i].id))];
-
+		tiers[i].mods = [...(await getMods(sql, tiers[i].id))];
 		const modIds = tiers[i].mods.map((mod) => mod.id);
-
 		if (locals.player) {
 			tiers[i].clears = Number(
 				(
@@ -33,9 +29,15 @@ export async function load({ params, locals }) {
 		}
 	}
 
-	side.tiers = [...tiers];
+	return tiers;
+}
 
-	if (!side) error(404);
+export async function load({ params, locals }) {
+	const sql = locals.sql;
 
-	return { side };
+	const side = (await getSides(sql, { name: params.name }))[0];
+
+	return {
+		side: { ...side, tiers: getData(locals, side.id) }
+	};
 }

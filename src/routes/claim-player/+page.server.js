@@ -1,4 +1,3 @@
-import sql from '$lib/database/db';
 import { createSession } from '$lib/server/session';
 import { setSessionTokenCookie } from '$lib/server/session';
 import { generateSessionToken } from '$lib/server/session';
@@ -9,6 +8,8 @@ export async function load({ locals }) {
 	if (locals.session === null) {
 		redirect(302, '/');
 	}
+
+	const sql = locals.sql;
 
 	const playerList = await sql`
     SELECT id, name
@@ -25,6 +26,8 @@ export async function load({ locals }) {
 export const actions = {
 	claim: async (event) => {
 		const locals = event.locals;
+		const sql = locals.sql;
+
 		if (locals.session === null) {
 			return fail(401);
 		}
@@ -32,7 +35,7 @@ export const actions = {
 		const playerId = locals.player.id;
 		const selectedPlayerId = (await event.request.formData()).get('selected_player_id');
 
-		await invalidateSession(locals.session.id);
+		await invalidateSession(sql, locals.session.id);
 		deleteSessionTokenCookie(event);
 
 		try {
@@ -64,7 +67,7 @@ export const actions = {
 			)[0].id;
 
 			const sessionToken = generateSessionToken();
-			const session = await createSession(sessionToken, updatedPlayerId);
+			const session = await createSession(sql, sessionToken, updatedPlayerId);
 
 			setSessionTokenCookie(event, sessionToken, session.expiresAt);
 

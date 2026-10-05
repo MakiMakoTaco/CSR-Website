@@ -1,6 +1,4 @@
-import sql from '$lib/database/db';
-
-export async function getMods(tierId = '') {
+export async function getMods(sql, tierId = '') {
 	const mods = await sql`
     SELECT *
     FROM mods
@@ -10,7 +8,7 @@ export async function getMods(tierId = '') {
 	return mods;
 }
 
-export async function getModNames() {
+export async function getModNames(sql) {
 	const names = await sql`
 	SELECT id, gb_name, shorthand
 	FROM mod_data
@@ -19,7 +17,7 @@ export async function getModNames() {
 	return names;
 }
 
-export async function getModData(modId) {
+export async function getModData(sql, modId) {
 	if (!modId) {
 		throw new Error('Getting mod data requires a mod ID');
 	}
@@ -105,7 +103,7 @@ export async function getModData(modId) {
 	return mod;
 }
 
-export async function getClearedPlayers(modId) {
+export async function getClearedPlayers(sql, modId) {
 	if (!modId) {
 		throw new Error('Getting clears for a mod requires a mod ID');
 	}

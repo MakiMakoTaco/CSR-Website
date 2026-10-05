@@ -1,6 +1,4 @@
-import sql from '$lib/database/db';
-
-export async function getTiers(sideId = '') {
+export async function getTiers(sql, sideId = '') {
 	const tiers = await sql`
     SELECT
       t.id, clears_for_rank, name, append_side_name, color, color_plus, side_index

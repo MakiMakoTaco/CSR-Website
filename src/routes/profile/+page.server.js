@@ -1,4 +1,4 @@
-import { updatePlayer } from '$lib/database/functions/user.js';
+import { updatePlayer } from '$lib/functions/user.js';
 import { deleteSessionTokenCookie, invalidateSession } from '$lib/server/session.js';
 import { fail, redirect } from '@sveltejs/kit';
 
@@ -10,6 +10,8 @@ export function load({ locals }) {
 
 export const actions = {
 	update: async ({ request, locals }) => {
+		const sql = locals.sql;
+
 		const player = locals.player;
 		const playerId = player.id;
 		const data = await request.formData();
@@ -29,7 +31,7 @@ export const actions = {
 
 		if (update) {
 			try {
-				await updatePlayer(newData, playerId);
+				await updatePlayer(sql, newData, playerId);
 
 				for (const key of Object.keys(newData)) {
 					player[key] = newData[key];
@@ -48,8 +50,8 @@ export const actions = {
 			return fail(401);
 		}
 
-		await invalidateSession(event.locals.session.id);
-		deleteSessionTokenCookie(event);
+		await invalidateSession(sql, event.locals.session.id);
+		setSessionTokenCookie(event);
 
 		return redirect(302, '/');
 	}

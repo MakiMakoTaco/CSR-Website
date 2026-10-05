@@ -1,6 +1,4 @@
-import sql from '$lib/database/db';
-
-export async function getSides(data = { select: '', name: '' }) {
+export async function getSides(sql, data = { select: '', name: '' }) {
 	const query = sql`
 		SELECT
 			${data.select ? sql(data.select) : sql`*`}
@@ -13,7 +11,7 @@ export async function getSides(data = { select: '', name: '' }) {
 	return sides;
 }
 
-export async function getSideData(sideId) {
+export async function getSideData(sql, sideId) {
 	if (!sideId) {
 		throw new Error('Getting side data requires a side ID');
 	}

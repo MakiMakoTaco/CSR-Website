@@ -1,6 +1,4 @@
-import sql from '$lib/database/db';
-
-export async function invalidateSession(sessionId) {
+export async function invalidateSession(sql, sessionId) {
 	await sql`
 		DELETE FROM session
 		WHERE id = ${sessionId}
@@ -17,9 +15,9 @@ export function deleteSessionTokenCookie(event) {
 	});
 }
 
-export async function validateSessionToken(token) {
+export async function validateSessionToken(sql, token) {
 	const sessionId = await hashSecret(token);
-	const session = await getSession(sessionId);
+	const session = await getSession(sql, sessionId);
 	if (!session) {
 		return null;
 	}
@@ -57,7 +55,7 @@ export function generateSessionToken() {
 	return id;
 }
 
-export async function createSession(token, playerId) {
+export async function createSession(sql, token, playerId) {
 	const now = new Date();
 
 	const sessionId = await hashSecret(token);
@@ -75,7 +73,7 @@ export async function createSession(token, playerId) {
 	return session;
 }
 
-async function getSession(sessionId) {
+async function getSession(sql, sessionId) {
 	const now = new Date();
 
 	const result = (
@@ -110,7 +108,7 @@ async function getSession(sessionId) {
 
 	// Check expiration
 	if (now.getTime() > session.expiresAt.getTime()) {
-		await invalidateSession(sessionId);
+		await invalidateSession(sql, sessionId);
 		return { session: null, player: null };
 	}
 	if (now.getTime() >= session.expiresAt.getTime() - 1000 * 60 * 60 * 24 * 15) {

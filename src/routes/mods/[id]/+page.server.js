@@ -1,11 +1,12 @@
-import sql from '$lib/database/db.js';
 import { error } from '@sveltejs/kit';
-import { getModData } from '$lib/database/functions/getMods.js';
+import { getModData } from '$lib/functions/getMods.js';
 
-export async function load({ params }) {
+export async function load({ params, locals }) {
 	if (!Number(params.id)) error(404);
 
-	const mod = await getModData(params.id);
+	const sql = locals.sql;
+
+	const mod = await getModData(sql, params.id);
 	const clears = (
 		await sql`
 		SELECT COUNT(*)

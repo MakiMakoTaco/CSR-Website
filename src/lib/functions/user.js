@@ -1,6 +1,7 @@
-import sql from '$lib/database/db';
-
-export async function createPlayer(data = { name: '', discordId: '', avatar: '', nameColor: '' }) {
+export async function createPlayer(
+	sql,
+	data = { name: '', discordId: '', avatar: '', nameColor: '' }
+) {
 	const existingPlayer = (
 		await sql`
     SELECT EXISTS(
@@ -25,6 +26,7 @@ export async function createPlayer(data = { name: '', discordId: '', avatar: '',
 }
 
 export async function updatePlayer(
+	sql,
 	newData = { name: '', avatar: '', nameColor: '', about: '' },
 	playerId
 ) {
@@ -35,7 +37,7 @@ export async function updatePlayer(
     `;
 }
 
-export async function getPlayerFromDiscordId(discordId) {
+export async function getPlayerFromDiscordId(sql, discordId) {
 	const player = (
 		await sql`
     SELECT id, name, avatar, name_color, about
@@ -48,7 +50,7 @@ export async function getPlayerFromDiscordId(discordId) {
 	return player;
 }
 
-export async function getPlayerFromId(playerId) {
+export async function getPlayerFromId(sql, playerId) {
 	const player = (
 		await sql`
     SELECT name, discord_id, avatar, name_color, about
@@ -61,7 +63,7 @@ export async function getPlayerFromId(playerId) {
 	return player;
 }
 
-export async function getPlayerClears(playerId) {
+export async function getPlayerClears(sql, playerId) {
 	const clears = await sql`
     SELECT *
     FROM player_progress pp

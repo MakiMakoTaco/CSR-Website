@@ -1,28 +1,26 @@
-import sql from '$lib/database/db.js';
-import { getSides } from '$lib/database/functions/getSides.js';
-import { getTiers } from '$lib/database/functions/getTiers.js';
-import { getModNames, getMods } from '$lib/database/functions/getMods.js';
+import { getSides } from '$lib/functions/getSides.js';
+import { getTiers } from '$lib/functions/getTiers.js';
+import { getModData, getModNames, getMods } from '$lib/functions/getMods.js';
 
-import { writeFileSync, readdirSync, existsSync, mkdirSync } from 'node:fs';
 import { fail, redirect } from '@sveltejs/kit';
-import { randomUUID } from 'node:crypto';
-import { exit } from 'node:process';
 
 export async function load({ locals }) {
 	if (locals.session === null) {
 		redirect(302, '/login');
 	}
 
-	let sides = await getSides();
+	const sql = locals.sql;
+
+	let sides = await getSides(sql);
 	const mods = [];
 
-	const modNames = await getModNames();
+	const modNames = await getModNames(sql);
 
 	for (let i = 0; i < sides.length; i++) {
-		const tiers = await getTiers(sides[i].id);
+		const tiers = await getTiers(sql, sides[i].id);
 
 		for (let j = 0; j < tiers.length; j++) {
-			tiers[j].mods = [...(await getMods(tiers[j].id))];
+			tiers[j].mods = [...(await getMods(sql, tiers[j].id))];
 
 			mods.push(
 				...tiers[j].mods.map((mod) => {
@@ -61,31 +59,33 @@ export async function load({ locals }) {
 
 export const actions = {
 	default: async ({ request, url, locals }) => {
+		const sql = locals.sql;
+
 		const data = await request.formData();
 		const playerId = locals.player.id;
 
 		const modMap = {};
-		for (const [key, value] of data) {
+		for (let [key, value] of data) {
 			const modData = key.split('-');
 			const modId = modData[0];
 			let column = modData[1];
 
-			// switch (column) {
-			// 	case 'time':
-			// 		column = 'timeTaken';
-			// 		break;
-			// 	case 'date':
-			// 		column = 'clearedDate';
-			// 		break;
-			// 	case 'notes':
-			// 		column = 'publicNotes';
-			// 		break;
-			// }
+			if (column === 'proof') {
+				try {
+					const url = new URL(value);
 
-			// https://imgur.com/a/T2nIogH
+					value = url.href;
+				} catch (error) {
+					const mod = await getModData(sql, modId);
+
+					return fail(406, { error: `${mod.name} does not have a valid URL as proof` });
+				}
+			}
 
 			modMap[modId] = { ...modMap[modId], [column]: value || null };
 		}
+
+		return;
 
 		// const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg'];
 

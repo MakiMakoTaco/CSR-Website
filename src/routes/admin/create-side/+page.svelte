@@ -20,7 +20,7 @@
 		loadSideData();
 	});
 
-	async function getModData(value, index = 0) {
+	async function getModData(sql, value, index = 0) {
 		try {
 			const url = new URL(value);
 
@@ -67,7 +67,7 @@
 			tierData.map(async (tier) => {
 				const mods = await Promise.all(
 					tier.mods.map(async (mod, modIndex) => {
-						const modData = await getModData(mod, modIndex);
+						const modData = await getModData(sql, mod, modIndex);
 						processedMods++;
 						return modData;
 					})
