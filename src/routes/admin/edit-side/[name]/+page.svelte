@@ -94,8 +94,11 @@
 									<button
 										onclick={(e) => {
 											e.preventDefault();
+
 											const data = document.getElementById(`${mod.id}-mod-data`);
 											const edit = document.getElementById(`${mod.id}-mod-edit`);
+
+											edit.querySelector('#tier-selector').value = tier.id;
 
 											data.hidden = true;
 											edit.hidden = false;
@@ -109,6 +112,11 @@
 								<form method="POST" action="?/updateMod" onsubmit={(e) => e.requestSubmit()}>
 									<input type="number" name="id" value={mod.id} hidden />
 									<input id="{mod.id}-name" type="text" name="name" value={mod.name} />
+									<select id="tier-selector" name="tierId">
+										{#each tiers as tierOptions}
+											<option value={tierOptions.id}>{tierOptions.name}</option>
+										{/each}
+									</select>
 									<textarea name="notes" value={mod.notes ?? ''} id="{mod.id}-notes"></textarea>
 									<button
 										onclick={(e) => {

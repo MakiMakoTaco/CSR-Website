@@ -43,6 +43,7 @@ export const actions = {
 		const sql = locals.sql;
 
 		const form = await request.formData();
+
 		const modId = form.get('id');
 		if (!modId) {
 			fail(412, { error: 'Missing modID' });
