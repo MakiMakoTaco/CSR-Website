@@ -37,28 +37,28 @@
 			{/await}
 		</nav>
 		<h1 style="color: #{side.color ?? 'ffffff'};">
-			{side.name}
-			{#await side.tiers then tiers}
-				{#if data.player}
-					{tiers
-						.map((tier) => Number(tier.clears) ?? 0)
-						.reduce((previous, current) => previous + current, 0)}/{tiers
-						.map((tier) => tier.mods.length ?? 0)
-						.reduce((previous, current) => previous + current, 0)}
-				{/if}
-				{#if side.clearsForRank}
-					{#if side.clears >= side.clearsForRank}
-						<small>(role achieved!)</small>
-					{:else}
-						<small>({side.clearsForRank ?? 0} needed for role)</small>
+			<div style="text-align: center;">{side.name}</div>
+			<div style="text-align: center;">
+				{#await side.tiers then tiers}
+					{#if data.player}
+						{tiers
+							.map((tier) => Number(tier.clears) ?? 0)
+							.reduce((previous, current) => previous + current, 0)}/{tiers
+							.map((tier) => tier.mods.length ?? 0)
+							.reduce((previous, current) => previous + current, 0)}
 					{/if}
-				{/if}
-			{/await}
+					{#if side.clearsForRank}
+						{#if side.clears >= side.clearsForRank}
+							<small>(role achieved!)</small>
+						{:else}
+							<small>({side.clearsForRank ?? 0} needed for role)</small>
+						{/if}
+					{/if}
+				{/await}
+			</div>
 		</h1>
 		{#await side.tiers then tiers}
-			{console.log(tiers)}
 			{#each tiers as tier}
-				{console.log(tier)}
 				<div id={tier.name} class="tier-name">
 					{#if data.side.showTierNames}
 						<h2 style="color: #{tier.colorPlus};">
