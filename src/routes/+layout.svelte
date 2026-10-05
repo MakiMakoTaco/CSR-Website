@@ -163,7 +163,7 @@
 		<li class="dropdown-items">
 			<a
 				href="/sides/{side.name}"
-				onclick={dlc.togglePopover()}
+				onclick={() => dlc.togglePopover()}
 				style="color: #{new TextEncoder().encode(side.colorPlus)};">{side.name}</a
 			>
 		</li>

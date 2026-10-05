@@ -13,21 +13,24 @@ async function getData(locals, id) {
 		tiers[i].mods = [...(await getMods(sql, tiers[i].id))];
 		const modIds = tiers[i].mods.map((mod) => mod.id);
 		if (locals.player) {
-			tiers[i].clears = Number(
-				(
+			tiers[i].clears = [
+				...(
 					await sql`
-						SELECT COUNT(*)
+						SELECT mod_id
 						FROM player_progress pp
 						JOIN mods m
 							ON pp.mod_id = m.id
 						WHERE
 							player_id = ${locals.player.id}
+							AND pp.cleared = true
 							AND m.id IN ${sql(modIds)}
 					`
-				)[0]['count']
-			);
+				).map((clear) => clear.modId)
+			];
 		}
 	}
+
+	console.log(tiers);
 
 	return tiers;
 }

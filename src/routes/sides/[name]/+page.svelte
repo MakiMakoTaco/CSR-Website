@@ -42,7 +42,7 @@
 				{#await side.tiers then tiers}
 					{#if data.player}
 						{tiers
-							.map((tier) => Number(tier.clears) ?? 0)
+							.map((tier) => tier.clears.length ?? 0)
 							.reduce((previous, current) => previous + current, 0)}/{tiers
 							.map((tier) => tier.mods.length ?? 0)
 							.reduce((previous, current) => previous + current, 0)}
@@ -63,10 +63,12 @@
 					{#if data.side.showTierNames}
 						<h2 style="color: #{tier.colorPlus};">
 							{tier.name}{#if data.player}:
-								<small>{tier.clears ?? 0}/{tier.mods.filter((mod) => !mod.isChild).length}</small>
+								<small
+									>{tier.clears.length ?? 0}/{tier.mods.filter((mod) => !mod.isChild).length}</small
+								>
 							{/if}
 
-							{#if tier.clears >= tier.clearsForRank}
+							{#if tier.clears.length >= tier.clearsForRank}
 								<small>(role achieved!)</small>
 							{:else}
 								<small
@@ -80,6 +82,10 @@
 				{#each tier.mods as mod}
 					<div class="mod-info">
 						<div>
+							<!-- {console.log(tier.clears.includes())} -->
+							{#if tier.clears.includes(mod.id)}
+								<span style="color: green;">Cleared!</span>
+							{/if}
 							<a
 								id="mod"
 								href="/mods/{mod.id}"
