@@ -43,12 +43,13 @@
 					{#if data.player}
 						{tiers
 							.map((tier) => tier.clears.length ?? 0)
-							.reduce((previous, current) => previous + current, 0)}/{tiers
-							.map((tier) => tier.mods.length ?? 0)
-							.reduce((previous, current) => previous + current, 0)}
+							.reduce((previous, current) => previous + current, 0)}/
 					{/if}
+					{tiers
+						.map((tier) => tier.mods.length ?? 0)
+						.reduce((previous, current) => previous + current, 0)} mods
 					{#if side.clearsForRank}
-						{#if side.clears >= side.clearsForRank}
+						{#if side?.clears >= side.clearsForRank}
 							<small>(role achieved!)</small>
 						{:else}
 							<small>({side.clearsForRank ?? 0} needed for role)</small>
@@ -68,7 +69,7 @@
 								>
 							{/if}
 
-							{#if tier.clears.length >= tier.clearsForRank}
+							{#if tier.clears && tier.clears.length >= tier.clearsForRank}
 								<small>(role achieved!)</small>
 							{:else}
 								<small
@@ -82,8 +83,7 @@
 				{#each tier.mods as mod}
 					<div class="mod-info">
 						<div>
-							<!-- {console.log(tier.clears.includes())} -->
-							{#if tier.clears.includes(mod.id)}
+							{#if tier.clears && tier.clears.includes(mod.id)}
 								<span style="color: green;">Cleared!</span>
 							{/if}
 							<a

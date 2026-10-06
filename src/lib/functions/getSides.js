@@ -1,3 +1,27 @@
+export async function getSidesWithStats(sql) {
+	const sides = await sql`
+		SELECT
+			s.id,
+			s.name,
+			s.type,
+			s.archived,
+			s.color_plus,
+			COUNT(pp.player_id) AS clear_count,
+			COUNT(DISTINCT pp.player_id) AS unique_players
+		FROM sides s
+		LEFT JOIN tiers t
+			ON t.side_id = s.id
+		LEFT JOIN mods m
+			ON m.tier_id = t.id
+		LEFT JOIN player_progress pp
+			ON pp.mod_id = m.id
+			AND pp.cleared = true
+		GROUP BY s.id, s.name, s.type, s.archived, s.color_plus
+	`;
+
+	return sides;
+}
+
 export async function getSides(sql, data = { select: '', name: '' }) {
 	const query = sql`
 		SELECT

@@ -1,4 +1,4 @@
-import { closeConnection, createSql, getConnectionString } from '$lib/server/db';
+import { createSql, getConnectionString } from '$lib/server/db';
 import {
 	deleteSessionTokenCookie,
 	setSessionTokenCookie,
@@ -14,10 +14,6 @@ function dbConnection({ event, resolve }) {
 	}
 
 	return resolve(event);
-	// try {
-	// } finally {
-	// 	closeConnection(event.locals.sql);
-	// }
 }
 
 async function getSession({ event, resolve }) {

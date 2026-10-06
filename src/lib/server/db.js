@@ -1,5 +1,4 @@
 import postgres from 'postgres';
-import { env } from '$env/dynamic/private';
 
 export function createSql(connectionString) {
 	return postgres(connectionString, {
@@ -10,11 +9,6 @@ export function createSql(connectionString) {
 	});
 }
 
-// Fallback for local dev
 export function getConnectionString(platform) {
-	return platform?.env?.HYPERDRIVE?.connectionString ?? env.HYPERDRIVE_CONNECTION_STRING;
-}
-
-export function closeConnection(sql) {
-	sql.end({ timeout: 0 }).catch(() => {});
+	return platform?.env?.HYPERDRIVE?.connectionString;
 }

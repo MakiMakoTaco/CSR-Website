@@ -1,5 +1,9 @@
 import { updatePlayer } from '$lib/functions/user.js';
-import { deleteSessionTokenCookie, invalidateSession } from '$lib/server/session.js';
+import {
+	deleteSessionTokenCookie,
+	setSessionTokenCookie,
+	invalidateSession
+} from '$lib/server/session.js';
 import { fail, redirect } from '@sveltejs/kit';
 
 export function load({ locals }) {
@@ -49,6 +53,8 @@ export const actions = {
 		if (event.locals.session === null) {
 			return fail(401);
 		}
+
+		const sql = event.locals.sql;
 
 		await invalidateSession(sql, event.locals.session.id);
 		setSessionTokenCookie(event);

@@ -1,14 +1,9 @@
-import { getSides, getSideData } from '$lib/functions/getSides';
+import { getSidesWithStats } from '$lib/functions/getSides';
 
-export async function load({ cookies, locals }) {
+export async function load({ locals }) {
 	const sql = locals.sql;
 
-	const sides = await getSides(sql, {
-		select: ['id', 'name', 'type', 'archived', 'colorPlus']
-	});
-	for (let i = 0; i < sides.length; i++) {
-		sides[i] = { ...sides[i], ...(await getSideData(sql, sides[i].id)) };
-	}
+	const sides = await getSidesWithStats(sql);
 
 	return {
 		sides,

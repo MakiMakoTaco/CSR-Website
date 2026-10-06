@@ -89,6 +89,8 @@ export const actions = {
 
 		// const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg'];
 
+		// select tierid, clearsforrank, childcount from tiers where modid in [modids]
+
 		for (const modId in modMap) {
 			let mod = modMap[modId];
 			mod.cleared = true;
@@ -167,6 +169,16 @@ export const actions = {
 				throw new Error(error.message);
 			}
 		}
+
+		// add db value to store roles achieved
+		// [[0, 18], [2, 0]]
+
+		// [{sideId: 0, tierId: 18, clear: true, clearPlus: false}]
+
+		/**
+		 * check db for player's achieved roles
+		 *
+		 */
 
 		return { success: true };
 	}

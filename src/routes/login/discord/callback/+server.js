@@ -1,4 +1,5 @@
-import { CLIENT_ID, CLIENT_SECRET, REDIRECT_URI } from '$env/static/private';
+import { CLIENT_ID, CLIENT_SECRET } from '$env/static/private';
+import { env } from '$env/dynamic/private';
 import { createPlayer, getPlayerFromDiscordId } from '$lib/functions/user.js';
 import { createSession, generateSessionToken, setSessionTokenCookie } from '$lib/server/session.js';
 
@@ -28,7 +29,7 @@ export async function GET(event) {
 			client_secret: CLIENT_SECRET,
 			code: code,
 			grant_type: 'authorization_code',
-			redirect_uri: REDIRECT_URI,
+			redirect_uri: env.DISCORD_REDIRECT_URI,
 			scope: 'identify'
 		}).toString(),
 		headers: {

@@ -16,5 +16,19 @@
 			"id": "1660e283847147bbbed0c02eab1a767d",
 			"localConnectionString": "postgres://user:password@ip:5432/dbname?sslmode=require"
 		}
-	]
+	],
+	"observability": {
+		"enabled": true,
+		"logs": {
+			"enabled": true,
+			"invocation_logs": true,
+			"persist": true
+		},
+		"traces": {
+			"enabled": false
+		}
+	},
+	"vars": {
+		"DISCORD_REDIRECT_URI": "http://localhost:5173/login/discord/callback"
+	}
 }

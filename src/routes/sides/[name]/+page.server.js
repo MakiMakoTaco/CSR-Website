@@ -13,6 +13,7 @@ async function getData(locals, id) {
 		tiers[i].mods = [...(await getMods(sql, tiers[i].id))];
 		const modIds = tiers[i].mods.map((mod) => mod.id);
 		if (locals.player) {
+			console.log(locals.player);
 			tiers[i].clears = [
 				...(
 					await sql`
