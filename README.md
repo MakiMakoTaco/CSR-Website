@@ -2,7 +2,10 @@
 
 ## Active version
 
-There is currently no active version whilst the site gets ready for public use
+> [!NOTE]
+> This is where the site will be, however this current version is still in a testing state
+
+[Celeste Skill Rating](https://celesteskillrating.net)
 
 # Running the website locally
 
