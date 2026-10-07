@@ -86,7 +86,7 @@ export async function GET(event) {
 				name,
 				discordId: discordUser.id,
 				avatar: `https://cdn.discordapp.com/avatars/${discordUser.id}/${discordUser.avatar}`,
-				nameColor: discordUser.banner_color.substring(1)
+				nameColor: discordUser.banner_color.substring(1) ?? 'ffffff'
 			});
 
 			playerExists = false;
