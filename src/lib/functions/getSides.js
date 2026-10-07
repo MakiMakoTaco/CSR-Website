@@ -6,8 +6,8 @@ export async function getSidesWithStats(sql) {
 			s.type,
 			s.archived,
 			s.color_plus,
-			COUNT(pp.player_id) AS clear_count,
-			COUNT(DISTINCT pp.player_id) AS unique_players
+			COUNT(pp.player_id)::int AS clear_count,
+			COUNT(DISTINCT pp.player_id)::int AS unique_players
 		FROM sides s
 		LEFT JOIN tiers t
 			ON t.side_id = s.id

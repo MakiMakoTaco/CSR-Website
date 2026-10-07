@@ -3,7 +3,7 @@
 </script>
 
 <svelte:head>
-	<title>Welcome! - CSR</title>
+	<title>Celeste Skill Rating - Home</title>
 </svelte:head>
 
 <main>
