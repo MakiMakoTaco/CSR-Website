@@ -3,6 +3,11 @@ import { getTiers } from '$lib/functions/getTiers.js';
 import { getModData, getModNames, getMods } from '$lib/functions/getMods.js';
 
 import { fail, redirect } from '@sveltejs/kit';
+import { DISCORD_BOT_TOKEN } from '$env/static/private';
+import { env } from '$env/dynamic/private';
+
+import { REST } from '@discordjs/rest';
+import { MessageFlags, Routes } from 'discord-api-types/v10';
 
 export async function load({ locals }) {
 	if (locals.session === null) {
@@ -57,6 +62,17 @@ export async function load({ locals }) {
 	return { sides: [...sides], mods };
 }
 
+function checkClearRequirements(requirements) {
+	return {
+		clear: requirements.clearedMods >= requirements.clearsForRank,
+		clearPlus: requirements.clearedMods >= requirements.modCount
+	};
+}
+
+function rankName(rank, plus = false) {
+	return rank.tierName + (plus ? '+' : '') + (rank.appendSideName ? ` ${rank.sideName}` : '');
+}
+
 export const actions = {
 	default: async ({ request, url, locals }) => {
 		const sql = locals.sql;
@@ -85,11 +101,31 @@ export const actions = {
 			modMap[modId] = { ...modMap[modId], [column]: value || null };
 		}
 
-		return;
-
 		// const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg'];
 
-		// select tierid, clearsforrank, childcount from tiers where modid in [modids]
+		const modIds = Object.keys(modMap);
+
+		const tiers = await sql`
+			SELECT
+				t.id,
+				clears_for_rank,
+				COUNT(m.id)::int AS mod_count,
+				COUNT(pp.player_id)::int AS cleared_mods
+			FROM tiers t
+			LEFT JOIN mods m
+				ON m.tier_id = t.id
+			LEFT JOIN player_progress pp
+				ON pp.mod_id = m.id
+				AND pp.player_id = ${playerId}
+			WHERE
+				EXISTS (
+					SELECT 1
+					FROM mods m2
+					WHERE m2.tier_id = t.id
+						AND m2.id IN ${sql(modIds)}
+				)
+			GROUP BY t.id, clears_for_rank
+		`;
 
 		for (const modId in modMap) {
 			let mod = modMap[modId];
@@ -129,56 +165,126 @@ export const actions = {
 			// 	mod.proof = `/players/${playerId}/${modId}/${fileName}`;
 			// }
 
-			const existingSubmission = (
-				await sql`
-				SELECT EXISTS (
-					SELECT 1
-					FROM player_progress
-					WHERE
-						player_id = ${playerId}
-						AND mod_id = ${modId}
-				)    
-				`
-			)[0];
+			// 	const existingSubmission = (
+			// 		await sql`
+			// 		SELECT EXISTS (
+			// 			SELECT 1
+			// 			FROM player_progress
+			// 			WHERE
+			// 				player_id = ${playerId}
+			// 				AND mod_id = ${modId}
+			// 		)
+			// 		`
+			// 	)[0];
 
-			try {
-				if (existingSubmission.exists) {
-					mod.updatedAt = new Date();
+			// 	try {
+			// 		if (existingSubmission.exists) {
+			// 			mod.updatedAt = new Date();
 
-					await sql`
-						UPDATE player_progress
-						SET ${sql(mod)}
-						WHERE
-							player_id = ${playerId}
-							AND mod_id = ${modId}
-					`;
-				} else if (existingSubmission.exists === false) {
-					mod.playerId = playerId;
-					mod.modId = Number(modId);
-					mod.submittedAt = new Date();
+			// 			await sql`
+			// 				UPDATE player_progress
+			// 				SET ${sql(mod)}
+			// 				WHERE
+			// 					player_id = ${playerId}
+			// 					AND mod_id = ${modId}
+			// 			`;
+			// 		} else if (existingSubmission.exists === false) {
+			// 			mod.playerId = playerId;
+			// 			mod.modId = Number(modId);
+			// 			mod.submittedAt = new Date();
 
-					await sql`
-						INSERT INTO	player_progress
-						${sql(mod)}
-					`;
-				} else {
-					throw new Error('Unable to submit mods for unknown reason');
-				}
-			} catch (error) {
-				console.error(error);
-				throw new Error(error.message);
-			}
+			// 			await sql`
+			// 				INSERT INTO	player_progress
+			// 				${sql(mod)}
+			// 			`;
+			// 		} else {
+			// 			throw new Error('Unable to submit mods for unknown reason');
+			// 		}
+			// 	} catch (error) {
+			// 		console.error(error);
+			// 		throw new Error(error.message);
+			// 	}
 		}
 
-		// add db value to store roles achieved
-		// [[0, 18], [2, 0]]
+		const playerRoles = await sql`
+			SELECT
+				array_to_json(rank_id) AS rank_id,
+				clear,
+				clear_plus
+			FROM player_roles
+			WHERE
+				player_id = ${playerId}
+				AND rank_id[2] IN ${sql(tiers.map((tier) => tier.id))}
+		`;
 
-		// [{sideId: 0, tierId: 18, clear: true, clearPlus: false}]
+		tiers.forEach(async (tier) => {
+			const existingRank = playerRoles.find((role) => role.rankId[1] == tier.id) ?? {
+				rankId: [0, tier.id],
+				clear: false,
+				clearPlus: false
+			};
 
-		/**
-		 * check db for player's achieved roles
-		 *
-		 */
+			if (existingRank.clearPlus) return;
+
+			const shoutoutCheck = checkClearRequirements(tier);
+			if (!shoutoutCheck.clear) return;
+
+			const rankData = (
+				await sql`
+				SELECT
+					s.name AS side_name,
+					tp.name AS tier_name,
+					append_side_name
+				FROM tiers t
+				JOIN sides s
+					ON s.id = t.side_id
+				JOIN tier_presets tp
+					ON tp.id = t.preset_id
+				WHERE t.id = ${tier.id}
+			`
+			)[0];
+
+			const rest = new REST({ version: '10' }).setToken(DISCORD_BOT_TOKEN);
+
+			let roles = { clear: null, clearPlus: null };
+			const guildRoles = await rest.get(Routes.guildRoles(env.DISCORD_SERVER_ID));
+
+			guildRoles.forEach((role) => {
+				if (role.name === rankName(rankData, false)) {
+					roles.clear = role;
+				} else if (role.name === rankName(rankData, true)) {
+					roles.clearPlus = role;
+				}
+			});
+
+			try {
+				let content = `**Congrats to our newest ${shoutoutCheck.clearPlus ? `${roles.clearPlus.name}${shoutoutCheck.clear ? roles.clear.name : ''}` : roles.clear.name} rank, ${locals.player.name}!**`;
+				const post = await rest.post(Routes.channelMessages(env.DISCORD_SHOUTOUT_CHANNEL_ID), {
+					body: {
+						content
+					}
+				});
+
+				content = `**Congrats to our newest ${shoutoutCheck.clearPlus ? `<@&${roles.clearPlus.id}>${shoutoutCheck.clear ? ` (and <@&${roles.clear.id}>)` : ''}` : `<@&${roles.clear.id}>`} rank, ${locals.player.name}!**`;
+				await rest.patch(Routes.channelMessage(env.DISCORD_SHOUTOUT_CHANNEL_ID, post.id), {
+					body: {
+						content
+					}
+				});
+
+				// for (const role in roles) {
+				// 	try {
+				// 		await rest.put(
+				// 			Routes.guildMemberRole(env.DISCORD_SERVER_ID, locals.player.discordId, roles[role].id)
+				// 		);
+				// 	} catch (error) {
+				// 		console.error(error);
+				// 	}
+				// }
+			} catch (error) {
+				console.error(error);
+			}
+		});
 
 		return { success: true };
 	}
