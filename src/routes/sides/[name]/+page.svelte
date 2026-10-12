@@ -3,7 +3,6 @@
 	import { onMount } from 'svelte';
 
 	let { data } = $props();
-	// let side = $derived(data.side);
 
 	function scroll(id) {
 		const navbar = document.getElementById('navbar');
@@ -25,98 +24,108 @@
 </script>
 
 <svelte:head>
-	<title
-		>{data.sides.find((side) => side.name.toLowerCase() === page.params.name.toLowerCase())}</title
-	>
+	{#await data.side}
+		<title>Loading Side...</title>
+	{:then side}
+		{#if side}
+			<title>{side.name} - CSR</title>
+		{:else}
+			<title>Side Not Found</title>
+		{/if}
+	{/await}
 </svelte:head>
 
 <main>
 	{#await data.side}
 		Loading side data...
 	{:then side}
-		<div class="content">
-			<nav>
-				<button onclick={() => (location = '#')}><h3>{side.name}</h3></button>
-				{#await side.tiers then tiers}
-					{#each tiers as tier}
-						<button
-							style="color: #{tier.color};"
-							onclick={() => {
-								scroll(tier.name);
-							}}>{tier.name}</button
-						>
-					{/each}
-				{/await}
-			</nav>
-			<h1 style="color: #{side.color ?? 'ffffff'};">
-				<div style="text-align: center;">{side.name}</div>
-				<div style="text-align: center;">
-					{#if data.player}
-						{side.tiers
-							.map((tier) => tier.mods.filter((mod) => mod.cleared).length ?? 0)
-							.reduce((previous, current) => previous + current, 0)}/
-					{/if}{side.tiers
-						.map((tier) => tier.mods.length ?? 0)
-						.reduce((previous, current) => previous + current, 0)} mods
-					{#if side.clearsForRank}
-						{#if side?.clears >= side.clearsForRank}
-							<small>(role achieved!)</small>
-						{:else}
-							<small>({side.clearsForRank ?? 0} needed for role)</small>
-						{/if}
-					{/if}
-				</div>
-			</h1>
-			{#each side.tiers as tier}
-				<div id={tier.name} class="tier-name">
-					{#if side.showTierNames}
-						<h2 style="color: #{tier.colorPlus};">
-							{tier.name}
-							{#if data.player}:
-								<small
-									>{tier.mods.filter((mod) => mod.cleared).length ?? 0}/{tier.mods.filter(
-										(mod) => !mod.isChild
-									).length}</small
-								>
-							{/if}
-
-							{#if tier.clears && tier.clears.length >= tier.clearsForRank}
+		{#if side}
+			<div class="content">
+				<nav>
+					<button onclick={() => (location = '#')}><h3>{side.name}</h3></button>
+					{#await side.tiers then tiers}
+						{#each tiers as tier}
+							<button
+								style="color: #{tier.color};"
+								onclick={() => {
+									scroll(tier.name);
+								}}>{tier.name}</button
+							>
+						{/each}
+					{/await}
+				</nav>
+				<h1 style="color: #{side.color ?? 'ffffff'};">
+					<div style="text-align: center;">{side.name}</div>
+					<div style="text-align: center;">
+						{#if data.player}
+							{side.tiers
+								.map((tier) => tier.mods.filter((mod) => mod.cleared).length ?? 0)
+								.reduce((previous, current) => previous + current, 0)}/
+						{/if}{side.tiers
+							.map((tier) => tier.mods.length ?? 0)
+							.reduce((previous, current) => previous + current, 0)} mods
+						{#if side.clearsForRank}
+							{#if side?.clears >= side.clearsForRank}
 								<small>(role achieved!)</small>
 							{:else}
-								<small
-									>({tier.clearsForRank}
-									needed for role)</small
-								>
+								<small>({side.clearsForRank ?? 0} needed for role)</small>
 							{/if}
-						</h2>
-					{/if}
-				</div>
-				{#each tier.mods as mod}
-					<div class="mod-info">
-						<div>
-							{#if mod.cleared}
-								<span style="color: green;">Cleared!</span>
-							{/if}
-							<a
-								id="mod"
-								href="/mods/{mod.id}"
-								style="text-decoration: none; color: #{tier.color ?? 'ffffff'};">{mod.name}</a
-							>
-							{#if mod.notes}
-								<sup
-									id="note-tag"
-									onmouseenter={() => {
-										note.textContent = mod.notes;
-										note.showPopover();
-									}}
-									onmouseleave={() => note.hidePopover()}>notes</sup
-								>
-							{/if}
-						</div>
+						{/if}
 					</div>
+				</h1>
+				{#each side.tiers as tier}
+					<div id={tier.name} class="tier-name">
+						{#if side.showTierNames}
+							<h2 style="color: #{tier.colorPlus};">
+								{tier.name}
+								{#if data.player}:
+									<small
+										>{tier.mods.filter((mod) => mod.cleared).length ?? 0}/{tier.mods.filter(
+											(mod) => !mod.isChild
+										).length}</small
+									>
+								{/if}
+
+								{#if tier.clears && tier.clears.length >= tier.clearsForRank}
+									<small>(role achieved!)</small>
+								{:else}
+									<small
+										>({tier.clearsForRank}
+										needed for role)</small
+									>
+								{/if}
+							</h2>
+						{/if}
+					</div>
+					{#each tier.mods as mod}
+						<div class="mod-info">
+							<div>
+								{#if mod.cleared}
+									<span style="color: green;">Cleared!</span>
+								{/if}
+								<a
+									id="mod"
+									href="/mods/{mod.id}"
+									style="text-decoration: none; color: #{tier.color ?? 'ffffff'};">{mod.name}</a
+								>
+								{#if mod.notes}
+									<sup
+										id="note-tag"
+										onmouseenter={() => {
+											note.textContent = mod.notes;
+											note.showPopover();
+										}}
+										onmouseleave={() => note.hidePopover()}>notes</sup
+									>
+								{/if}
+							</div>
+						</div>
+					{/each}
 				{/each}
-			{/each}
-		</div>
+			</div>
+		{:else}
+			No side found
+		{/if}
 	{/await}
 </main>
 
