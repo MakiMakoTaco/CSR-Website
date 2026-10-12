@@ -1,8 +1,9 @@
 <script>
 	import { page } from '$app/state';
+	import { onMount } from 'svelte';
 
 	let { data } = $props();
-	let side = $derived(data.side);
+	// let side = $derived(data.side);
 
 	function scroll(id) {
 		const navbar = document.getElementById('navbar');
@@ -11,6 +12,12 @@
 		scrollTo({ top: tier.offsetTop - navbar.clientHeight });
 	}
 
+	onMount(() => {
+		document.addEventListener('scroll', (e) => {
+			note.hidePopover();
+		});
+	});
+
 	// $effect(() => {
 	// 	const sides = document.getElementById('side-cassette');
 	// 	sides.src = `/assets/navbar/cassettes/${page.params?.name}.png`;
@@ -18,34 +25,37 @@
 </script>
 
 <svelte:head>
-	<title>{side.name} - CSR</title>
+	<title
+		>{data.sides.find((side) => side.name.toLowerCase() === page.params.name.toLowerCase())}</title
+	>
 </svelte:head>
 
 <main>
-	<div class="content">
-		<nav>
-			<button onclick={() => (location = '#')}><h3>{side.name}</h3></button>
-			{#await side.tiers then tiers}
-				{#each tiers as tier}
-					<button
-						style="color: #{tier.color};"
-						onclick={() => {
-							scroll(tier.name);
-						}}>{tier.name}</button
-					>
-				{/each}
-			{/await}
-		</nav>
-		<h1 style="color: #{side.color ?? 'ffffff'};">
-			<div style="text-align: center;">{side.name}</div>
-			<div style="text-align: center;">
+	{#await data.side}
+		Loading side data...
+	{:then side}
+		<div class="content">
+			<nav>
+				<button onclick={() => (location = '#')}><h3>{side.name}</h3></button>
 				{#await side.tiers then tiers}
+					{#each tiers as tier}
+						<button
+							style="color: #{tier.color};"
+							onclick={() => {
+								scroll(tier.name);
+							}}>{tier.name}</button
+						>
+					{/each}
+				{/await}
+			</nav>
+			<h1 style="color: #{side.color ?? 'ffffff'};">
+				<div style="text-align: center;">{side.name}</div>
+				<div style="text-align: center;">
 					{#if data.player}
-						{tiers
-							.map((tier) => tier.clears.length ?? 0)
+						{side.tiers
+							.map((tier) => tier.mods.filter((mod) => mod.cleared).length ?? 0)
 							.reduce((previous, current) => previous + current, 0)}/
-					{/if}
-					{tiers
+					{/if}{side.tiers
 						.map((tier) => tier.mods.length ?? 0)
 						.reduce((previous, current) => previous + current, 0)} mods
 					{#if side.clearsForRank}
@@ -55,17 +65,18 @@
 							<small>({side.clearsForRank ?? 0} needed for role)</small>
 						{/if}
 					{/if}
-				{/await}
-			</div>
-		</h1>
-		{#await side.tiers then tiers}
-			{#each tiers as tier}
+				</div>
+			</h1>
+			{#each side.tiers as tier}
 				<div id={tier.name} class="tier-name">
-					{#if data.side.showTierNames}
+					{#if side.showTierNames}
 						<h2 style="color: #{tier.colorPlus};">
-							{tier.name}{#if data.player}:
+							{tier.name}
+							{#if data.player}:
 								<small
-									>{tier.clears.length ?? 0}/{tier.mods.filter((mod) => !mod.isChild).length}</small
+									>{tier.mods.filter((mod) => mod.cleared).length ?? 0}/{tier.mods.filter(
+										(mod) => !mod.isChild
+									).length}</small
 								>
 							{/if}
 
@@ -83,7 +94,7 @@
 				{#each tier.mods as mod}
 					<div class="mod-info">
 						<div>
-							{#if tier.clears && tier.clears.includes(mod.id)}
+							{#if mod.cleared}
 								<span style="color: green;">Cleared!</span>
 							{/if}
 							<a
@@ -105,8 +116,8 @@
 					</div>
 				{/each}
 			{/each}
-		{/await}
-	</div>
+		</div>
+	{/await}
 </main>
 
 <div role="note" popover="manual" id="note" style="white-space: pre-wrap;"></div>
@@ -124,6 +135,10 @@
 			padding: 4px;
 			font-size: 14px;
 			cursor: pointer;
+		}
+
+		@media (width < 1000px) {
+			display: none;
 		}
 	}
 

@@ -25,11 +25,7 @@ export async function createPlayer(
 	return player;
 }
 
-export async function updatePlayer(
-	sql,
-	newData = { name: '', avatar: '', nameColor: '', about: '' },
-	playerId
-) {
+export async function updatePlayer(sql, newData, playerId) {
 	await sql`
       UPDATE players 
       SET ${sql(newData)}
@@ -40,7 +36,12 @@ export async function updatePlayer(
 export async function getPlayerFromDiscordId(sql, discordId) {
 	const player = (
 		await sql`
-    SELECT id, name, avatar, name_color, about
+    SELECT
+      id,
+      name,
+      avatar,
+      name_color,
+      about
     FROM players
     WHERE discord_id = ${discordId}
     LIMIT 1

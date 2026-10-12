@@ -1,6 +1,8 @@
 <!-- use the journal and flip page animation to see stats -->
 
 <script>
+	import { get } from 'svelte/store';
+
 	let { data, form } = $props();
 	let { name, color, avatar, about } = $derived({
 		name: data.player.name,
@@ -8,6 +10,16 @@
 		avatar: data.player.avatar,
 		about: data.player.about
 	});
+
+	let apiKey = $state(0);
+
+	async function getApiKey() {
+		apiKey = await (
+			await fetch('/profile/get-api-key', {
+				method: 'PATCH'
+			})
+		).json();
+	}
 </script>
 
 <svelte:head>
@@ -18,6 +30,11 @@
 	<dialog class="toast">Successfully updated player info</dialog>
 {:else if form?.error}
 	<div>Failed to update player data: {form?.message ?? 'Unable to find reason'}</div>
+{/if}
+
+<button onclick={getApiKey} tabindex="0">Get an API Key</button>
+{#if apiKey}
+	{apiKey}
 {/if}
 
 <div id="update-player">

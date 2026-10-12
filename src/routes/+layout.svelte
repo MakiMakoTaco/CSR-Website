@@ -1,5 +1,6 @@
 <script>
 	import { page } from '$app/state';
+	import { onMount } from 'svelte';
 
 	let { data, children } = $props();
 
@@ -24,20 +25,50 @@
 		clears.textContent = `Clears: ${side.clearCount}`;
 		players.textContent = `Unique Players: ${side.uniquePlayers}`;
 	}
+
+	function flipDropdown(id) {
+		document.getElementById(id).hidden = !document.getElementById(id).hidden;
+	}
+
+	onMount(() => {
+		document.addEventListener('touchstart', (e) => {
+			console.log(e.target.parentElement.id);
+
+			if (!e.target.parentElement || !e.target.parentElement.id.includes('sidebar')) {
+				if (sidebar.style.width && sidebar.style.width == '250px') {
+					e.preventDefault();
+					sidebar.style.width = '';
+				}
+			}
+		});
+
+		const navLinks = document.getElementsByClassName('nav-link');
+
+		for (const link of navLinks) {
+			link.addEventListener('touchend', () => {
+				sidebar.style.width = '';
+
+				const dropdowns = sidebar.getElementsByClassName('dropdown-menu');
+				for (const dropdown of dropdowns) {
+					dropdown.hidden = true;
+				}
+			});
+		}
+	});
 </script>
 
-<nav id="navbar">
+<nav id="navbar" class="nav navbar">
 	<ul class="nav-left">
 		<li><a href="/">Home</a></li>
 		<li id="sides-dropdown">
 			<button popovertarget="sides-menu" class="sides-dropdown" tabindex="0" href="/">Sides</button>
 			<!-- <img
-				id="side-cassette"
-				class="cassette"
-				alt="cassette tape"
-				onerror={() => (this.src = '/assets/navbar/cassettes/default.png')}
-				style="visibility: {page.url.pathname.startsWith('/sides') ? 'visible' : 'hidden'};"
-			/> -->
+					id="side-cassette"
+					class="cassette"
+					alt="cassette tape"
+					onerror={() => (this.src = '/assets/navbar/cassettes/default.png')}
+					style="visibility: {page.url.pathname.startsWith('/sides') ? 'visible' : 'hidden'};"
+				/> -->
 		</li>
 		<li>
 			<a href="/sides/Catstare">Catstare</a>
@@ -136,21 +167,6 @@
 	</div>
 </div>
 
-<!-- <div
-	popover
-	id="sides"
-	class="dropdown-menu sides-dropdown"
-	role="menu"
-	tabindex="0"
-	onmouseleave={() => sides.hidePopover()}
->
-	{#each data.sides.filter((side) => side.type === 'standard') as side}
-		<li class="dropdown-items">
-			<a href="/sides/{side.name}">{side.name}</a>
-		</li>
-	{/each}
-</div> -->
-
 <div
 	popover
 	id="dlc"
@@ -187,9 +203,178 @@
 	</div>
 </div>
 
+<div id="sidebar-togge" class="nav sidebar">
+	<button
+		class="hamburger-menu"
+		aria-label="show nav menu"
+		onclick={() => (sidebar.style.width = '250px')}
+		ontouchstart={() => (sidebar.style.width = '250px')}
+	>
+		Open Sidebar
+	</button>
+</div>
+
+<div id="sidebar" class="nav-sidebar">
+	<a class="nav-link" href="/">Home</a>
+	<div
+		tabindex="0"
+		role="button"
+		onclick={() => flipDropdown('sides-dropdown-test')}
+		onkeypress={() => flipDropdown('sides-dropdown-test')}
+	>
+		Sides
+	</div>
+	<div id="sides-dropdown-test" class="sides dropdown-menu" role="menu" tabindex="0" hidden>
+		{#each data.sides.filter((side) => side.type === 'standard') as side}
+			<a class="nav-link" href="/sides/{side.name}">{side.name}</a>
+		{/each}
+	</div>
+	<a href="/sides/Catstare">Catstare</a>
+	<div
+		tabindex="0"
+		role="button"
+		onclick={() => flipDropdown('dlc-dropdown-test')}
+		onkeypress={() => flipDropdown('dlc-dropdown-test')}
+	>
+		DLC
+	</div>
+	<div id="dlc-dropdown-test" class="dlc dropdown-menu" role="menu" tabindex="0" hidden>
+		{#each data.sides.filter((side) => side.type === 'dlc' && !side.archived) as side}
+			<a class="nav-link" href="/sides/{side.name}">{side.name}</a>
+		{/each}
+	</div>
+	<div
+		tabindex="0"
+		role="button"
+		onclick={() => flipDropdown('archived-dropdown-test')}
+		onkeypress={() => flipDropdown('archived-dropdown-test')}
+	>
+		Archived
+	</div>
+	<div id="archived-dropdown-test" class="archived dropdown-menu" role="menu" tabindex="0" hidden>
+		{#each data.sides.filter((side) => side.type === 'dlc' && side.archived) as side}
+			<a class="nav-link" href="/sides/{side.name}">{side.name}</a>
+		{/each}
+	</div>
+	<a
+		href="https://docs.google.com/spreadsheets/d/1XTAL3kgpX0bG6SBfznPX8z7Qdb7lGnQRuxeUfPZMFoU/edit?usp=sharing"
+		target="_blank">CSR Spreadsheet</a
+	>
+	<a href="https://discord.gg/rVYhpeRX2u" target="_blank">Discord Server</a>
+	<a class="submit nav-link" href="/submit">Submit Mods</a>
+	{#if data?.player?.name}
+		{#if data.player.role}
+			<a class="nav-link" href="/admin">Admin Panel</a>
+		{/if}
+		{#if !data.player.claimed}
+			<a class="nav-link" href="/claim-player">Claim Player</a>
+		{/if}
+		<a class="nav-link" href="/profile" style="color: #{data.player.nameColor};">
+			<img src={data.player.avatar} alt="profile" class="profile-pic-nav" /><span
+				>{data.player.name}</span
+			>
+		</a>
+	{:else}
+		<a class="nav-link" href="/login">Login</a>
+	{/if}
+</div>
+<!-- <div id="sidebar" class="nav-sidebar">
+	<div>
+		<li><a href="/">Home</a></li>
+		<li id="sides-dropdown">
+			<button>Sides</button>
+			<div id="sides" class="dropdown-menu sides-dropdown" role="menu" tabindex="0" hidden>
+				{#each data.sides.filter((side) => side.type === 'standard') as side}
+					<li class="dropdown-items">
+						<a href="/sides/{side.name}">{side.name}</a>
+					</li>
+				{/each}
+			</div>
+		</li>
+		<li>
+			<a href="/sides/Catstare">Catstare</a>
+		</li>
+		{#if data.sides.filter((side) => side.type === 'dlc' && side.archived).length > 0}
+			<li>
+				<button
+					onmouseenter={() => {
+						postitionDropdown('dlc');
+						dlc.showPopover();
+					}}
+					onmouseleave={() => {
+						if (event.relatedTarget !== dlc) {
+							dlc.hidePopover();
+						}
+					}}>Active DLC</button
+				>
+			</li>
+		{/if}
+		<li>
+			<button
+				onmouseenter={() => {
+					postitionDropdown('archived');
+					archived.showPopover();
+				}}
+				onmouseleave={() => {
+					if (event.relatedTarget !== archived) {
+						archived.hidePopover();
+					}
+				}}>Archived</button
+			>
+		</li>
+	</div>
+	<div>
+		<li>
+			<a
+				href="https://docs.google.com/spreadsheets/d/1XTAL3kgpX0bG6SBfznPX8z7Qdb7lGnQRuxeUfPZMFoU/edit?usp=sharing"
+				target="_blank">CSR Spreadsheet</a
+			>
+		</li>
+		<li><a href="https://discord.gg/rVYhpeRX2u" target="_blank">Discord Server</a></li>
+	</div>
+	<div>
+		<li>
+			<a class="submit" href="/submit">Submit Mods</a>
+		</li>
+		{#if data?.player?.name}
+			{#if data.player.role}
+				<li>
+					<a href="/admin">Admin Panel</a>
+				</li>
+			{/if}
+			{#if !data.player.claimed}
+				<li><a href="/claim-player">Claim Player</a></li>
+			{/if}
+			<li>
+				<a href="/profile" style="color: #{data.player.nameColor};">
+					<img src={data.player.avatar} alt="profile" class="profile-pic-nav" /><span
+						>{data.player.name}</span
+					>
+				</a>
+			</li>
+		{:else}
+			<li><a href="/login">Login</a></li>
+		{/if}
+	</div>
+</div> -->
+
 {@render children()}
 
 <style>
+	.sidebar {
+		display: none;
+	}
+
+	@media (width < 1000px) {
+		.navbar {
+			display: none;
+		}
+
+		.sidebar {
+			display: grid;
+		}
+	}
+
 	nav {
 		inset: 0;
 		padding: 15px 0;
@@ -279,13 +464,6 @@
 
 	.nav-right a img {
 		margin-right: 10px;
-	}
-
-	.profile-pic-nav {
-		width: 50px;
-		height: 50px;
-		border-radius: 50%;
-		vertical-align: middle;
 	}
 
 	.sides-dropdown {
@@ -397,6 +575,48 @@
 			scale: 50%;
 			font-size: 20px;
 			font-weight: bold;
+		}
+	}
+
+	.profile-pic-nav {
+		width: 50px;
+		height: 50px;
+		border-radius: 50%;
+		vertical-align: middle;
+	}
+
+	.nav {
+		inset: 0;
+		position: sticky;
+		overflow-x: hidden;
+	}
+
+	.hamburger-menu {
+		border: none;
+		background: none;
+		justify-self: left;
+		margin: 10px 0 0 15px;
+	}
+
+	.nav-sidebar {
+		height: 100%;
+		width: 0;
+		position: fixed;
+		z-index: 1;
+		top: 0;
+		left: 0;
+		overflow-x: hidden;
+		background-color: Canvas;
+		transition: 0.5s;
+		padding-top: 60px;
+
+		a {
+			padding: 8px 8px 8px 32px;
+			text-decoration: none;
+			font-size: 25px;
+			color: plum;
+			display: block;
+			transition: 0.3s;
 		}
 	}
 </style>
