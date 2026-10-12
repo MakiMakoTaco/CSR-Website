@@ -7,7 +7,7 @@ import { DISCORD_BOT_TOKEN } from '$env/static/private';
 import { env } from '$env/dynamic/private';
 
 import { REST } from '@discordjs/rest';
-import { MessageFlags, Routes } from 'discord-api-types/v10';
+import { Routes } from 'discord-api-types/v10';
 
 export async function load({ locals }) {
 	if (locals.session === null) {

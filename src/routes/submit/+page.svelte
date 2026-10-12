@@ -43,6 +43,8 @@
 
 <svelte:head>
 	<title>Submit - CSR</title>
+	<meta name="description" content="Submit mods to CSR" />
+	<meta name="keywords" content="CSR, Celeste, Skill, Rating, Submit" />
 </svelte:head>
 
 <main>

@@ -4,11 +4,22 @@
 
 <svelte:head>
 	<title>Celeste Skill Rating - Home</title>
+	<meta
+		name="description"
+		content="Get better at Celeste by beating mods organised into difficulty tiers"
+	/>
+	<meta name="keywords" content="CSR, Celeste, Skill, Rating, Progress, Improve" />
 </svelte:head>
 
 <main>
 	<div class="title">
 		<h1>Welcome to the Celeste Skill Rating!</h1>
+		<p>
+			This site is still being tested, if you want to actually submit, please continue using the <a
+				href="https://docs.google.com/spreadsheets/d/1XTAL3kgpX0bG6SBfznPX8z7Qdb7lGnQRuxeUfPZMFoU/edit?usp=sharing"
+				>Google sheet</a
+			> for now
+		</p>
 	</div>
 	<div class="sides-info">
 		<table class="sides-info">

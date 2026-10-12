@@ -31,7 +31,6 @@ function findUpdateTable(key) {
 	const updateKeys = { mods: ['name', 'notes'], modData: ['page'] };
 
 	for (const table in updateKeys) {
-		console.log(table, updateKeys[table]);
 		if (updateKeys[table].includes(key)) {
 			return table;
 		}

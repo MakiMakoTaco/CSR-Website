@@ -70,9 +70,6 @@
 					{#await tierMod.data}
 						Loading mod data...
 					{:then mod}
-						{#if mod.id === 251}
-							{console.log(mod)}
-						{/if}
 						<div class="mod-info">
 							<div id="{mod.id}-mod-data">
 								<div>

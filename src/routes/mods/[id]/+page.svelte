@@ -55,7 +55,6 @@
 			<div class="children">
 				{#each mod.children as child}
 					<span>
-						{console.log(child.download)}
 						<a href="/mod-data/{child.id}">{child.gbName}</a>
 						<a href={child.download?.everest.everestUrl}>Quick Install</a>
 					</span>

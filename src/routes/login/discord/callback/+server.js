@@ -91,7 +91,6 @@ export async function GET(event) {
 
 			playerExists = false;
 		} catch (error) {
-			console.log(error);
 			switch (attempts) {
 				case 1:
 					name = discordUser.username;
