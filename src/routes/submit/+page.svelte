@@ -22,7 +22,7 @@
 	let filteredMods = $derived.by(async () => {
 		if (!sides || sides.length <= 0) return [];
 
-		const filter = searchFilter.toLowerCase().trim();
+		const filter = searchFilter.toLowerCase().trim().split(' ');
 
 		const mods = sides.flatMap((side) =>
 			side.tiers.flatMap((tier) => tier.mods.filter((mod) => !mod.submitting).flat())
@@ -31,17 +31,24 @@
 		if (!filter) return mods;
 
 		return mods.filter((mod) => {
+			let doesMatch = true;
+
 			const matches = [
 				// mod.name.toLowerCase().split(' '),
 				mod.fullName.toLowerCase().split(' '),
 				...(mod?.shorthand ?? [])
-			]
-				.flat()
-				.join(' ');
-			console.log(matches);
+			].flat();
 
-			const regex = new RegExp(filter);
-			return matches.match(regex);
+			filter.forEach((word) => {
+				let test = false;
+				matches.forEach((match) => {
+					if (match.includes(word)) test = true;
+				});
+
+				if (!test) doesMatch = false;
+			});
+
+			return doesMatch;
 		});
 	});
 
