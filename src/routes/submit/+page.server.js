@@ -1,65 +1,32 @@
-import { getSides } from '$lib/functions/getSides.js';
-import { getTiers } from '$lib/functions/getTiers.js';
-import { getModData, getModNames, getMods } from '$lib/functions/getMods.js';
-
-import { fail, redirect } from '@sveltejs/kit';
-import { DISCORD_BOT_TOKEN } from '$env/static/private';
 import { env } from '$env/dynamic/private';
+import { DISCORD_BOT_TOKEN } from '$env/static/private';
+import { fail, redirect } from '@sveltejs/kit';
+
+import { getSideByName, getSubmitData } from '$lib/functions/getSides.js';
 
 import { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v10';
 
-export async function load({ locals }) {
+async function getData(sql, parent, playerId) {
+	const parentSides = (await parent()).sides;
+	const sides = [];
+	parentSides.forEach((side) => {
+		if (side.archived === true) return;
+
+		sides.push(getSubmitData(sql, side.name, playerId));
+	});
+
+	return sides;
+}
+
+export async function load({ locals, parent }) {
 	if (locals.session === null) {
 		redirect(302, '/login');
 	}
 
 	const sql = locals.sql;
 
-	let sides = await getSides(sql);
-	const mods = [];
-
-	const modNames = await getModNames(sql);
-
-	for (let i = 0; i < sides.length; i++) {
-		const tiers = await getTiers(sql, sides[i].id);
-
-		for (let j = 0; j < tiers.length; j++) {
-			tiers[j].mods = [...(await getMods(sql, tiers[j].id))];
-
-			mods.push(
-				...tiers[j].mods.map((mod) => {
-					return {
-						id: mod.id,
-						name: mod.name,
-						fullName: `${mod.name} - ${tiers[j].name} ${sides[i].name}`,
-						shorthand: modNames.find((modData) => modData.id === mod.modDataId),
-						color: tiers[j].color,
-						hidden: false
-					};
-				})
-			);
-		}
-
-		sides[i].tiers = [...tiers];
-	}
-
-	mods.sort((a, b) => {
-		const nameA = a.name.toLowerCase();
-		const nameB = b.name.toLowerCase();
-
-		if (nameA < nameB) {
-			return -1;
-		}
-
-		if (nameA > nameB) {
-			return 1;
-		}
-
-		return 0;
-	});
-
-	return { sides: [...sides], mods };
+	return { sides: getData(sql, parent, locals.player.id) };
 }
 
 function checkClearRequirements(requirements) {
@@ -79,6 +46,9 @@ export const actions = {
 
 		const data = await request.formData();
 		const playerId = locals.player.id;
+
+		console.log(data);
+		return;
 
 		const modMap = {};
 		for (let [key, value] of data) {

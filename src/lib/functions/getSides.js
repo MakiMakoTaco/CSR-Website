@@ -22,7 +22,7 @@ export async function getSidesWithStats(sql) {
 	return sides;
 }
 
-export async function getSideByName(sql, name, playerId = null) {
+export async function getSideByName(sql, name, playerId = null, shorthand = false) {
 	const side = (
 		await sql`
 		SELECT
@@ -56,6 +56,7 @@ export async function getSideByName(sql, name, playerId = null) {
 						'name', m.name,
 						'notes', m.notes
 						${playerId ? sql`, 'cleared', pp.cleared` : sql``}
+						${shorthand ? sql`, 'shorthand', md.shorthand` : sql``}
 					)
 					ORDER BY m.name
 				) AS mods
@@ -67,12 +68,31 @@ export async function getSideByName(sql, name, playerId = null) {
 				AND pp.player_id = ${playerId}`
 					: sql``
 			}
+			${
+				shorthand
+					? sql`LEFT OUTER JOIN mod_data md
+				ON md.id = m.mod_data_id`
+					: sql``
+			}
 			WHERE m.tier_id = t.id
 		) m
 		WHERE s.name = ${name}
 		GROUP BY s.id, s.name, s.clears_for_rank, s.color, s.archived, s.quick_install, s.show_tier_names
 	`
 	)[0];
+
+	return side;
+}
+
+export async function getSubmitData(sql, name, playerId) {
+	const side = await getSideByName(sql, name, playerId, true);
+
+	side.tiers.forEach((tier) => {
+		tier.mods.forEach((mod) => {
+			mod.fullName = `${mod.name} - ${tier.name} ${side.name.split('-')[0]}`;
+			mod.submitting = false;
+		});
+	});
 
 	return side;
 }
