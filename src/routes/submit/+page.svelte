@@ -28,32 +28,72 @@
 			side.tiers.flatMap((tier) => tier.mods.filter((mod) => !mod.submitting).flat())
 		);
 
-		if (!filter) return mods;
+		if (!filter || filter == '') return mods;
 
-		return mods.filter((mod) => {
-			let modMatch = true;
+		const filtered = mods
+			.filter((mod) => {
+				let modMatch = true;
 
-			const matches = [
-				// mod.name.toLowerCase().split(' '),
-				mod.fullName.toLowerCase().split(' '),
-				...(mod?.shorthand ?? [])
-			].flat();
+				filter.forEach((word, index) => {
+					let filterMatch = false;
+					mod.matches.forEach((match) => {
+						if (match.toLowerCase().includes(word)) filterMatch = true;
+					});
 
-			filter.forEach((word, index) => {
-				let filterMatch = false;
-				matches.forEach((match) => {
-					if (filter.length - 1 === index) {
-						if (match.includes(word)) filterMatch = true;
-					} else {
-						if (match === word) filterMatch = true;
-					}
+					if (!filterMatch) modMatch = false;
 				});
 
-				if (!filterMatch) modMatch = false;
+				return modMatch;
+			})
+			.sort((a, b) => {
+				let scoreA = 0;
+				let scoreB = 0;
+
+				if (
+					a.name.toLowerCase() === searchFilter.toLowerCase() &&
+					b.name.toLowerCase() !== searchFilter.toLowerCase()
+				) {
+					return -1;
+				} else if (
+					a.name.toLowerCase() !== searchFilter.toLowerCase() &&
+					b.name.toLowerCase() === searchFilter.toLowerCase()
+				) {
+					return 1;
+				}
+
+				if (a.name === searchFilter && b.name !== searchFilter) {
+					return -1;
+				} else if (a.name !== searchFilter && b.name === searchFilter) {
+					console.log(a.name, searchFilter);
+					return 1;
+				}
+
+				filter.forEach((filterWord) => {
+					a.matches.forEach((modWord) => {
+						if (modWord.toLowerCase() === filterWord) {
+							scoreA += 5;
+						} else if (modWord.toLowerCase().includes(filterWord)) {
+							scoreA++;
+						}
+					});
+
+					b.matches.forEach((modWord) => {
+						if (modWord.toLowerCase() === filterWord) {
+							scoreB += 5;
+						} else if (modWord.toLowerCase().includes(filterWord)) {
+							scoreB++;
+						}
+					});
+				});
+
+				if (scoreA > scoreB) {
+					return -1;
+				} else if (scoreA < scoreB) {
+					return 1;
+				}
 			});
 
-			return modMatch;
-		});
+		return filtered;
 	});
 
 	$effect(async () => {

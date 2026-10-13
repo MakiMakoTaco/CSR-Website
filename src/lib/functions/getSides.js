@@ -90,6 +90,12 @@ export async function getSubmitData(sql, name, playerId) {
 	side.tiers.forEach((tier) => {
 		tier.mods.forEach((mod) => {
 			mod.fullName = `${mod.name} - ${tier.name} ${side.name.split('-')[0]}`;
+			mod.matches = [
+				...mod.name.split(' '),
+				...tier.name.split(' '),
+				side.name,
+				...(mod?.shorthand ?? [])
+			].flat();
 			mod.submitting = false;
 		});
 	});
