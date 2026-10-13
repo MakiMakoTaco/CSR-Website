@@ -30,12 +30,19 @@
 
 		if (!filter) return mods;
 
-		return mods.filter(
-			(mod) =>
-				mod.name.toLowerCase().includes(filter) ||
-				mod.fullName.toLowerCase().includes(filter) ||
-				mod.shorthand?.some((short) => filter.split(' ').includes(short))
-		);
+		return mods.filter((mod) => {
+			const matches = [
+				// mod.name.toLowerCase().split(' '),
+				mod.fullName.toLowerCase().split(' '),
+				...(mod?.shorthand ?? [])
+			]
+				.flat()
+				.join(' ');
+			console.log(matches);
+
+			const regex = new RegExp(filter);
+			return matches.match(regex);
+		});
 	});
 
 	$effect(async () => {
