@@ -31,7 +31,7 @@
 		if (!filter) return mods;
 
 		return mods.filter((mod) => {
-			let doesMatch = true;
+			let modMatch = true;
 
 			const matches = [
 				// mod.name.toLowerCase().split(' '),
@@ -39,16 +39,20 @@
 				...(mod?.shorthand ?? [])
 			].flat();
 
-			filter.forEach((word) => {
-				let test = false;
+			filter.forEach((word, index) => {
+				let filterMatch = false;
 				matches.forEach((match) => {
-					if (match.includes(word)) test = true;
+					if (filter.length - 1 === index) {
+						if (match.includes(word)) filterMatch = true;
+					} else {
+						if (match === word) filterMatch = true;
+					}
 				});
 
-				if (!test) doesMatch = false;
+				if (!filterMatch) modMatch = false;
 			});
 
-			return doesMatch;
+			return modMatch;
 		});
 	});
 
