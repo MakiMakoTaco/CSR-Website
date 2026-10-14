@@ -8,8 +8,20 @@
 		"binding": "ASSETS",
 		"directory": ".svelte-kit/cloudflare"
 	},
-	"workers_dev": true,
-	"preview_urls": true,
+	"workers_dev": false,
+	"preview_urls": false,
+	"observability": {
+		"enabled": true,
+		"issues": {
+			"enabled": true
+		},
+		"logs": {
+			"enabled": true
+		},
+		"traces": {
+			"enabled": true
+		}
+	},
 	"hyperdrive": [
 		{
 			"binding": "HYPERDRIVE",
@@ -17,18 +29,9 @@
 			"localConnectionString": "postgres://user:password@ip:5432/dbname?sslmode=require"
 		}
 	],
-	"observability": {
-		"enabled": true,
-		"logs": {
-			"enabled": true,
-			"invocation_logs": true,
-			"persist": true
-		},
-		"traces": {
-			"enabled": false
-		}
-	},
 	"vars": {
-		"DISCORD_REDIRECT_URI": "http://localhost:5173/login/discord/callback"
+		"DISCORD_REDIRECT_URI": "http://localhost:5173/login/discord/callback",
+		"DISCORD_SERVER_ID": "927897210471989270",
+		"DISCORD_SHOUTOUT_CHANNEL_ID": "1277745299795738656"
 	}
 }
