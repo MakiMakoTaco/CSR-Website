@@ -19,16 +19,6 @@ async function getData(sql, parent, playerId) {
 	return sides;
 }
 
-export async function load({ locals, parent }) {
-	if (locals.session === null) {
-		redirect(302, '/login');
-	}
-
-	const sql = locals.sql;
-
-	return { sides: getData(sql, parent, locals.player.id) };
-}
-
 function checkClearRequirements(requirements) {
 	return {
 		clear: requirements.clearedMods >= requirements.clearsForRank,
@@ -38,6 +28,14 @@ function checkClearRequirements(requirements) {
 
 function rankName(rank, plus = false) {
 	return rank.tierName + (plus ? '+' : '') + (rank.appendSideName ? ` ${rank.sideName}` : '');
+}
+
+export async function load({ locals, parent }) {
+	if (locals.session === null) {
+		redirect(302, '/login');
+	}
+
+	return { sides: getData(locals.sql, parent, locals.player.id) };
 }
 
 export const actions = {

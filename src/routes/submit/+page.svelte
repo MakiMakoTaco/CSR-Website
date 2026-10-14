@@ -64,7 +64,6 @@
 				if (a.name === searchFilter && b.name !== searchFilter) {
 					return -1;
 				} else if (a.name !== searchFilter && b.name === searchFilter) {
-					console.log(a.name, searchFilter);
 					return 1;
 				}
 
@@ -101,8 +100,6 @@
 		if (!promise) return [];
 
 		sides = await Promise.all(promise);
-
-		console.log(sides);
 	});
 </script>
 
