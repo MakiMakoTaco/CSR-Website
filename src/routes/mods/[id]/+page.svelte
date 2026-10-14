@@ -75,20 +75,20 @@
 						{#each mod.downloads as download}
 							<tr>
 								<td>
-									{#if download.everestUrl}
-										<a href={download.everestUrl}>Download</a>
+									{#if download.everest}
+										<a href={download.everest}>Download</a>
 									{:else}
 										No Everest link available
 									{/if}
 								</td>
 								<td>
-									{#if download.manualUrl}
-										<a href={download.manualUrl}>{download.fileName}</a>
+									{#if download.manual}
+										<a href={download.manual}>{download.name}</a>
 									{:else}
 										No link available
 									{/if}
 								</td>
-								<td>{formatBytes(download.fileSize)}</td>
+								<td>{formatBytes(download.size)}</td>
 							</tr>
 						{/each}
 					</tbody>
