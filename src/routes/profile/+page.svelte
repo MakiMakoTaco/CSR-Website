@@ -14,11 +14,11 @@
 	let apiKey = $state(0);
 
 	async function getApiKey() {
-		apiKey = await (
-			await fetch('/profile/get-api-key', {
-				method: 'PATCH'
-			})
-		).json();
+		const response = await fetch('/profile/get-api-key', {
+			method: 'POST'
+		});
+		const body = await response.json();
+		apiKey = body.apiKey;
 	}
 </script>
 
