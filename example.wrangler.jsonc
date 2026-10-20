@@ -8,6 +8,27 @@
 		"binding": "ASSETS",
 		"directory": ".svelte-kit/cloudflare"
 	},
+	"hyperdrive": [
+		{
+			"binding": "HYPERDRIVE",
+			"id": "1660e283847147bbbed0c02eab1a767d",
+			"localConnectionString": "postgres://user:password@ip:5432/dbname?sslmode=require"
+		}
+	],
+	"images": {
+		"binding": "IMAGES"
+	},
+	"r2_buckets": [
+		{
+			"binding": "R2",
+			"bucket_name": "player-images"
+		}
+	],
+	"vars": {
+		"DISCORD_REDIRECT_URI": "http://localhost:5173/login/discord/callback",
+		"DISCORD_SERVER_ID": "927897210471989270",
+		"DISCORD_SHOUTOUT_CHANNEL_ID": "1277745299795738656"
+	},
 	"workers_dev": false,
 	"preview_urls": false,
 	"observability": {
@@ -21,17 +42,5 @@
 		"traces": {
 			"enabled": true
 		}
-	},
-	"hyperdrive": [
-		{
-			"binding": "HYPERDRIVE",
-			"id": "1660e283847147bbbed0c02eab1a767d",
-			"localConnectionString": "postgres://user:password@ip:5432/dbname?sslmode=require"
-		}
-	],
-	"vars": {
-		"DISCORD_REDIRECT_URI": "http://localhost:5173/login/discord/callback",
-		"DISCORD_SERVER_ID": "927897210471989270",
-		"DISCORD_SHOUTOUT_CHANNEL_ID": "1277745299795738656"
 	}
 }
