@@ -113,68 +113,80 @@
 	{#await sides}
 		Fetching mods...
 	{:then sides}
-		<input
-			class="mod-selection"
-			bind:value={searchFilter}
-			onfocusin={() => {
-				displayMods = true;
-			}}
-			onkeydown={(event) => {
-				if (selectedModIndex < 0) {
-					selectedModIndex = filteredMods.length - 1;
-				} else if (selectedModIndex >= filteredMods.length) {
-					selectedModIndex = 0;
-				}
+		<div class="mod-search-container">
+			<div class="mod-search-border">
+				<div class="search-bar">
+					<span>
+						<input
+							class="mod-selection"
+							bind:value={searchFilter}
+							onfocusin={() => {
+								displayMods = true;
+							}}
+							onkeydown={(event) => {
+								if (selectedModIndex < 0) {
+									selectedModIndex = filteredMods.length - 1;
+								} else if (selectedModIndex >= filteredMods.length) {
+									selectedModIndex = 0;
+								}
 
-				switch (event.key) {
-					case 'ArrowUp':
-						selectedModIndex--;
-						break;
-					case 'ArrowDown':
-						selectedModIndex++;
-						break;
-					case 'Enter':
-						console.log(`Pressed enter. Selected mod: ${filteredMods[selectedModIndex].name}`);
-						break;
-					case 'Escape':
-						displayMods = false;
-						searchFilter = '';
+								switch (event.key) {
+									case 'ArrowUp':
+										selectedModIndex--;
+										break;
+									case 'ArrowDown':
+										selectedModIndex++;
+										break;
+									case 'Enter':
+										console.log(
+											`Pressed enter. Selected mod: ${filteredMods[selectedModIndex].name}`
+										);
+										break;
+									case 'Escape':
+										displayMods = false;
+										searchFilter = '';
 
-						event.target.blur();
-						break;
-				}
-			}}
-		/>
-		{#if displayMods}
-			<button
-				onclick={() => {
-					displayMods = false;
-					searchFilter = '';
-				}}>Close</button
-			>
-		{/if}
+										event.target.blur();
+										break;
+								}
+							}}
+						/>
+						<button
+							class="close-mod-filter"
+							onclick={() => {
+								displayMods = false;
+								searchFilter = '';
+							}}
+							hidden={!displayMods}>Close</button
+						>
+					</span>
+				</div>
+
+				{#if displayMods}
+					{#await filteredMods then mods}
+						{#each mods as mod}
+							{#if !mod.hidden}
+								<div>
+									<span class="mod-search-name" style="color: #{mod.color};">{mod.fullName}</span>
+									<button
+										class="add-mod"
+										onclick={async () => {
+											mod.submitting = true;
+
+											searchFilter = '';
+											displayMods = false;
+										}}>Add mod</button
+									>
+								</div>
+							{/if}
+						{/each}
+					{/await}
+				{/if}
+			</div>
+		</div>
 
 		{#if submitting}
 			Submitting mods...
-		{/if}
-		{#if displayMods}
-			{#await filteredMods then mods}
-				{#each mods as mod}
-					{#if !mod.hidden}
-						<p style="color: #{mod.color};">
-							{mod.fullName}
-							<button
-								onclick={async () => {
-									mod.submitting = true;
-
-									searchFilter = '';
-									displayMods = false;
-								}}>Add mod</button
-							>
-						</p>
-					{/if}
-				{/each}
-			{/await}
 		{/if}
 
 		<br />
@@ -308,6 +320,66 @@
 </main>
 
 <style>
+	.mod-search-container {
+		display: grid;
+
+		> div {
+			place-self: center;
+			display: grid;
+			gap: 1rem;
+
+			/* border: 0.5rem solid;
+			border-radius: 5px; */
+
+			> * {
+				padding: 0 10px;
+				justify-self: center;
+				align-items: center;
+				display: grid;
+				width: 50vw;
+				max-width: 700px;
+				grid-auto-flow: column;
+				grid-template-columns: 2fr 1fr;
+
+				> * {
+					height: fit-content;
+					max-width: fit-content;
+				}
+			}
+
+			.search-bar {
+				grid-template-columns: 1fr;
+				justify-items: center;
+
+				input {
+					font-size: large;
+				}
+			}
+		}
+	}
+
+	.mod-search-name {
+		text-align: left;
+	}
+
+	.add-mod {
+		justify-self: center;
+	}
+
+	.mod-selection {
+		align-self: center;
+		justify-self: center;
+
+		margin: 20px;
+	}
+
+	.close-mod-filter {
+		width: fit-content;
+		padding: 2px 5px;
+		border-radius: 20px;
+		border-color: transparent;
+	}
+
 	.submission-container {
 		display: grid;
 		justify-content: center;
@@ -334,7 +406,6 @@
 
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(min(var(--min-col-size), 100%), 1fr));
-		/* gap: 1rem; */
 		margin-bottom: 10px;
 
 		> * {
