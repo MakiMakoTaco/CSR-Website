@@ -5,8 +5,8 @@ import { error } from '@sveltejs/kit';
 import { timingSafeEqual } from 'crypto';
 
 const limiter = new RetryAfterRateLimiter({
-	IP: [20, '10m'],
-	IPUA: [5, 'm']
+	IP: [5, 'm']
+	// IPUA: [2, '10m']
 });
 
 export async function POST(event) {
@@ -70,6 +70,7 @@ export async function POST(event) {
 
 	const form = await request.formData();
 	const images = form.getAll('proof');
+	console.log(images);
 
 	if (images.length > 4) {
 		error(400, {
@@ -87,7 +88,7 @@ export async function POST(event) {
 			});
 		}
 
-		if (image.size > 1000 * 1000 * 3) {
+		if (image.size > 1000 * 1000 * 4) {
 			error(400, {
 				message: 'File size(s) too large',
 				details: 'File must be smaller than 3MB'
@@ -102,68 +103,70 @@ export async function POST(event) {
 		}
 	});
 
-	const sightengineData = new FormData();
-	images.forEach((image) => {
-		sightengineData.append('media[]', image);
-	});
-	sightengineData.append('models', 'nudity-2.1,people-counting,type');
-	sightengineData.append('api_user', SIGHTENGINE_API_USER);
-	sightengineData.append('api_secret', SIGHTENGINE_API_SECRET);
+	// const sightengineData = new FormData();
+	// images.forEach((image) => {
+	// 	sightengineData.append('media[]', image);
+	// });
+	// sightengineData.append('models', 'nudity-2.1,people-counting,type');
+	// sightengineData.append('api_user', SIGHTENGINE_API_USER);
+	// sightengineData.append('api_secret', SIGHTENGINE_API_SECRET);
 
-	const response = await fetch('https://api.sightengine.com/1.0/check.json', {
-		method: 'POST',
-		body: sightengineData
-	});
+	// const response = await fetch('https://api.sightengine.com/1.0/check.json', {
+	// 	method: 'POST',
+	// 	body: sightengineData
+	// });
 
-	const sightengineBody = await response.json();
-	if (sightengineBody.status === 'failure') {
-		console.error(sightengineBody.error);
-		error(400, {
-			message: 'Sightengine error'
-		});
-	}
-	if (images.length > 1) {
-		sightengineBody.data.forEach((imageResult) => {
-			if (
-				imageResult.nudity.none !== 0.99 ||
-				imageResult['people-counting']['0'] !== 0.99 ||
-				imageResult.type.illustration !== 0.99
-			) {
-				error(422, {
-					message: 'Image failed moderation checks'
-				});
-			}
-		});
-	} else if (
-		sightengineBody.nudity.none !== 0.99 ||
-		sightengineBody['people-counting']['0'] !== 0.99 ||
-		sightengineBody.type.illustration !== 0.99
-	) {
-		error(422, {
-			message: 'Image failed moderation checks'
-		});
-	}
+	// const sightengineBody = await response.json();
+	// if (sightengineBody.status === 'failure') {
+	// 	console.error(sightengineBody.error);
+	// 	error(400, {
+	// 		message: 'Sightengine error'
+	// 	});
+	// }
+	// if (images.length > 1) {
+	// 	sightengineBody.data.forEach((imageResult) => {
+	// 		if (
+	// 			imageResult.nudity.none !== 0.99 ||
+	// 			imageResult['people-counting']['0'] !== 0.99 ||
+	// 			imageResult.type.illustration !== 0.99
+	// 		) {
+	// 			error(422, {
+	// 				message: 'Image failed moderation checks'
+	// 			});
+	// 		}
+	// 	});
+	// } else if (
+	// 	sightengineBody.nudity.none !== 0.99 ||
+	// 	sightengineBody['people-counting']['0'] !== 0.99 ||
+	// 	sightengineBody.type.illustration !== 0.99
+	// ) {
+	// 	error(422, {
+	// 		message: 'Image failed moderation checks'
+	// 	});
+	// }
 
-	const uploads = images.map(async (image, index) => {
-		let bytes;
+	// const uploads = images.map(async (image, index) => {
+	// 	let bytes;
 
-		if (image.type !== 'image/webp') {
-			const transformed = (
-				await platform.env.IMAGES.input(image.stream()).output({ format: 'image/webp' })
-			).response();
+	// 	if (image.type !== 'image/webp') {
+	// 		const transformed = (
+	// 			await platform.env.IMAGES.input(image.stream()).output({ format: 'image/webp' })
+	// 		).response();
 
-			bytes = await transformed.arrayBuffer();
-		} else {
-			bytes = await image.arrayBuffer();
-		}
+	// 		bytes = await transformed.arrayBuffer();
+	// 	} else {
+	// 		bytes = await image.arrayBuffer();
+	// 	}
 
-		const fileName = `3/1/proof${images.length > 1 ? `-${index + 1}` : ''}.webp`;
-		await platform.env.R2.put(fileName, bytes, {
-			httpMetadata: { contentType: 'image/webp' }
-		});
-	});
+	// 	console.log(bytes);
 
-	await Promise.all(uploads);
+	// 	const fileName = `3/1/proof${images.length > 1 ? `-${index + 1}` : ''}.webp`;
+	// 	await platform.env.R2.put(fileName, bytes, {
+	// 		httpMetadata: { contentType: 'image/webp' }
+	// 	});
+	// });
+
+	// await Promise.all(uploads);
 
 	return Response.json({ message: 'Passed checks' });
 }
