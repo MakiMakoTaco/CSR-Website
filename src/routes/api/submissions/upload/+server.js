@@ -6,7 +6,6 @@ import { timingSafeEqual } from 'crypto';
 
 const limiter = new RetryAfterRateLimiter({
 	IP: [5, 'm']
-	// IPUA: [2, '10m']
 });
 
 export async function POST(event) {
@@ -70,7 +69,6 @@ export async function POST(event) {
 
 	const form = await request.formData();
 	const images = form.getAll('proof');
-	console.log(images);
 
 	if (images.length > 4) {
 		error(400, {
@@ -91,14 +89,14 @@ export async function POST(event) {
 		if (image.size > 1000 * 1000 * 4) {
 			error(400, {
 				message: 'File size(s) too large',
-				details: 'File must be smaller than 3MB'
+				details: 'File must be smaller than 4MB'
 			});
 		}
 
-		if (image.type === 'image/webp' && image.size > 1000 * 100) {
+		if (image.type === 'image/webp' && image.size > 1000 * 130) {
 			error(400, {
 				message: 'File size(s) too large for webp limit',
-				details: 'WebP files must be smaller than 100KB'
+				details: 'WebP files must be smaller than 130KB'
 			});
 		}
 	});
@@ -128,7 +126,7 @@ export async function POST(event) {
 	// 		if (
 	// 			imageResult.nudity.none !== 0.99 ||
 	// 			imageResult['people-counting']['0'] !== 0.99 ||
-	// 			imageResult.type.illustration !== 0.99
+	// 			imageResult.type.illustration < 0.95
 	// 		) {
 	// 			error(422, {
 	// 				message: 'Image failed moderation checks'
@@ -138,7 +136,7 @@ export async function POST(event) {
 	// } else if (
 	// 	sightengineBody.nudity.none !== 0.99 ||
 	// 	sightengineBody['people-counting']['0'] !== 0.99 ||
-	// 	sightengineBody.type.illustration !== 0.99
+	// 	sightengineBody.type.illustration < 0.95
 	// ) {
 	// 	error(422, {
 	// 		message: 'Image failed moderation checks'

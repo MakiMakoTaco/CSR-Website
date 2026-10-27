@@ -1,6 +1,10 @@
 import { env } from '$env/dynamic/private';
-import { DISCORD_BOT_TOKEN } from '$env/static/private';
-import { fail, redirect } from '@sveltejs/kit';
+import {
+	DISCORD_BOT_TOKEN,
+	SIGHTENGINE_API_USER,
+	SIGHTENGINE_API_SECRET
+} from '$env/static/private';
+import { error, fail, redirect } from '@sveltejs/kit';
 
 import { getSideByName, getSubmitData } from '$lib/functions/getSides.js';
 
@@ -39,14 +43,11 @@ export async function load({ locals, parent }) {
 }
 
 export const actions = {
-	default: async ({ request, url, locals }) => {
+	default: async ({ request, url, locals, platform }) => {
 		const sql = locals.sql;
 
 		const data = await request.formData();
 		const playerId = locals.player.id;
-
-		console.log(data);
-		return;
 
 		const modMap = {};
 		for (let [key, value] of data) {
@@ -54,25 +55,139 @@ export const actions = {
 			const modId = modData[0];
 			let column = modData[1];
 
-			if (column === 'proof') {
-				try {
-					const url = new URL(value);
+			if (column === 'url') {
+				if (value) {
+					try {
+						const url = new URL(value);
 
-					value = url.href;
-				} catch (error) {
-					const mod = await getModData(sql, modId);
-
-					return fail(406, { error: `${mod.name} does not have a valid URL as proof` });
+						value = url.href;
+					} catch (error) {
+						return fail(400, { error: `${modId} does not have a valid URL as proof` });
+					}
 				}
 			}
 
-			modMap[modId] = { ...modMap[modId], [column]: value || null };
+			if (column !== 'image') modMap[modId] = { ...modMap[modId], [column]: value || null };
 		}
 
-		// const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg'];
+		const allowedTypes = ['image/webp', 'image/png', 'image/jpg'];
+		for (const modId in modMap) {
+			let mod = modMap[modId];
+
+			if (!mod.url) {
+				mod.images = data.getAll(`${modId}-image`);
+
+				if (mod.images.length > 4) {
+					return fail(400, { error: `${modId} has too many images` });
+				}
+
+				for (const image of mod.images) {
+					if (image.size === 0) {
+						return fail(400, { error: `${modId} has an invalid image` });
+					}
+
+					if (!allowedTypes.includes(image.type)) {
+						return fail(400, {
+							error: 'File must be of type WebP (under 130KB) or PNG/JPEG (under 4MB)'
+						});
+					}
+
+					if (image.size > 1000 * 1000 * 4) {
+						return fail(400, {
+							error: 'File must be smaller than 4MB'
+						});
+					}
+
+					if (image.type === 'image/webp' && image.size > 1000 * 130) {
+						return fail(400, {
+							error: 'WebP files must be smaller than 130KB'
+						});
+					}
+				}
+
+				// const sightengineData = new FormData();
+				// mod.images.forEach((image) => {
+				// 	sightengineData.append('media[]', image);
+				// });
+				// sightengineData.append('models', 'nudity-2.1,people-counting,type');
+				// sightengineData.append('api_user', SIGHTENGINE_API_USER);
+				// sightengineData.append('api_secret', SIGHTENGINE_API_SECRET);
+
+				// const response = await fetch('https://api.sightengine.com/1.0/check.json', {
+				// 	method: 'POST',
+				// 	body: sightengineData
+				// });
+
+				// const sightengineBody = await response.json();
+				// console.log(sightengineBody);
+				// if (sightengineBody.status === 'failure') {
+				// 	console.error(sightengineBody.error);
+				// 	return fail(400, {
+				// 		error: 'Sightengine error'
+				// 	});
+				// }
+				// if (mod.images.length > 1) {
+				// 	for (const imageResult of sightengineBody.data) {
+				// 		if (
+				// 			imageResult.nudity.none !== 0.99 ||
+				// 			imageResult['people-counting']['0'] !== 0.99 ||
+				// 			imageResult.type.illustration < 0.95
+				// 		) {
+				// 			return fail(422, {
+				// 				error: 'Image failed moderation checks'
+				// 			});
+				// 		}
+				// 	}
+				// } else if (
+				// 	sightengineBody.nudity.none !== 0.99 ||
+				// 	sightengineBody['people-counting']['0'] !== 0.99 ||
+				// 	sightengineBody.type.illustration < 0.95
+				// ) {
+				// 	return fail(422, {
+				// 		error: 'Image failed moderation checks'
+				// 	});
+				// }
+
+				// const uploads = mod.images.map(async (image, index) => {
+				// 	let bytes;
+
+				// 	if (image.type !== 'image/webp') {
+				// 		const transformed = (
+				// 			await platform.env.IMAGES.input(image.stream()).output({ format: 'image/webp' })
+				// 		).response();
+
+				// 		bytes = await transformed.arrayBuffer();
+				// 	} else {
+				// 		bytes = await image.arrayBuffer();
+				// 	}
+
+				// const folderName = `${playerId}/${modId}`;
+				// await platform.env.R2.delete(folderName);
+				// 	const fileName = `${folderName}/proof${mod.images.length > 1 ? `-${index + 1}` : ''}.webp`;
+				// 	await platform.env.R2.put(fileName, bytes, {
+				// 		httpMetadata: { contentType: 'image/webp' }
+				// 	});
+				// });
+
+				// await Promise.all(uploads);
+			}
+
+			mod.cleared = true;
+			mod.proof = mod.url ?? mod.images;
+			delete mod.url;
+			delete mod.images;
+		}
+
+		console.log(modMap);
+
+		// await sql`
+		// 	INSERT INTO
+		// 		player_progress
+		// 	${sql(modMap)}
+		// 	ON CONFLICT ()
+		// `
 
 		const modIds = Object.keys(modMap);
-
 		const tiers = await sql`
 			SELECT
 				t.id,
@@ -97,41 +212,6 @@ export const actions = {
 
 		for (const modId in modMap) {
 			let mod = modMap[modId];
-			mod.cleared = true;
-
-			// if (!allowedTypes.includes(mod.upload.type) && !mod.link) {
-			// 	return fail(422, {
-			// 		error: 'Either a link or file upload is required for proof'
-			// 	});
-			// } else if (allowedTypes.includes(mod.upload.type) && mod.link) {
-			// 	return fail(422, {
-			// 		error:
-			// 			'Unable to process form data with both link and upload fields filled, please only include one type of <a href="/" target="_blank">proof</a>'
-			// 	});
-			// }
-
-			// mod.proof = mod.link ? mod.link : mod.upload;
-			// delete mod.link;
-			// delete mod.upload;
-
-			// if (mod.proof?.size <= 0) {
-			// 	return fail(422, {
-			// 		error: 'Unknown error reading image with file size equal to or less than 0'
-			// 	});
-			// } else if (mod.proof?.size > 0) {
-			// 	const fileName = randomUUID();
-
-			// 	if (!(await existsSync(`/var/www/html/uploads/players/${playerId}`))) {
-			// 		await mkdirSync(`/var/www/html/uploads/players/${playerId}`, { recursive: true });
-			// 	}
-
-			// 	await writeFileSync(
-			// 		`/var/www/html/uploads/players/${playerId}/${fileName}`,
-			// 		Buffer.from(await mod.proof.arrayBuffer())
-			// 	);
-
-			// 	mod.proof = `/players/${playerId}/${modId}/${fileName}`;
-			// }
 
 			// 	const existingSubmission = (
 			// 		await sql`
