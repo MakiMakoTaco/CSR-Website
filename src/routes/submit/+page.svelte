@@ -1,6 +1,7 @@
 <script>
 	// Imports
 	import { enhance } from '$app/forms';
+	import { preventDefault } from 'svelte/legacy';
 
 	// Data from server
 	let { data, form } = $props();
@@ -10,8 +11,6 @@
 	let submitting = $state(false); // Set the submitting trigger for form enhance
 	let displayMods = $state(false); // The switch for showing mod selection
 	// let hasFocus = $state(false);
-
-	const submittingMods = [];
 
 	// String states
 	let searchFilter = $state(''); // Player input as a search filter
@@ -110,6 +109,11 @@
 </svelte:head>
 
 <main>
+	{#if form?.error}
+		<p class="error">
+			{@html form.error}
+		</p>
+	{/if}
 	{#await sides}
 		Fetching mods...
 	{:then sides}
@@ -190,12 +194,6 @@
 		{/if}
 
 		<br />
-
-		{#if form?.error}
-			<p class="error">
-				{@html form.error}
-			</p>
-		{/if}
 		{#if sides.flatMap((side) => side.tiers.flatMap((tier) => tier.mods
 					.filter((mod) => mod.submitting)
 					.flat())).length > 0}
@@ -256,28 +254,60 @@
 									</h2>
 								</div>
 								<div class="mod-data">
-									<span id="poof">
+									<span id="proofs">
 										<label for="{mod.id}-proof">Proof:</label>
-										<input
-											id="{mod.id}-proof"
-											name="{mod.id}-proof"
-											value={mod.proof}
-											placeholder="https://imgur.com/a/BaxjPdY"
-											required
-										/>
+										<div id="{mod.id}-url">
+											<input
+												id="{mod.id}-proof"
+												name="{mod.id}-url"
+												placeholder="https://imgur.com/a/BaxjPdY"
+											/>
+										</div>
+										<div id="{mod.id}-image" hidden>
+											<input
+												id="{mod.id}-proof"
+												name="{mod.id}-image"
+												type="file"
+												accept="image/webp, image/png, image/jpg"
+												multiple
+											/>
+											<button
+												onclick={(e) => {
+													e.preventDefault();
+
+													document.getElementById(`${mod.id}-image`).firstChild.value = '';
+												}}>Reset</button
+											>
+										</div>
+										<button
+											onclick={(e) => {
+												e.preventDefault();
+
+												const url = document.getElementById(`${mod.id}-url`);
+												const image = document.getElementById(`${mod.id}-image`);
+
+												if (url.hidden) {
+													url.hidden = false;
+													image.hidden = true;
+
+													// image.firstChild.value = '';
+
+													this.textContent = 'Use Image';
+												} else {
+													url.hidden = true;
+													image.hidden = false;
+
+													// url.firstChild.value = '';
+
+													this.textContent = 'Use Link';
+												}
+											}}>Use Image</button
+										>
 									</span>
 									<span id="date">
 										<label for="{mod.id}-clear-date">Clear Date:</label>
 										<input id="{mod.id}-clear-date" name="{mod.id}-clearedDate" type="date" />
 									</span>
-									<!-- <input
-						id="{mod.id}-proof"
-						name="{mod.id}-upload"
-						value={mod.proof}
-						multiple
-						type="file"
-						accept="image/png image/jpeg"
-					/> -->
 									<span id="deaths">
 										<label for="{mod.id}-death-count">Deaths:</label>
 										<input id="{mod.id}-death-count" name="{mod.id}-deaths" type="number" />
@@ -313,7 +343,25 @@
 					that I am respecting other Celeste players by not cheating or faking my clear.</label
 				>
 				<br />
-				<button disabled={submitting}>Submit</button>
+				<button
+					onclick={(e) => {
+						const submittingMods = sides.flatMap((side) =>
+							side.tiers.flatMap((tier) => tier.mods.filter((mod) => mod.submitting).flat())
+						);
+
+						submittingMods.forEach((mod) => {
+							const url = document.getElementById(`${mod.id}-url`);
+							const image = document.getElementById(`${mod.id}-image`);
+
+							if (url.hidden) {
+								url.firstChild.value = '';
+							} else {
+								image.firstChild.value = '';
+							}
+						});
+					}}
+					disabled={submitting}>Submit</button
+				>
 			</form>
 		{/if}
 	{/await}
@@ -408,18 +456,21 @@
 		grid-template-columns: repeat(auto-fit, minmax(min(var(--min-col-size), 100%), 1fr));
 		margin-bottom: 10px;
 
-		> * {
+		> span {
+			display: grid;
 			min-width: auto;
 			justify-self: center;
-		}
 
-		label {
-			display: grid;
-			justify-content: center;
+			> * {
+				max-width: fit-content;
+				justify-self: center;
+				margin-bottom: 5px;
+			}
 		}
 
 		input {
 			width: minmax(min(150px, 100%), 1fr);
+			height: fit-content;
 		}
 	}
 </style>

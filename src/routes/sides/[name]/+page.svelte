@@ -77,8 +77,7 @@
 					<div id={tier.name} class="tier-name">
 						{#if side.showTierNames}
 							<h2 style="color: #{tier.colorPlus};">
-								{tier.name}
-								{#if data.player}:
+								{tier.name}{#if data.player}:
 									<small
 										>{tier.mods.filter((mod) => mod.cleared).length ?? 0}/{tier.mods.filter(
 											(mod) => !mod.isChild
