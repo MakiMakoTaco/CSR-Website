@@ -10,10 +10,6 @@ export async function load({ url, params, locals }) {
 		} else {
 			player.is_video = false;
 		}
-
-		if (!player.proof.includes('https')) {
-			player.proof = url.origin + player.proof;
-		}
 	});
 
 	return {

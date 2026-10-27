@@ -46,16 +46,17 @@ export const actions = {
 	default: async ({ request, url, locals, platform }) => {
 		const sql = locals.sql;
 
-		const data = await request.formData();
+		const formData = await request.formData();
 		const playerId = locals.player.id;
 
+		const mods = [];
 		const modMap = {};
-		for (let [key, value] of data) {
-			const modData = key.split('-');
-			const modId = modData[0];
-			let column = modData[1];
+		for (let [key, value] of formData) {
+			const [modId, dbKey] = key.split('-');
 
-			if (column === 'url') {
+			if (dbKey === 'image') continue;
+
+			if (dbKey === 'url') {
 				if (value) {
 					try {
 						const url = new URL(value);
@@ -67,15 +68,18 @@ export const actions = {
 				}
 			}
 
-			if (column !== 'image') modMap[modId] = { ...modMap[modId], [column]: value || null };
+			modMap[modId] = { ...modMap[modId], [dbKey]: value || null };
 		}
 
 		const allowedTypes = ['image/webp', 'image/png', 'image/jpg'];
 		for (const modId in modMap) {
-			let mod = modMap[modId];
+			const mod = modMap[modId];
+			mod.playerId = playerId;
+			mod.modId = modId;
+			mod.cleared = true;
 
 			if (!mod.url) {
-				mod.images = data.getAll(`${modId}-image`);
+				mod.images = formData.getAll(`${modId}-image`);
 
 				if (mod.images.length > 4) {
 					return fail(400, { error: `${modId} has too many images` });
@@ -83,7 +87,7 @@ export const actions = {
 
 				for (const image of mod.images) {
 					if (image.size === 0) {
-						return fail(400, { error: `${modId} has an invalid image` });
+						return fail(400, { error: `${modId} has no valid proof` });
 					}
 
 					if (!allowedTypes.includes(image.type)) {
@@ -161,8 +165,8 @@ export const actions = {
 				// 		bytes = await image.arrayBuffer();
 				// 	}
 
-				// const folderName = `${playerId}/${modId}`;
-				// await platform.env.R2.delete(folderName);
+				// 	const folderName = `${playerId}/${modId}`;
+				// 	await platform.env.R2.delete(folderName);
 				// 	const fileName = `${folderName}/proof${mod.images.length > 1 ? `-${index + 1}` : ''}.webp`;
 				// 	await platform.env.R2.put(fileName, bytes, {
 				// 		httpMetadata: { contentType: 'image/webp' }
@@ -172,20 +176,25 @@ export const actions = {
 				// await Promise.all(uploads);
 			}
 
-			mod.cleared = true;
-			mod.proof = mod.url ?? mod.images;
+			mod.proof = mod.url ?? `https://celesteskillrating.net/proofs/${playerId}/${modId}`;
 			delete mod.url;
 			delete mod.images;
+
+			mods.push(mod);
 		}
 
-		console.log(modMap);
+		await sql`
+			INSERT INTO
+				player_progress
+			${sql(mods)}
+			ON CONFLICT (player_id, mod_id)
+			DO UPDATE
+			SET
+				proof = EXCLUDED.proof,
+				updated_at = CURRENT_TIMESTAMP
+		`;
 
-		// await sql`
-		// 	INSERT INTO
-		// 		player_progress
-		// 	${sql(modMap)}
-		// 	ON CONFLICT ()
-		// `
+		return;
 
 		const modIds = Object.keys(modMap);
 		const tiers = await sql`
@@ -209,50 +218,6 @@ export const actions = {
 				)
 			GROUP BY t.id, clears_for_rank
 		`;
-
-		for (const modId in modMap) {
-			let mod = modMap[modId];
-
-			// 	const existingSubmission = (
-			// 		await sql`
-			// 		SELECT EXISTS (
-			// 			SELECT 1
-			// 			FROM player_progress
-			// 			WHERE
-			// 				player_id = ${playerId}
-			// 				AND mod_id = ${modId}
-			// 		)
-			// 		`
-			// 	)[0];
-
-			// 	try {
-			// 		if (existingSubmission.exists) {
-			// 			mod.updatedAt = new Date();
-
-			// 			await sql`
-			// 				UPDATE player_progress
-			// 				SET ${sql(mod)}
-			// 				WHERE
-			// 					player_id = ${playerId}
-			// 					AND mod_id = ${modId}
-			// 			`;
-			// 		} else if (existingSubmission.exists === false) {
-			// 			mod.playerId = playerId;
-			// 			mod.modId = Number(modId);
-			// 			mod.submittedAt = new Date();
-
-			// 			await sql`
-			// 				INSERT INTO	player_progress
-			// 				${sql(mod)}
-			// 			`;
-			// 		} else {
-			// 			throw new Error('Unable to submit mods for unknown reason');
-			// 		}
-			// 	} catch (error) {
-			// 		console.error(error);
-			// 		throw new Error(error.message);
-			// 	}
-		}
 
 		const playerRoles = await sql`
 			SELECT
