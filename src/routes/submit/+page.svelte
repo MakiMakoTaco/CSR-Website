@@ -259,7 +259,7 @@
 										<div id="{mod.id}-url">
 											<input
 												id="{mod.id}-proof"
-												name="{mod.id}-url"
+												name="{mod.id}-proof"
 												placeholder="https://imgur.com/a/BaxjPdY"
 											/>
 										</div>
@@ -283,21 +283,17 @@
 											onclick={(e) => {
 												e.preventDefault();
 
-												const url = document.getElementById(`${mod.id}-url`);
+												const url = document.getElementById(`${mod.id}-proof`);
 												const image = document.getElementById(`${mod.id}-image`);
 
 												if (url.hidden) {
 													url.hidden = false;
 													image.hidden = true;
 
-													// image.firstChild.value = '';
-
 													this.textContent = 'Use Image';
 												} else {
 													url.hidden = true;
 													image.hidden = false;
-
-													// url.firstChild.value = '';
 
 													this.textContent = 'Use Link';
 												}
@@ -350,7 +346,7 @@
 						);
 
 						submittingMods.forEach((mod) => {
-							const url = document.getElementById(`${mod.id}-url`);
+							const url = document.getElementById(`${mod.id}-proof`);
 							const image = document.getElementById(`${mod.id}-image`);
 
 							if (url.hidden) {

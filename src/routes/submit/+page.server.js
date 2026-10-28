@@ -56,7 +56,7 @@ export const actions = {
 
 			if (dbKey === 'image') continue;
 
-			if (dbKey === 'url') {
+			if (dbKey === 'proof') {
 				if (value) {
 					try {
 						const url = new URL(value);
@@ -74,11 +74,13 @@ export const actions = {
 		const allowedTypes = ['image/webp', 'image/png', 'image/jpg'];
 		for (const modId in modMap) {
 			const mod = modMap[modId];
+
 			mod.playerId = playerId;
 			mod.modId = modId;
 			mod.cleared = true;
 
-			if (!mod.url) {
+			if (!mod.proof) {
+				mod.isLocalProof = true;
 				mod.images = formData.getAll(`${modId}-image`);
 
 				if (mod.images.length > 4) {
@@ -167,7 +169,7 @@ export const actions = {
 
 				// 	const folderName = `${playerId}/${modId}`;
 				// 	await platform.env.R2.delete(folderName);
-				// 	const fileName = `${folderName}/proof${mod.images.length > 1 ? `-${index + 1}` : ''}.webp`;
+				// 	const fileName = `${folderName}/${index + 1}`;
 				// 	await platform.env.R2.put(fileName, bytes, {
 				// 		httpMetadata: { contentType: 'image/webp' }
 				// 	});
@@ -176,25 +178,22 @@ export const actions = {
 				// await Promise.all(uploads);
 			}
 
-			mod.proof = mod.url ?? `https://celesteskillrating.net/proofs/${playerId}/${modId}`;
-			delete mod.url;
 			delete mod.images;
 
 			mods.push(mod);
 		}
 
-		await sql`
-			INSERT INTO
-				player_progress
-			${sql(mods)}
-			ON CONFLICT (player_id, mod_id)
-			DO UPDATE
-			SET
-				proof = EXCLUDED.proof,
-				updated_at = CURRENT_TIMESTAMP
-		`;
-
-		return;
+		// await sql`
+		// 	INSERT INTO
+		// 		player_progress
+		// 	${sql(mods)}
+		// 	ON CONFLICT (player_id, mod_id)
+		// 	DO UPDATE
+		// 	SET
+		// 		proof = EXCLUDED.proof,
+		// 		is_local_proof = EXCLUDED.is_local_proof,
+		// 		updated_at = CURRENT_TIMESTAMP
+		// `;
 
 		const modIds = Object.keys(modMap);
 		const tiers = await sql`
@@ -210,7 +209,8 @@ export const actions = {
 				ON pp.mod_id = m.id
 				AND pp.player_id = ${playerId}
 			WHERE
-				EXISTS (
+				t.clears_for_rank <> 0
+				AND EXISTS (
 					SELECT 1
 					FROM mods m2
 					WHERE m2.tier_id = t.id
@@ -229,6 +229,9 @@ export const actions = {
 				player_id = ${playerId}
 				AND rank_id[2] IN ${sql(tiers.map((tier) => tier.id))}
 		`;
+
+		console.log(tiers, playerRoles);
+		return;
 
 		tiers.forEach(async (tier) => {
 			const existingRank = playerRoles.find((role) => role.rankId[1] == tier.id) ?? {

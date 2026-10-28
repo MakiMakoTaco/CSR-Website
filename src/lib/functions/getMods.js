@@ -197,7 +197,7 @@ export async function getClearedPlayers(sql, modId) {
 
 	const clearedPlayers = await sql`
 		SELECT
-			p.id, name, proof, is_fc, cleared_date, is_private, public_notes, public_mod_notes
+			p.id, name, proof, is_local_proof, is_fc, cleared_date, is_private, public_notes, public_mod_notes
 		FROM player_progress pp
 		JOIN players p
 			ON player_id = p.id
