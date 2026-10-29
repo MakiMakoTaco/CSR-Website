@@ -13,7 +13,7 @@
 </script>
 
 <svelte:head>
-	<title>{side.name} - CSR</title>
+	<title>Editing {side.name} - CSR</title>
 </svelte:head>
 
 <main>
