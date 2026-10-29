@@ -25,6 +25,8 @@ export const actions = {
 		for (let [key, value] of data) {
 			if (key === 'nameColor') {
 				value = value.substring(1);
+			} else if (key === 'name' && !value.trim()) {
+				value = player.name;
 			}
 
 			if (value !== (player[key] ?? '')) {
