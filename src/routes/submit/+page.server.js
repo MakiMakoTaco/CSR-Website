@@ -169,7 +169,7 @@ export const actions = {
 
 				// 	const folderName = `${playerId}/${modId}`;
 				// 	await platform.env.R2.delete(folderName);
-				// 	const fileName = `${folderName}/${index + 1}`;
+				// 	const fileName = `${folderName}/${index + 1}.webp`;
 				// 	await platform.env.R2.put(fileName, bytes, {
 				// 		httpMetadata: { contentType: 'image/webp' }
 				// 	});

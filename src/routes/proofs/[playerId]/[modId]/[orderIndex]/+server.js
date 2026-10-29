@@ -5,7 +5,7 @@ export async function GET({ platform, params }) {
 		error(400, { message: 'Image cannot exist', details: 'Page number outside range (1-4)' });
 	}
 
-	const filePath = `${params.playerId}/${params.modId}/${params.orderIndex}`;
+	const filePath = `${params.playerId}/${params.modId}/${params.orderIndex}.webp`;
 
 	const image = await platform.env.R2.get(filePath);
 	if (!image) {

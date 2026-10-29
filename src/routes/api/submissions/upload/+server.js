@@ -158,7 +158,7 @@ export async function POST(event) {
 
 	// 	console.log(bytes);
 
-	// 	const fileName = `3/1/${index + 1}`}`;
+	// 	const fileName = `3/1/${index + 1}.webp`}`;
 	// 	await platform.env.R2.put(fileName, bytes, {
 	// 		httpMetadata: { contentType: 'image/webp' }
 	// 	});
