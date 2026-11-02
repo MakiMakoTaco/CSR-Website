@@ -67,21 +67,57 @@
 			</tbody>
 		</table>
 	</div>
-	<div class="what-is">
-		<h2>What is CSR?</h2>
-		<p>
-			CSR is a list of Celeste maps, collabs and contests that you can play through at your own
-			pace, & feel a sense of accomplishment once you beat them! Have you just started playing and
-			want to see how far you can get? Or are you a veteran celeste player and want to show off?
-			There's something for every player in CSR!
-		</p>
+	<div>
+		<div class="submissions">
+			<h2>Recent Submissions</h2>
+			<div class="submission-table-container">
+				<table class="submission-table">
+					<thead>
+						<tr>
+							<th align="left" scope="col">Submission</th>
+							<th scope="col">Player</th>
+							<th scope="col">Tier</th>
+						</tr>
+					</thead>
+					<tbody>
+						{#each data.recentSubmissions as submission}
+							<tr>
+								<td align="left"><a href="/mods/{submission.mod.id}">{submission.mod.name}</a></td>
+								<td
+									><a
+										class="player"
+										style="color: #{submission.player.color};"
+										href="/players/{submission.player.id}">{submission.player.name}</a
+									></td
+								>
+								<td
+									><div class="tier" style="background-color: #{submission.mod.tierColor};">
+										{submission.mod.tierName}
+									</div></td
+								>
+							</tr>
+						{/each}
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<div class="what-is">
+			<h2>What is CSR?</h2>
+			<p>
+				CSR is a list of Celeste maps, collabs and contests that you can play through at your own
+				pace, & feel a sense of accomplishment once you beat them! Have you just started playing and
+				want to see how far you can get? Or are you a veteran celeste player and want to show off?
+				There's something for every player in CSR!
+			</p>
+		</div>
 	</div>
 </main>
 
 <style>
 	main {
+		margin: 10px 50px;
 		display: grid;
-		grid: auto-flow / repeat(2, 1fr);
+		grid: auto-flow / 1.5fr 1fr;
 		gap: 10px;
 
 		@media (width < 1130px) {
@@ -101,14 +137,10 @@
 
 	.sides-info {
 		table-layout: fixed;
-		width: 70vw;
+		width: 100%;
 		margin: 10px auto;
 		border-collapse: collapse;
 		text-align: center;
-
-		@media (width < 1130px) {
-			width: 100vw;
-		}
 	}
 
 	thead {
@@ -124,8 +156,50 @@
 		}
 	}
 
-	.what-is {
-		width: 80%;
-		justify-self: center;
+	.submission-table-container {
+		padding: 1rem;
+		border: 2px solid white;
+		border-radius: 20px;
+	}
+
+	.submission-table {
+		width: 100%;
+		background-color: 040406;
+		border-collapse: collapse;
+		border-radius: 10px;
+
+		tr:first-child th {
+			border-top: 0;
+		}
+
+		tr:last-child td {
+			border-bottom: 0;
+		}
+		th,
+		td {
+			width: fit-content;
+			font-size: medium;
+			justify-self: center;
+
+			border: 0 solid grey;
+			border-width: 1px 0;
+		}
+
+		a {
+			text-decoration: none;
+		}
+
+		.player,
+		.tier {
+			width: fit-content;
+			margin: auto;
+			padding: 5px;
+			color: black;
+			border-radius: 20px;
+		}
+
+		.player {
+			background-color: grey;
+		}
 	}
 </style>
