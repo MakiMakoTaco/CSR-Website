@@ -23,15 +23,27 @@ async function getData(sql, parent, playerId) {
 	return sides;
 }
 
-function checkClearRequirements(requirements) {
-	return {
-		clear: requirements.clearedMods >= requirements.clearsForRank,
-		clearPlus: requirements.clearedMods >= requirements.modCount
-	};
+function rankName(tierName, sideName, appendSideName, plus = false) {
+	return tierName + (plus ? '+' : '') + (appendSideName ? ` ${sideName}` : '');
 }
 
-function rankName(rank, plus = false) {
-	return rank.tierName + (plus ? '+' : '') + (rank.appendSideName ? ` ${rank.sideName}` : '');
+function shoutoutMessage(playerName, hasBaseRank, newCheck, roles, ping = false) {
+	let roleOutput = { clear: '', clearPlus: '' };
+	if (ping) {
+		roleOutput.clear = `<@&${roles.clear.id}>`;
+		roleOutput.clearPlus = roles.clearPlus ? `<@&${roles.clearPlus.id}>` : 'Unknown plus role';
+	} else {
+		roleOutput.clear = roles.clear.name;
+		roleOutput.clearPlus = roles.clearPlus ? roles.clearPlus.name : 'Unknown plus role';
+	}
+
+	if (!roleOutput.clear) throw new Error('Unexpected error, Missing base role');
+
+	if (hasBaseRank) {
+		return `**Congrats to our newest ${roleOutput.clearPlus} rank, ${playerName}!**`;
+	} else {
+		return `**Congrats to our newest ${newCheck.clearPlus ? `${roleOutput.clearPlus}${newCheck.clear ? ` (and ${roleOutput.clear})` : ''}` : roleOutput.clear} rank, ${playerName}!**`;
+	}
 }
 
 export async function load({ locals, parent }) {
@@ -111,71 +123,70 @@ export const actions = {
 					}
 				}
 
-				// const sightengineData = new FormData();
-				// mod.images.forEach((image) => {
-				// 	sightengineData.append('media[]', image);
-				// });
-				// sightengineData.append('models', 'nudity-2.1,people-counting,type');
-				// sightengineData.append('api_user', SIGHTENGINE_API_USER);
-				// sightengineData.append('api_secret', SIGHTENGINE_API_SECRET);
+				const sightengineData = new FormData();
+				mod.images.forEach((image) => {
+					sightengineData.append('media[]', image);
+				});
+				sightengineData.append('models', 'nudity-2.1,people-counting,type');
+				sightengineData.append('api_user', SIGHTENGINE_API_USER);
+				sightengineData.append('api_secret', SIGHTENGINE_API_SECRET);
 
-				// const response = await fetch('https://api.sightengine.com/1.0/check.json', {
-				// 	method: 'POST',
-				// 	body: sightengineData
-				// });
+				const response = await fetch('https://api.sightengine.com/1.0/check.json', {
+					method: 'POST',
+					body: sightengineData
+				});
 
-				// const sightengineBody = await response.json();
-				// console.log(sightengineBody);
-				// if (sightengineBody.status === 'failure') {
-				// 	console.error(sightengineBody.error);
-				// 	return fail(400, {
-				// 		error: 'Sightengine error'
-				// 	});
-				// }
-				// if (mod.images.length > 1) {
-				// 	for (const imageResult of sightengineBody.data) {
-				// 		if (
-				// 			imageResult.nudity.none !== 0.99 ||
-				// 			imageResult['people-counting']['0'] !== 0.99 ||
-				// 			imageResult.type.illustration < 0.95
-				// 		) {
-				// 			return fail(422, {
-				// 				error: 'Image failed moderation checks'
-				// 			});
-				// 		}
-				// 	}
-				// } else if (
-				// 	sightengineBody.nudity.none !== 0.99 ||
-				// 	sightengineBody['people-counting']['0'] !== 0.99 ||
-				// 	sightengineBody.type.illustration < 0.95
-				// ) {
-				// 	return fail(422, {
-				// 		error: 'Image failed moderation checks'
-				// 	});
-				// }
+				const sightengineBody = await response.json();
+				if (sightengineBody.status === 'failure') {
+					console.error(sightengineBody.error);
+					return fail(400, {
+						error: 'Sightengine error'
+					});
+				}
+				if (mod.images.length > 1) {
+					for (const imageResult of sightengineBody.data) {
+						if (
+							imageResult.nudity.none !== 0.99 ||
+							imageResult['people-counting']['0'] !== 0.99 ||
+							imageResult.type.illustration < 0.95
+						) {
+							return fail(422, {
+								error: 'Image failed moderation checks'
+							});
+						}
+					}
+				} else if (
+					sightengineBody.nudity.none !== 0.99 ||
+					sightengineBody['people-counting']['0'] !== 0.99 ||
+					sightengineBody.type.illustration < 0.95
+				) {
+					return fail(422, {
+						error: 'Image failed moderation checks'
+					});
+				}
 
-				// const uploads = mod.images.map(async (image, index) => {
-				// 	let bytes;
+				const uploads = mod.images.map(async (image, index) => {
+					let bytes;
 
-				// 	if (image.type !== 'image/webp') {
-				// 		const transformed = (
-				// 			await platform.env.IMAGES.input(image.stream()).output({ format: 'image/webp' })
-				// 		).response();
+					if (image.type !== 'image/webp') {
+						const transformed = (
+							await platform.env.IMAGES.input(image.stream()).output({ format: 'image/webp' })
+						).response();
 
-				// 		bytes = await transformed.arrayBuffer();
-				// 	} else {
-				// 		bytes = await image.arrayBuffer();
-				// 	}
+						bytes = await transformed.arrayBuffer();
+					} else {
+						bytes = await image.arrayBuffer();
+					}
 
-				// 	const folderName = `${playerId}/${modId}`;
-				// 	await platform.env.R2.delete(folderName);
-				// 	const fileName = `${folderName}/${index + 1}.webp`;
-				// 	await platform.env.R2.put(fileName, bytes, {
-				// 		httpMetadata: { contentType: 'image/webp' }
-				// 	});
-				// });
+					const folderName = `${playerId}/${modId}`;
+					await platform.env.R2.delete(folderName);
+					const fileName = `${folderName}/${index + 1}.webp`;
+					await platform.env.R2.put(fileName, bytes, {
+						httpMetadata: { contentType: 'image/webp' }
+					});
+				});
 
-				// await Promise.all(uploads);
+				await Promise.all(uploads);
 			}
 
 			delete mod.images;
@@ -183,124 +194,320 @@ export const actions = {
 			mods.push(mod);
 		}
 
-		// await sql`
-		// 	INSERT INTO
-		// 		player_progress
-		// 	${sql(mods)}
-		// 	ON CONFLICT (player_id, mod_id)
-		// 	DO UPDATE
-		// 	SET
-		// 		proof = EXCLUDED.proof,
-		// 		is_local_proof = EXCLUDED.is_local_proof,
-		// 		updated_at = CURRENT_TIMESTAMP
-		// `;
+		const inserted = await sql`
+			INSERT INTO
+				player_progress
+			${sql(mods)}
+			ON CONFLICT (player_id, mod_id)
+			DO UPDATE
+			SET
+				proof = EXCLUDED.proof,
+				is_local_proof = EXCLUDED.is_local_proof,
+				updated_at = CURRENT_TIMESTAMP
+		`;
+
+		const folderName = `${playerId}/${modId}`;
+		await platform.env.R2.delete(folderName);
 
 		const modIds = Object.keys(modMap);
-		const tiers = await sql`
+		const clearData = await sql`
 			SELECT
-				t.id,
-				clears_for_rank,
+				s.id,
+				s.name,
+				s.shoutout_on_clear,
+				s.clears_for_rank,
+				COALESCE(pr.clear, false) AS rank,
+				COALESCE(pr.clear_plus, false) AS rank_plus,
 				COUNT(m.id)::int AS mod_count,
-				COUNT(pp.player_id)::int AS cleared_mods
-			FROM tiers t
+				COUNT(pp.id)::int AS clears,
+				json_agg(
+					DISTINCT jsonb_build_object(
+						'id', t.id,
+						'name', tp.name,
+						'append_side_name', tp.append_side_name,
+						'clears_for_rank', t.clears_for_rank,
+						'mod_count', tier_clears.mod_count,
+						'clears', tier_clears.clears,
+						'rank', tier_clears.clear,
+						'rank_plus', tier_clears.clear_plus
+					)
+				) tiers
+			FROM sides s
+			LEFT JOIN tiers t
+				ON t.side_id = s.id
+			LEFT JOIN tier_presets tp
+				ON tp.id = t.preset_id
 			LEFT JOIN mods m
 				ON m.tier_id = t.id
 			LEFT JOIN player_progress pp
 				ON pp.mod_id = m.id
 				AND pp.player_id = ${playerId}
-			WHERE
-				t.clears_for_rank <> 0
-				AND EXISTS (
-					SELECT 1
-					FROM mods m2
-					WHERE m2.tier_id = t.id
-						AND m2.id IN ${sql(modIds)}
-				)
-			GROUP BY t.id, clears_for_rank
-		`;
-
-		const playerRoles = await sql`
-			SELECT
-				array_to_json(rank_id) AS rank_id,
-				clear,
-				clear_plus
-			FROM player_roles
-			WHERE
-				player_id = ${playerId}
-				AND rank_id[2] IN ${sql(tiers.map((tier) => tier.id))}
-		`;
-
-		console.log(tiers, playerRoles);
-		return;
-
-		tiers.forEach(async (tier) => {
-			const existingRank = playerRoles.find((role) => role.rankId[1] == tier.id) ?? {
-				rankId: [0, tier.id],
-				clear: false,
-				clearPlus: false
-			};
-
-			if (existingRank.clearPlus) return;
-
-			const shoutoutCheck = checkClearRequirements(tier);
-			if (!shoutoutCheck.clear) return;
-
-			const rankData = (
-				await sql`
+			LEFT JOIN player_roles pr
+				ON pr.rank_id[1] = s.id
+				AND pr.player_id = ${playerId}
+			LEFT JOIN (
 				SELECT
-					s.name AS side_name,
-					tp.name AS tier_name,
-					append_side_name
+					m.tier_id,
+					COUNT(m.id)::int AS mod_count,
+					COALESCE(pr.clear, false) AS clear,
+					COALESCE(pr.clear_plus, false) AS clear_plus,
+					COUNT(p.id)::int AS clears
+				FROM mods m
+				LEFT JOIN player_roles pr
+					ON pr.player_id = ${playerId}
+					AND pr.rank_id[2] = m.tier_id
+				LEFT JOIN player_progress p
+					ON p.mod_id = m.id
+					AND p.player_id = ${playerId}
+				GROUP BY m.tier_id, pr.clear, pr.clear_plus
+			) tier_clears
+				ON tier_clears.tier_id = t.id
+			WHERE s.id IN (
+				SELECT
+					side_id
 				FROM tiers t
-				JOIN sides s
-					ON s.id = t.side_id
-				JOIN tier_presets tp
-					ON tp.id = t.preset_id
-				WHERE t.id = ${tier.id}
-			`
-			)[0];
+				WHERE t.id IN (
+					SELECT
+						tier_id
+					FROM mods m
+					WHERE m.id IN ${sql(modIds)}
+				)
+			)
+			GROUP BY s.id, s.name, s.clears_for_rank, rank, rank_plus
+		`;
 
-			const rest = new REST({ version: '10' }).setToken(DISCORD_BOT_TOKEN);
+		const rest = new REST({ version: '10' }).setToken(DISCORD_BOT_TOKEN);
+		const guildRoles = await rest.get(Routes.guildRoles(env.DISCORD_SERVER_ID));
 
-			let roles = { clear: null, clearPlus: null };
-			const guildRoles = await rest.get(Routes.guildRoles(env.DISCORD_SERVER_ID));
+		const updatedRanks = [];
 
-			guildRoles.forEach((role) => {
-				if (role.name === rankName(rankData, false)) {
-					roles.clear = role;
-				} else if (role.name === rankName(rankData, true)) {
-					roles.clearPlus = role;
+		for await (const side of clearData) {
+			if (side.rankPlus) continue;
+
+			for await (const tier of side.tiers) {
+				if (!tier.clearsForRank || tier.clearsForRank <= 0 || tier.rankPlus) continue;
+
+				const shoutoutCheck = {
+					clear: tier.clears >= tier.clearsForRank,
+					clearPlus: tier.clears >= tier.modCount
+				};
+
+				if (shoutoutCheck.clearPlus || (!tier.rank && shoutoutCheck.clear)) {
+					updatedRanks.push({
+						playerId,
+						rankId: [0, tier.id],
+						clear: shoutoutCheck.clear,
+						clearPlus: shoutoutCheck.clearPlus
+					});
 				}
-			});
 
-			try {
-				let content = `**Congrats to our newest ${shoutoutCheck.clearPlus ? `${roles.clearPlus.name}${shoutoutCheck.clear ? roles.clear.name : ''}` : roles.clear.name} rank, ${locals.player.name}!**`;
-				const post = await rest.post(Routes.channelMessages(env.DISCORD_SHOUTOUT_CHANNEL_ID), {
-					body: {
-						content
+				if (!shoutoutCheck.clear || (!shoutoutCheck.clearPlus && shoutoutCheck.clear && tier.rank))
+					continue;
+
+				let roles = { clear: null, clearPlus: null };
+				guildRoles.forEach((role) => {
+					if (role.name === rankName(tier.name, side.name, tier.appendSideName, false)) {
+						roles.clear = role;
+					} else if (role.name === rankName(tier.name, side.name, tier.appendSideName, true)) {
+						roles.clearPlus = role;
 					}
 				});
 
-				content = `**Congrats to our newest ${shoutoutCheck.clearPlus ? `<@&${roles.clearPlus.id}>${shoutoutCheck.clear ? ` (and <@&${roles.clear.id}>)` : ''}` : `<@&${roles.clear.id}>`} rank, ${locals.player.name}!**`;
-				await rest.patch(Routes.channelMessage(env.DISCORD_SHOUTOUT_CHANNEL_ID, post.id), {
-					body: {
-						content
-					}
-				});
+				if (!roles.clear || !roles.clearPlus) {
+					// return {
+					// 	success: false,
+					// 	error: `Error finding roles in CSR server. Please screenshot this message and send to a mod to allow them to do it on the site's behalf. Player ${locals.player.name} requires shoutouts for ${rankName(tier.name, side.name, tier.appendSideName, false)}${shoutoutCheck.clearPlus ? ` ${rankName(tier.name, side.name, tier.appendSideName, true)}` : ''}`
+					// };
+					continue;
+				}
 
-				// for (const role in roles) {
-				// 	try {
-				// 		await rest.put(
-				// 			Routes.guildMemberRole(env.DISCORD_SERVER_ID, locals.player.discordId, roles[role].id)
-				// 		);
-				// 	} catch (error) {
-				// 		console.error(error);
-				// 	}
-				// }
-			} catch (error) {
-				console.error(error);
+				try {
+					let content = '';
+					try {
+						content = shoutoutMessage(locals.player.name, tier.rank, shoutoutCheck, roles, false);
+					} catch (error) {
+						console.error(error);
+						return {
+							success: true,
+							error: 'Unable to find suitable roles for shoutout(s): ' + side.name
+						};
+					}
+					const post = await rest.post(Routes.channelMessages(env.DISCORD_SHOUTOUT_CHANNEL_ID), {
+						body: {
+							content
+						}
+					});
+
+					content = shoutoutMessage(locals.player.name, tier.rank, shoutoutCheck, roles, true);
+
+					await rest.patch(Routes.channelMessage(env.DISCORD_SHOUTOUT_CHANNEL_ID, post.id), {
+						body: {
+							content
+						}
+					});
+
+					// if (shoutoutCheck.clearPlus) {
+					// 	for (const role in roles) {
+					// 		try {
+					// 			await rest.put(
+					// 				Routes.guildMemberRole(
+					// 					env.DISCORD_SERVER_ID,
+					// 					locals.player.discordId,
+					// 					roles[role].id
+					// 				)
+					// 			);
+					// 		} catch (error) {
+					// 			console.error(error);
+					// 		}
+					// 	}
+					// } else {
+					// 	try {
+					// 		await rest.put(
+					// 			Routes.guildMemberRole(
+					// 				env.DISCORD_SERVER_ID,
+					// 				locals.player.discordId,
+					// 				roles.clear.id
+					// 			)
+					// 		);
+					// 	} catch (error) {
+					// 		console.error(error);
+					// 	}
+					// }
+				} catch (error) {
+					console.error(error);
+				}
 			}
-		});
+
+			if (side.clearsForRank) {
+				const shoutoutCheck = {
+					clear: side.clears >= side.clearsForRank,
+					clearPlus: side.clears >= side.modCount
+				};
+
+				if (shoutoutCheck.clearPlus || (!side.rank && shoutoutCheck.clear)) {
+					updatedRanks.push({
+						playerId,
+						rankId: [side.id, 0],
+						clear: shoutoutCheck.clear,
+						clearPlus: shoutoutCheck.clearPlus
+					});
+				}
+
+				if (!shoutoutCheck.clear || (!shoutoutCheck.clearPlus && shoutoutCheck.clear && side.rank))
+					continue;
+
+				let roles = { clear: null, clearPlus: null };
+				guildRoles.forEach((role) => {
+					if (role.name === rankName(side.name, '', false, false)) {
+						roles.clear = role;
+					} else if (role.name === rankName(side.name, '', false, true)) {
+						roles.clearPlus = role;
+					}
+				});
+
+				if (!roles.clear || !roles.clearPlus) {
+					// return {
+					// 	success: true,
+					// 	error: `Error finding roles in CSR server. Please screenshot this message and send to a mod to allow them to do it on the site's behalf. Player ${locals.player.name} requires shoutouts for ${rankName(tier.name, side.name, tier.appendSideName, false)}${shoutoutCheck.clearPlus ? ` ${rankName(tier.name, side.name, tier.appendSideName, true)}` : ''}`
+					// };
+					continue;
+				}
+
+				try {
+					let content = '';
+					try {
+						content = shoutoutMessage(locals.player.name, side.rank, shoutoutCheck, roles, false);
+					} catch (error) {
+						console.error(error);
+						return {
+							success: true,
+							error: 'Unable to find suitable roles for shoutout(s): ' + side.name
+						};
+					}
+					const post = await rest.post(Routes.channelMessages(env.DISCORD_SHOUTOUT_CHANNEL_ID), {
+						body: {
+							content
+						}
+					});
+
+					content = shoutoutMessage(locals.player.name, tier.rank, shoutoutCheck, roles, true);
+
+					await rest.patch(Routes.channelMessage(env.DISCORD_SHOUTOUT_CHANNEL_ID, post.id), {
+						body: {
+							content
+						}
+					});
+
+					// if (shoutoutCheck.clearPlus) {
+					// 	for (const role in roles) {
+					// 		try {
+					// 			await rest.put(
+					// 				Routes.guildMemberRole(
+					// 					env.DISCORD_SERVER_ID,
+					// 					locals.player.discordId,
+					// 					roles[role].id
+					// 				)
+					// 			);
+					// 		} catch (error) {
+					// 			console.error(error);
+					// 		}
+					// 	}
+					// } else {
+					// 	try {
+					// 		await rest.put(
+					// 			Routes.guildMemberRole(
+					// 				env.DISCORD_SERVER_ID,
+					// 				locals.player.discordId,
+					// 				roles.clear.id
+					// 			)
+					// 		);
+					// 	} catch (error) {
+					// 		console.error(error);
+					// 	}
+					// }
+				} catch (error) {
+					console.error(error);
+				}
+			} else if (side.shoutoutOnClear && side.clears >= side.modCount) {
+				updatedRanks.push({
+					playerId,
+					rankId: [side.id, 0],
+					clear: true,
+					clearPlus: true
+				});
+
+				let addedRole = true;
+				const frogRole = guildRoles.find((role) => role.name === `The Frog ${side.name}`);
+
+				if (frogRole) {
+					try {
+						await rest.put(
+							Routes.guildMemberRole(env.DISCORD_SERVER_ID, locals.player.discordId, frogRole.id)
+						);
+					} catch (error) {
+						addedRole = false;
+						console.error(error);
+					}
+				}
+
+				// await rest.post(Routes.channelMessages(env.DISCORD_MOD_CHANNEL_ID), {
+				// 	body: {
+				// 		content: `${locals.player.name} has cleared all mods in ${side.name} and needs a shoutout${!addedRole ? '. Failed to add role automatically' : ''}`
+				// 	}
+				// });
+			}
+
+			await sql`
+				INSERT INTO
+					player_roles
+				${sql(updatedRanks)}
+				ON CONFLICT (player_id, rank_id)
+				DO UPDATE
+				SET
+					clear = EXCLUDED.clear,
+					clear_plus = EXCLUDED.clear_plus
+			`;
+		}
 
 		return { success: true };
 	}
