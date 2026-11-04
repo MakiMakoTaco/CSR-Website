@@ -40,9 +40,9 @@
 					{/if}
 				</small>
 			{/if}
-			<small style="font-size: 16px;"
+			<!-- <small style="font-size: 16px;"
 				><a href="/mod-data/{mod.modDataId}" style="text-decoration: none;">data</a></small
-			>
+			> -->
 		</h1>
 		<div class="clears">
 			<a href="{id}/clears">view {data.clears} clears</a>
