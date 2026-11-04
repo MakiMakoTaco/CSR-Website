@@ -180,7 +180,7 @@
 			<a
 				href="/sides/{side.name}"
 				onclick={() => dlc.togglePopover()}
-				style="color: #{new TextEncoder().encode(side.colorPlus)};">{side.name}</a
+				style="color: #{side.colorPlus};">{side.name}</a
 			>
 		</li>
 	{/each}
@@ -197,7 +197,11 @@
 	<div class="side-container">
 		{#each data.sides.filter((side) => side.type === 'dlc' && side.archived) as side}
 			<li class="dropdown-items">
-				<a href="/sides/{side.name}" onclick={archived.togglePopover()}>{side.name}</a>
+				<a
+					href="/sides/{side.name}"
+					onclick={archived.togglePopover()}
+					style="color: #{side.colorPlus};">{side.name}</a
+				>
 			</li>
 		{/each}
 	</div>

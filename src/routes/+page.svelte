@@ -46,7 +46,9 @@
 				{#each data.sides as side}
 					{#if (side.type === 'catstare' || side.type === 'dlc') && !side.archived}
 						<tr>
-							<th scope="row"><a href="/sides/{side.name}">{side.name}</a></th>
+							<th scope="row"
+								><a href="/sides/{side.name}" style="color: #{side.colorPlus};">{side.name}</a></th
+							>
 							<td>{side.clearCount}</td>
 							<td>{side.uniquePlayers}</td>
 						</tr>
@@ -58,7 +60,9 @@
 				{#each data.sides as side}
 					{#if side.archived}
 						<tr>
-							<th scope="row"><a href="/sides/{side.name}">{side.name}</a></th>
+							<th scope="row"
+								><a href="/sides/{side.name}" style="color: #{side.colorPlus};">{side.name}</a></th
+							>
 							<td>{side.clearCount}</td>
 							<td>{side.uniquePlayers}</td>
 						</tr>
