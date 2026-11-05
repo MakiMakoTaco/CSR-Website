@@ -396,7 +396,7 @@
 				justify-items: center;
 
 				input {
-					font-size: large;
+					font-size: 24px;
 				}
 			}
 		}
