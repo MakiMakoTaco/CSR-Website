@@ -11,8 +11,8 @@
 		if (!menu) return;
 
 		requestAnimationFrame(() => {
-			menu.style.left = `${anchor.offsetLeft + anchor.offsetWidth / 2 - menu.offsetWidth / 2}px`;
-			menu.style.top = `${anchor.offsetTop + anchor.offsetHeight + 15}px`;
+			menu.style.left = `${anchor.offsetLeft + (anchor.offsetWidth - menu.clientWidth + menu.clientLeft / 2) / 2}px`;
+			menu.style.top = `${anchor.offsetTop + anchor.offsetHeight + anchor.clientHeight - menu.clientTop}px`;
 		});
 	}
 
@@ -75,31 +75,11 @@
 		</li>
 		{#if data.sides.filter((side) => side.type === 'dlc' && side.archived).length > 0}
 			<li>
-				<button
-					onmouseenter={() => {
-						postitionDropdown('dlc');
-						dlc.showPopover();
-					}}
-					onmouseleave={() => {
-						if (event.relatedTarget !== dlc) {
-							dlc.hidePopover();
-						}
-					}}>Active DLC</button
-				>
+				<button class="dlc" popovertarget="dlc">Active DLC</button>
 			</li>
 		{/if}
 		<li>
-			<button
-				onmouseenter={() => {
-					postitionDropdown('archived');
-					archived.showPopover();
-				}}
-				onmouseleave={() => {
-					if (event.relatedTarget !== archived) {
-						archived.hidePopover();
-					}
-				}}>Archived</button
-			>
+			<button class="archived" popovertarget="archived">Archived</button>
 		</li>
 	</ul>
 	<ul class="nav-center">
@@ -167,40 +147,26 @@
 	</div>
 </div>
 
-<div
-	popover
-	id="dlc"
-	class="dropdown-menu"
-	role="menu"
-	tabindex="0"
-	onmouseleave={() => dlc.hidePopover()}
->
+<div popover id="dlc" class="dlc-dropdown" role="menu" tabindex="0">
 	{#each data.sides.filter((side) => side.type === 'dlc' && !side.archived) as side}
 		<li class="dropdown-items">
 			<a
 				href="/sides/{side.name}"
 				onclick={() => dlc.togglePopover()}
-				style="color: #{side.colorPlus};">{side.name}</a
+				style="--hover-color: #{side.colorPlus}; color: #{side.color};">{side.name}</a
 			>
 		</li>
 	{/each}
 </div>
 
-<div
-	popover
-	id="archived"
-	class="dropdown-menu"
-	role="menu"
-	tabindex="0"
-	onmouseleave={() => archived.hidePopover()}
->
+<div popover id="archived" class="archived-dropdown" role="menu" tabindex="0">
 	<div class="side-container">
 		{#each data.sides.filter((side) => side.type === 'dlc' && side.archived) as side}
 			<li class="dropdown-items">
 				<a
 					href="/sides/{side.name}"
 					onclick={archived.togglePopover()}
-					style="color: #{side.colorPlus};">{side.name}</a
+					style="--hover-color: #{side.colorPlus}; color: #{side.color};">{side.name}</a
 				>
 			</li>
 		{/each}
@@ -365,6 +331,53 @@
 {@render children()}
 
 <style>
+	button {
+		background: none;
+		border: none;
+		padding: 0;
+		cursor: pointer;
+		color: blueviolet;
+		font-size: medium;
+		font-weight: 400;
+	}
+
+	.dlc {
+		anchor-name: --dlc;
+	}
+
+	.archived {
+		anchor-name: --archived;
+	}
+
+	.dlc-dropdown {
+		position-anchor: --dlc;
+	}
+
+	.archived-dropdown {
+		position-anchor: --archived;
+	}
+
+	.dlc-dropdown,
+	.archived-dropdown {
+		inset: auto;
+		position: fixed;
+		top: anchor(bottom);
+		justify-self: anchor-center;
+
+		border-color: violet;
+		border-radius: 20px;
+
+		a:hover {
+			--hover-color: plum;
+			color: var(--hover-color) !important;
+		}
+
+		li {
+			padding: 0.3rem;
+			text-align: center;
+		}
+	}
+
 	.sidebar {
 		display: none;
 	}
@@ -421,7 +434,7 @@
 			transition: inset 300ms;
 		}
 
-		&:has(a:hover)::after {
+		&:has(a:hover, button:hover)::after {
 			top: anchor(top);
 			left: anchor(left);
 			right: anchor(right);
@@ -439,15 +452,16 @@
 		li {
 			list-style: none;
 
-			> a:focus-visible,
-			> a:hover {
+			&:hover {
 				anchor-name: --hovered-link;
 			}
 		}
 
-		a {
+		a,
+		button {
 			display: block;
 			padding: 1rem;
+			font-family: Arial, Helvetica, sans-serif;
 		}
 	}
 

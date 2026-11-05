@@ -5,6 +5,7 @@ export async function getSidesWithStats(sql) {
 			s.name,
 			s.type,
 			s.archived,
+			s.color,
 			s.color_plus,
 			COUNT(pp.player_id)::int AS clear_count,
 			COUNT(DISTINCT pp.player_id)::int AS unique_players

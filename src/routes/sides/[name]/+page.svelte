@@ -99,9 +99,6 @@
 					{#each tier.mods as mod}
 						<div class="mod-info">
 							<div>
-								{#if mod.cleared}
-									<span style="color: green;">Cleared!</span>
-								{/if}
 								<a
 									id="mod"
 									href="/mods/{mod.id}"
@@ -118,6 +115,10 @@
 									>
 								{/if}
 							</div>
+
+							{#if mod.cleared}
+								<span class="cleared" style="color: green;">Cleared!</span>
+							{/if}
 						</div>
 					{/each}
 				{/each}
@@ -174,6 +175,10 @@
 		gap: 2px;
 		border: 2px solid pink;
 		width: 80vw;
+	}
+
+	.cleared {
+		justify-self: end;
 	}
 
 	.tier-name {
