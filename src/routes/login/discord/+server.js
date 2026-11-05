@@ -7,11 +7,11 @@ export async function GET({ cookies }) {
 	const url = discord.createAuthorizationURL(state, null, scopes);
 
 	cookies.set('discord_oauth_state', state, {
-		path: '/',
+		path: '/login/discord/callback',
 		httpOnly: true,
 		maxAge: 60 * 10,
 		sameSite: 'lax',
-		secure: false
+		secure: true
 	});
 
 	return new Response(null, {
