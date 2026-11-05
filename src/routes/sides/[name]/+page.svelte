@@ -40,20 +40,20 @@
 		Loading side data...
 	{:then side}
 		{#if side}
+			<nav>
+				<button onclick={() => (location = '#')}><h3>{side.name}</h3></button>
+				{#await side.tiers then tiers}
+					{#each tiers as tier}
+						<button
+							style="color: #{tier.color};"
+							onclick={() => {
+								scroll(tier.name);
+							}}>{tier.name}</button
+						>
+					{/each}
+				{/await}
+			</nav>
 			<div class="content">
-				<nav>
-					<button onclick={() => (location = '#')}><h3>{side.name}</h3></button>
-					{#await side.tiers then tiers}
-						{#each tiers as tier}
-							<button
-								style="color: #{tier.color};"
-								onclick={() => {
-									scroll(tier.name);
-								}}>{tier.name}</button
-							>
-						{/each}
-					{/await}
-				</nav>
 				<h1 style="color: #{side.color ?? 'ffffff'};">
 					<div style="text-align: center;">{side.name}</div>
 					<div style="text-align: center;">
@@ -74,53 +74,61 @@
 					</div>
 				</h1>
 				{#each side.tiers as tier}
-					<div id={tier.name} class="tier-name">
-						{#if side.showTierNames}
-							<h2 style="color: #{tier.colorPlus};">
-								{tier.name}{#if data.player}:
-									<small
-										>{tier.mods.filter((mod) => mod.cleared).length ?? 0}/{tier.mods.filter(
-											(mod) => !mod.isChild
-										).length}</small
-									>
-								{/if}
+					<div class="tier" style="--tier-color: #{tier.colorPlus};">
+						<div id={tier.name} class="tier-name">
+							{#if side.showTierNames}
+								<h2 style="color: #{tier.colorPlus};">
+									{tier.name}{#if data.player}:
+										<small
+											>{tier.mods.filter((mod) => mod.cleared).length ?? 0}/{tier.mods.filter(
+												(mod) => !mod.isChild
+											).length}</small
+										>
+									{/if}
 
-								{#if tier.clears && tier.clears.length >= tier.clearsForRank}
-									<small>(role achieved!)</small>
-								{:else}
-									<small
-										>({tier.clearsForRank}
-										needed for role)</small
-									>
-								{/if}
-							</h2>
-						{/if}
-					</div>
-					{#each tier.mods as mod}
-						<div class="mod-info">
-							<div>
-								<a
-									id="mod"
-									href="/mods/{mod.id}"
-									style="text-decoration: none; color: #{tier.color ?? 'ffffff'};">{mod.name}</a
-								>
-								{#if mod.notes}
-									<sup
-										id="note-tag"
-										onmouseenter={() => {
-											note.textContent = mod.notes;
-											note.showPopover();
-										}}
-										onmouseleave={() => note.hidePopover()}>notes</sup
-									>
-								{/if}
-							</div>
-
-							{#if mod.cleared}
-								<span class="cleared" style="color: green;">Cleared!</span>
+									{#if tier.clears && tier.clears.length >= tier.clearsForRank}
+										<small>(role achieved!)</small>
+									{:else}
+										<small
+											>({tier.clearsForRank}
+											needed for role)</small
+										>
+									{/if}
+								</h2>
 							{/if}
 						</div>
-					{/each}
+						<div class="mods">
+							{#each tier.mods as mod}
+								<div class="mod-info">
+									<div>
+										<a
+											id="mod"
+											href="/mods/{mod.id}"
+											style="text-decoration: none; color: #{tier.color ?? 'ffffff'};">{mod.name}</a
+										>
+										{#if mod.notes}
+											<sup
+												id="note-tag"
+												onmouseenter={() => {
+													note.textContent = mod.notes;
+													note.showPopover();
+												}}
+												onmouseleave={() => note.hidePopover()}>notes</sup
+											>
+										{/if}
+									</div>
+
+									{#if mod.download}
+										<span class="download"><a href={mod.download}>Download</a></span>
+									{/if}
+
+									{#if mod.cleared}
+										<span class="cleared" style="color: green;">Cleared!</span>
+									{/if}
+								</div>
+							{/each}
+						</div>
+					</div>
 				{/each}
 			</div>
 		{:else}
@@ -133,6 +141,7 @@
 
 <style>
 	nav {
+		right: 1rem;
 		display: grid;
 		position: fixed;
 		padding-right: 1rem;
@@ -172,13 +181,14 @@
 
 	.content {
 		display: grid;
-		gap: 2px;
-		border: 2px solid pink;
+		gap: 1rem;
 		width: 80vw;
 	}
 
-	.cleared {
-		justify-self: end;
+	.tier {
+		margin: 10px;
+		border: 1px solid var(--tier-color);
+		border-radius: 1rem;
 	}
 
 	.tier-name {
@@ -188,9 +198,28 @@
 	}
 
 	.mod-info {
+		padding: 0.5rem;
 		display: grid;
 		grid-auto-flow: column;
-		margin: 5px 10px;
+		grid-template-columns: repeat(3, 1fr);
+
+		border: 1px solid grey;
+		border-left: 0;
+		border-right: 0;
+		border-bottom: 0;
+
+		.download {
+			justify-self: center;
+
+			a {
+				color: var(--tier-color);
+				text-decoration: none;
+			}
+		}
+	}
+
+	.cleared {
+		justify-self: end;
 	}
 
 	#note-tag:hover {

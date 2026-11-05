@@ -55,6 +55,7 @@ export async function getSideByName(sql, name, playerId = null, shorthand = fals
 					json_build_object(
 						'id', m.id,
 						'name', m.name,
+						'download', d.download,
 						'notes', m.notes
 						${playerId ? sql`, 'cleared', pp.cleared` : sql``}
 						${shorthand ? sql`, 'shorthand', md.shorthand` : sql``}
@@ -75,6 +76,22 @@ export async function getSideByName(sql, name, playerId = null, shorthand = fals
 				ON md.id = m.mod_data_id`
 					: sql``
 			}
+			LEFT JOIN LATERAL (
+				SELECT
+					CASE
+						WHEN everest_url IS NULL
+						THEN
+							manual_url
+						ELSE
+							everest_url
+						END AS download
+				FROM mod_data md
+				JOIN download_links dl
+					ON dl.mod_data_id = md.id
+				WHERE md.id = m.mod_data_id				
+				ORDER BY dl.order_index
+				LIMIT 1
+			) d ON true
 			WHERE m.tier_id = t.id
 		) m
 		WHERE s.name = ${name}
