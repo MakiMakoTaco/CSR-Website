@@ -55,6 +55,7 @@ export async function getSideByName(sql, name, playerId = null, shorthand = fals
 					json_build_object(
 						'id', m.id,
 						'name', m.name,
+						'clears', c.clears,
 						'download', d.download,
 						'notes', m.notes
 						${playerId ? sql`, 'cleared', pp.cleared` : sql``}
@@ -76,6 +77,12 @@ export async function getSideByName(sql, name, playerId = null, shorthand = fals
 				ON md.id = m.mod_data_id`
 					: sql``
 			}
+			LEFT JOIN LATERAL (
+				SELECT
+					COUNT(pp.id) AS clears
+				FROM player_progress pp
+				WHERE pp.mod_id = m.id
+			) c ON true
 			LEFT JOIN LATERAL (
 				SELECT
 					CASE

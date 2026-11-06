@@ -124,9 +124,12 @@
 											<span class="download"><a href={mod.download}>Download</a></span>
 										{/if}
 
-										{#if mod.cleared}
-											<span class="cleared" style="color: green;">Cleared!</span>
-										{/if}
+										<div class="clears">
+											<span class="clear-count">{mod.clears}</span>
+											{#if mod.cleared}
+												<span class="cleared">Cleared!</span>
+											{/if}
+										</div>
 									</div>
 								{/each}
 							</div>
@@ -164,9 +167,12 @@
 											<span class="download"><a href={mod.download}>Download</a></span>
 										{/if}
 
-										{#if mod.cleared}
-											<span class="cleared" style="color: green;">Cleared!</span>
-										{/if}
+										<div class="clears">
+											<span class="clear-count">1</span>
+											{#if mod.cleared}
+												<span class="cleared">Cleared!</span>
+											{/if}
+										</div>
 									</div>
 								{/each}
 							</div>
@@ -263,6 +269,7 @@
 
 		.download {
 			justify-self: center;
+			grid-column: 2;
 
 			a {
 				color: var(--tier-color);
@@ -273,9 +280,22 @@
 				}
 			}
 		}
+
+		.clears {
+			grid-column: 3;
+
+			display: grid;
+			grid-template-columns: repeat(2, 1fr);
+		}
+	}
+
+	.clear-count {
+		justify-self: end;
 	}
 
 	.cleared {
+		color: #3bb143;
+		grid-column: 2;
 		justify-self: end;
 	}
 
