@@ -8,7 +8,7 @@
 		const navbar = document.getElementById('navbar');
 		const tier = document.getElementById(id);
 
-		scrollTo({ top: tier.offsetTop - navbar.clientHeight });
+		scrollTo({ top: tier.offsetTop - navbar.offsetHeight - 1 });
 	}
 
 	onMount(() => {
@@ -139,6 +139,7 @@
 					<div class="side" style="--side-color: #{side.color};">
 						{#each side.tiers as tier}
 							<div
+								id={tier.name}
 								class="mod-container"
 								style="--tier-color: #{tier.color}; --hover-color: #{tier.colorPlus};"
 							>
@@ -168,7 +169,7 @@
 										{/if}
 
 										<div class="clears">
-											<span class="clear-count">1</span>
+											<span class="clear-count">{mod.clears}</span>
 											{#if mod.cleared}
 												<span class="cleared">Cleared!</span>
 											{/if}
