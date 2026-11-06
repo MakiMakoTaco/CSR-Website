@@ -73,63 +73,106 @@
 						{/if}
 					</div>
 				</h1>
-				{#each side.tiers as tier}
-					<div class="tier" style="--tier-color: #{tier.colorPlus};">
-						<div id={tier.name} class="tier-name">
-							{#if side.showTierNames}
-								<h2 style="color: #{tier.colorPlus};">
-									{tier.name}{#if data.player}:
-										<small
-											>{tier.mods.filter((mod) => mod.cleared).length ?? 0}/{tier.mods.filter(
-												(mod) => !mod.isChild
-											).length}</small
-										>
-									{/if}
-
-									{#if tier.clears && tier.clears.length >= tier.clearsForRank}
-										<small>(role achieved!)</small>
-									{:else}
-										<small
-											>({tier.clearsForRank}
-											needed for role)</small
-										>
-									{/if}
-								</h2>
-							{/if}
-						</div>
-						<div class="mods">
-							{#each tier.mods as mod}
-								<div class="mod-info">
-									<div>
-										<a
-											id="mod"
-											href="/mods/{mod.id}"
-											style="text-decoration: none; color: #{tier.color ?? 'ffffff'};">{mod.name}</a
-										>
-										{#if mod.notes}
-											<sup
-												id="note-tag"
-												onmouseenter={() => {
-													note.textContent = mod.notes;
-													note.showPopover();
-												}}
-												onmouseleave={() => note.hidePopover()}>notes</sup
+				{#if side.showTierNames}
+					{#each side.tiers as tier}
+						<div class="tier" style="--tier-color: #{tier.color}; --hover-color: #{tier.colorPlus}">
+							<div id={tier.name} class="tier-name">
+								{#if side.showTierNames}
+									<h2 style="color: #{tier.color};">
+										{tier.name}{#if data.player}:
+											<small
+												>{tier.mods.filter((mod) => mod.cleared).length ?? 0}/{tier.mods.filter(
+													(mod) => !mod.isChild
+												).length}</small
 											>
 										{/if}
+
+										{#if tier.clears && tier.clears.length >= tier.clearsForRank}
+											<small>(role achieved!)</small>
+										{:else}
+											<small
+												>({tier.clearsForRank}
+												needed for role)</small
+											>
+										{/if}
+									</h2>
+								{/if}
+							</div>
+							<div class="mods">
+								{#each tier.mods as mod}
+									<div class="mod-info">
+										<div>
+											<a
+												id="mod"
+												href="/mods/{mod.id}"
+												style="text-decoration: none; color: #{tier.color ?? 'ffffff'};"
+												>{mod.name}</a
+											>
+											{#if mod.notes}
+												<sup
+													id="note-tag"
+													onmouseenter={() => {
+														note.textContent = mod.notes;
+														note.showPopover();
+													}}
+													onmouseleave={() => note.hidePopover()}>notes</sup
+												>
+											{/if}
+										</div>
+
+										{#if mod.download}
+											<span class="download"><a href={mod.download}>Download</a></span>
+										{/if}
+
+										{#if mod.cleared}
+											<span class="cleared" style="color: green;">Cleared!</span>
+										{/if}
 									</div>
-
-									{#if mod.download}
-										<span class="download"><a href={mod.download}>Download</a></span>
-									{/if}
-
-									{#if mod.cleared}
-										<span class="cleared" style="color: green;">Cleared!</span>
-									{/if}
-								</div>
-							{/each}
+								{/each}
+							</div>
 						</div>
+					{/each}
+				{:else}
+					<div class="side" style="--side-color: #{side.color};">
+						{#each side.tiers as tier}
+							<div
+								class="mod-container"
+								style="--tier-color: #{tier.color}; --hover-color: #{tier.colorPlus};"
+							>
+								{#each tier.mods as mod}
+									<div class="mod-info">
+										<div>
+											<a
+												id="mod"
+												href="/mods/{mod.id}"
+												style="text-decoration: none; color: #{tier.color ?? 'ffffff'};"
+												>{mod.name}</a
+											>
+											{#if mod.notes}
+												<sup
+													id="note-tag"
+													onmouseenter={() => {
+														note.textContent = mod.notes;
+														note.showPopover();
+													}}
+													onmouseleave={() => note.hidePopover()}>notes</sup
+												>
+											{/if}
+										</div>
+
+										{#if mod.download}
+											<span class="download"><a href={mod.download}>Download</a></span>
+										{/if}
+
+										{#if mod.cleared}
+											<span class="cleared" style="color: green;">Cleared!</span>
+										{/if}
+									</div>
+								{/each}
+							</div>
+						{/each}
 					</div>
-				{/each}
+				{/if}
 			</div>
 		{:else}
 			No side found
@@ -185,6 +228,16 @@
 		width: 80vw;
 	}
 
+	.side {
+		margin: 10px;
+		border: 1px solid var(--side-color);
+		border-radius: 1rem;
+
+		.mod-container:first-child .mod-info:first-child {
+			border-top: 0;
+		}
+	}
+
 	.tier {
 		margin: 10px;
 		border: 1px solid var(--tier-color);
@@ -214,6 +267,10 @@
 			a {
 				color: var(--tier-color);
 				text-decoration: none;
+
+				&:hover {
+					color: var(--hover-color);
+				}
 			}
 		}
 	}
