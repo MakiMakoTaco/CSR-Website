@@ -18,7 +18,7 @@
 	// Non-state variables
 	let selectedModIndex = 0; // Know which mod the player is hovering over when using keyboard input
 
-	let filteredMods = $derived.by(async () => {
+	let filteredMods = $derived.by(() => {
 		if (!sides || sides.length <= 0) return [];
 
 		const filter = searchFilter.toLowerCase().trim().split(' ');
@@ -94,6 +94,16 @@
 		return filtered;
 	});
 
+	let failedMod = $derived.by(() => {
+		if (!form?.error || !sides || sides.length <= 0) return;
+
+		const modId = form.modId;
+		const mods = sides.flatMap((side) => side.tiers.flatMap((tier) => tier.mods));
+		const matchedMod = mods.find((mod) => mod.id == modId);
+
+		return matchedMod;
+	});
+
 	$effect(async () => {
 		const promise = await data.sides;
 		if (!promise) return [];
@@ -109,14 +119,15 @@
 </svelte:head>
 
 <main>
-	{#if form?.error}
-		<p class="error">
-			{@html form.error}
-		</p>
-	{/if}
 	{#await sides}
 		Fetching mods...
 	{:then sides}
+		{#if form?.error}
+			<p class="error">
+				{failedMod?.fullName}
+				{@html form.error}
+			</p>
+		{/if}
 		<div class="mod-search-container">
 			<div class="mod-search-border">
 				<div class="search-bar">
@@ -371,9 +382,6 @@
 			place-self: center;
 			display: grid;
 			gap: 1rem;
-
-			/* border: 0.5rem solid;
-			border-radius: 5px; */
 
 			> * {
 				padding: 0 10px;

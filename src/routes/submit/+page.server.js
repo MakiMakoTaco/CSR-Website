@@ -71,11 +71,17 @@ export const actions = {
 			if (dbKey === 'proof') {
 				if (value) {
 					try {
-						const url = new URL(value);
+						const urls = [];
+						value
+							.split(' ')
+							.map((link) => link.trim())
+							.forEach((url) => {
+								urls.push(new URL(value).href);
+							});
 
-						value = url.href;
+						value = urls.join(' ');
 					} catch (error) {
-						return fail(400, { error: `${modId} does not have a valid URL as proof` });
+						return fail(400, { modId, error: 'does not have a valid URL as proof' });
 					}
 				}
 			}
@@ -99,7 +105,7 @@ export const actions = {
 				mod.images = formData.getAll(`${modId}-image`);
 
 				if (mod.images.length > 4) {
-					return fail(400, { error: `${modId} has too many images` });
+					return fail(400, { modId, error: 'has too many images' });
 				}
 
 				for (const image of mod.images) {
@@ -407,7 +413,7 @@ export const actions = {
 				// if (!roles.clear || !roles.clearPlus) {
 				// 	// return {
 				// 	// 	success: true,
-				// 	// 	error: `Error finding roles in CSR server. Please screenshot this message and send to a mod to allow them to do it on the site's behalf. Player ${locals.player.name} requires shoutouts for ${rankName(tier.name, side.name, tier.appendSideName, false)}${shoutoutCheck.clearPlus ? ` ${rankName(tier.name, side.name, tier.appendSideName, true)}` : ''}`
+				// 	// 	error: `Error finding roles in CSR server, please contact a mod to do them manually'
 				// 	// };
 				// 	continue;
 				// }
@@ -420,7 +426,7 @@ export const actions = {
 				// 		console.error(error);
 				// 		return {
 				// 			success: true,
-				// 			error: 'Unable to find suitable roles for shoutout(s): ' + side.name
+				// 			error: 'Unable to find suitable roles for shoutout(s): ' + side.name + ', please contact a mod to do them manually'
 				// 		};
 				// 	}
 				// 	const post = await rest.post(Routes.channelMessages(env.DISCORD_SHOUTOUT_CHANNEL_ID), {

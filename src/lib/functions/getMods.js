@@ -204,7 +204,7 @@ export async function getClearedPlayers(sql, modId) {
 		WHERE
 			mod_id = ${modId}
 			AND cleared = true
-		ORDER BY player_id ASC
+		ORDER BY submitted_at ASC
 	`;
 
 	return clearedPlayers;

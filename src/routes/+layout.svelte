@@ -60,16 +60,19 @@
 <nav id="navbar" class="nav navbar">
 	<ul class="nav-left">
 		<li><a href="/">Home</a></li>
-		<li id="sides-dropdown">
-			<button popovertarget="sides-menu" class="sides-dropdown" tabindex="0" href="/">Sides</button>
-			<!-- <img
+		<li>
+			<button class="sides" popovertarget="sides">Sides</button>
+		</li>
+		<!-- <li id="sides-dropdown">
+			<button popovertarget="sides-menu" class="sides-dropdown" tabindex="0" href="/">Sides</button> -->
+		<!-- <img
 					id="side-cassette"
 					class="cassette"
 					alt="cassette tape"
 					onerror={() => (this.src = '/assets/navbar/cassettes/default.png')}
 					style="visibility: {page.url.pathname.startsWith('/sides') ? 'visible' : 'hidden'};"
 				/> -->
-		</li>
+		<!-- </li> -->
 		<li>
 			<a href="/sides/Catstare">Catstare</a>
 		</li>
@@ -117,7 +120,7 @@
 	</ul>
 </nav>
 
-<div popover id="sides-menu" class="sides-menu">
+<!-- <div popover id="sides-menu" class="sides-menu">
 	<img class="background" src="/assets/navbar/sides/card.png" alt="sides-background" />
 	<div class="content">
 		<div id="summary" class="summary">
@@ -145,6 +148,14 @@
 			</a>
 		{/each}
 	</div>
+</div> -->
+
+<div popover id="sides" class="sides-dropdown" role="menu" tabindex="0">
+	{#each data.sides.filter((side) => side.type === 'standard') as side}
+		<li class="dropdown-items">
+			<a href="/sides/{side.name}" onclick={() => sides.togglePopover()}>{side.name}</a>
+		</li>
+	{/each}
 </div>
 
 <div popover id="dlc" class="dlc-dropdown" role="menu" tabindex="0">
@@ -341,12 +352,20 @@
 		font-weight: 400;
 	}
 
+	.sides {
+		anchor-name: --sides;
+	}
+
 	.dlc {
 		anchor-name: --dlc;
 	}
 
 	.archived {
 		anchor-name: --archived;
+	}
+
+	.sides-dropdown {
+		position-anchor: --sides;
 	}
 
 	.dlc-dropdown {
@@ -357,6 +376,7 @@
 		position-anchor: --archived;
 	}
 
+	.sides-dropdown,
 	.dlc-dropdown,
 	.archived-dropdown {
 		inset: auto;
@@ -498,7 +518,7 @@
 		}
 	}
 
-	.sides-menu {
+	/* .sides-menu {
 		border-style: none;
 		position: fixed;
 
@@ -594,7 +614,7 @@
 			font-size: 20px;
 			font-weight: bold;
 		}
-	}
+	} */
 
 	.profile-pic-nav {
 		width: 50px;
