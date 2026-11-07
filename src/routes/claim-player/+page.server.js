@@ -43,7 +43,7 @@ export const actions = {
 
 		await sql`
 			INSERT INTO
-				player_claim
+				player_claims
 			${sql(playerClaim)}
 		`;
 

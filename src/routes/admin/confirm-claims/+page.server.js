@@ -12,7 +12,7 @@ export async function load({ locals }) {
       p2.about,
       p2.avatar,
       p2.name_color
-    FROM player_claim pc
+    FROM player_claims pc
     JOIN players p1
       ON p1.id = pc.requested_player_id
     JOIN players p2
