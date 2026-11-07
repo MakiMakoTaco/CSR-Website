@@ -114,7 +114,7 @@ export async function GET(event) {
 	return new Response(null, {
 		status: 302,
 		headers: {
-			Location: '/profile'
+			Location: '/new-player'
 		}
 	});
 }

@@ -104,9 +104,6 @@
 					<a href="/admin">Admin Panel</a>
 				</li>
 			{/if}
-			{#if !data.player.claimed}
-				<li><a href="/claim-player">Claim Player</a></li>
-			{/if}
 			<li>
 				<a href="/profile" style="color: #{data.player.nameColor};">
 					<img src={data.player.avatar} alt="profile" class="profile-pic-nav" /><span

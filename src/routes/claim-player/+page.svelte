@@ -18,42 +18,48 @@
 	let selectedPlayer = $state({ name: '', id: 0 });
 </script>
 
-{#if form?.success}
-	{redirect(302, '/profile')}
-{/if}
-
-<br />
-
-<input
-	bind:value={searchFilter}
-	oninput={() => {
-		filterPlayers(searchFilter);
-	}}
-/>
-
-<div>
-	{#each players as player}
-		<p>
-			{player.name} - ID: {player.id}
-			<button
-				onclick={() => {
-					selectedPlayer = player;
-					playerConfirm.showModal();
-				}}>Claim</button
-			>
-		</p>
-	{/each}
-</div>
-
-<form method="POST" action="?/claim">
-	<input type="hidden" name="selected_player_id" bind:value={selectedPlayer.id} />
-	<dialog id="playerConfirm" closedby="any">
-		<div>
-			Are you sure you want to claim the player {selectedPlayer.name} with ID of {selectedPlayer.id}
+<main>
+	{#if form?.success}
+		<div class="success-message">
+			<p>Player claim has been sent</p>
+			<!-- , feel free to ping a mod with a screenshot of this page</p> -->
+			<!-- <div class="player-info">
+				Player with the discord ID of {data.player.discordId} wants to claim {selectedPlayer?.name}
+			</div> -->
 		</div>
-		<button>Confirm</button>
-	</dialog>
-</form>
+	{:else}
+		<input
+			bind:value={searchFilter}
+			oninput={() => {
+				filterPlayers(searchFilter);
+			}}
+		/>
+
+		<div>
+			{#each players as player}
+				<p>
+					{player.name} - ID: {player.id}
+					<button
+						onclick={() => {
+							selectedPlayer = player;
+							playerConfirm.showModal();
+						}}>Claim</button
+					>
+				</p>
+			{/each}
+		</div>
+
+		<form method="POST" action="?/claim">
+			<input type="hidden" name="selected_player_id" bind:value={selectedPlayer.id} />
+			<dialog id="playerConfirm" closedby="any">
+				<div>
+					Are you sure you want to claim the player {selectedPlayer.name} with ID of {selectedPlayer.id}
+				</div>
+				<button>Confirm</button>
+			</dialog>
+		</form>
+	{/if}
+</main>
 
 <style>
 	dialog {

@@ -9,6 +9,10 @@ export async function load({ locals }) {
 		redirect(302, '/');
 	}
 
+	if (locals.player.claimed) {
+		redirect(302, '/profile');
+	}
+
 	const sql = locals.sql;
 
 	const playerList = await sql`
@@ -16,9 +20,9 @@ export async function load({ locals }) {
     FROM players
     WHERE
       claimed = false
-      AND id != ${locals.player.id}
-    ORDER BY id ASC
-      `;
+			AND id != ${locals.player.id}
+		ORDER BY id ASC
+  `;
 
 	return { playerList };
 }
@@ -35,46 +39,14 @@ export const actions = {
 		const playerId = locals.player.id;
 		const selectedPlayerId = (await event.request.formData()).get('selected_player_id');
 
-		await invalidateSession(sql, locals.session.id);
-		deleteSessionTokenCookie(event);
+		const playerClaim = { currentPlayerId: playerId, requestedPlayerId: selectedPlayerId };
 
-		try {
-			const player = (
-				await sql`
-          SELECT *
-          FROM players
-          WHERE id = ${playerId}
-        `
-			)[0];
+		await sql`
+			INSERT INTO
+				player_claim
+			${sql(playerClaim)}
+		`;
 
-			await sql`
-        DELETE FROM players
-        WHERE id = ${playerId}
-      `;
-
-			const updatedPlayerId = (
-				await sql`
-        UPDATE players
-        SET
-          discord_id = ${player.discordId},
-          about = ${player.about},
-          avatar = ${player.avatar},
-          name_color = ${player.nameColor},
-          claimed = true
-        WHERE id = ${selectedPlayerId}
-        RETURNING id
-      `
-			)[0].id;
-
-			const sessionToken = generateSessionToken();
-			const session = await createSession(sql, sessionToken, updatedPlayerId);
-
-			setSessionTokenCookie(event, sessionToken, session.expiresAt);
-
-			return { success: true };
-		} catch (error) {
-			console.error(error);
-			fail(412);
-		}
+		return { success: true, requestedPlayer: selectedPlayerId };
 	}
 };
