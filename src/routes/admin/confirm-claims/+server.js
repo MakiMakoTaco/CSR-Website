@@ -12,6 +12,8 @@ export async function POST({ request, locals }) {
 		error(400, { error: 'Player IDs are the same' });
 	}
 
+	console.log('Updating player');
+
 	await sql`
     UPDATE
       players
@@ -24,19 +26,24 @@ export async function POST({ request, locals }) {
     WHERE id = ${requested.id}
   `;
 
+	console.log('Updating session');
+
 	await sql`
     UPDATE
       session
     SET player_id = ${requested.id}
     WHERE player_id = ${current.id}
   `;
-	847620265784770581;
+
+	console.log('Deleting old player');
 
 	await sql`
     DELETE FROM
       players
     WHERE id = ${current.id}
   `;
+
+	console.log('Successful, returning');
 
 	return Response.json({ success: true });
 }

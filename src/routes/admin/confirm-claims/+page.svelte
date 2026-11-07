@@ -1,7 +1,8 @@
 <script>
 	let { data } = $props();
 
-	let pending = $state();
+	let pending = $state(false);
+	let confirmedPlayer = $state();
 </script>
 
 {#if !data.pendingPlayers || data.pendingPlayers.length < 1}
@@ -16,9 +17,10 @@
 		</div>
 
 		<button
-			disabled={pending}
+			disabled={confirmedPlayer?.current.discordId === player.current.discordId}
 			onclick={async () => {
 				try {
+					confirmedPlayer = player;
 					pending = true;
 
 					const response = await fetch('/admin/confirm-claims', {

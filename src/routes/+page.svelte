@@ -14,12 +14,11 @@
 <main>
 	<div class="title">
 		<h1>Welcome to the Celeste Skill Rating!</h1>
-		<p>
-			This site is still being tested, if you want to actually submit, please continue using the <a
-				href="https://docs.google.com/spreadsheets/d/1XTAL3kgpX0bG6SBfznPX8z7Qdb7lGnQRuxeUfPZMFoU/edit?usp=sharing"
-				>Google sheet</a
-			> for now
-		</p>
+		<h3>
+			The site's now live! There are so many things I've either forgotten about or planning to work
+			on so. Please feel free to contact hyrulemaki or a moderator in the Discord server about any
+			questions or feedback
+		</h3>
 	</div>
 	<div class="sides-info">
 		<table class="sides-info">
@@ -114,6 +113,68 @@
 				There's something for every player in CSR!
 			</p>
 		</div>
+		<div class="questions">
+			<div class="submissions">
+				<h1>Submissions</h1>
+				<p>
+					To submit your clears, submit the proof of the map(s) to the google form. Journal
+					screenshots (uploaded to websites like imgur or catbox.moe) are most common and always
+					accepted.
+				</p>
+				<p>
+					If your submission is not formatted correctly, or if it is a submission for the DLC tabs,
+					it will have to be manually reviewed by a moderator of the sheet, which can take some
+					time.
+				</p>
+				<p>
+					Note, resubmitting will likely not make this faster. Be sure to format your submissions
+					properly, and be patient!
+				</p>
+				<p>
+					Common formatting mistakes include spelling mistakes of the map in question, and inputting
+					a tier without its letter, like "Gold" instead of "Gold A", "Bronze SuperSide" instead of
+					"Bronze Super". (The quotes are just for separation here and should not be used in
+					submissions.)
+				</p>
+				<p>
+					Additionally, right now, server roles are not automated; mods will apply them as they come
+					up. If one ends up being missed after some time, ping a mod!
+				</p>
+				<p>
+					If you are totally new to Celeste, you can download the mod loader here:
+					https://everestapi.github.io/
+				</p>
+				<p>
+					The Shrimp sheet is a collection of maps that did not make it onto the main CSR sheet.
+					Check it out here:
+					https://docs.google.com/spreadsheets/d/1ljc0gVIURrKP3qtStGnrcuBCSOE5P_R8jZZz7VQwN8U
+				</p>
+			</div>
+			<div class="start">
+				<h1>Common Questions</h1>
+				<h4>Q. Where should I start?</h4>
+				<p>
+					A. The Super-Side is a collection of 250 of the most polished mods from A-Side to E-Side;
+					I highly recommend starting out there!
+				</p>
+				<h4>Q. What do the other sides mean?</h4>
+				<p>
+					A. The "sides" of the sheet correspond to the year those mods were released in. B-Side for
+					2022, C-Side for 2023, and so on. DLCs are from the current year, and the Catstare sheet
+					contains the GM+ maps.
+				</p>
+				<h4>Q. What counts as a clear?</h4>
+				<p>
+					A1. A clear is a clear, within reason. You can use savestates or toy with variants to
+					practice a room, but you must eventually clear all rooms, front to back, properly. Clears
+					of any date are also accepted!
+				</p>
+				<h4>
+					A2. You do not have to full clear maps unless it is listed as mandatory. (You still should
+					try, though!)
+				</h4>
+			</div>
+		</div>
 	</div>
 </main>
 
@@ -205,5 +266,25 @@
 		.player {
 			background-color: grey;
 		}
+	}
+
+	/* .questions {
+		display: grid;
+		gap: 1rem;
+		grid-template-columns: repeat(2, 50%);
+
+		* {
+			text-align: left;
+		}
+	} */
+
+	.submissions {
+		margin: auto;
+		max-width: 75%;
+	}
+	.start {
+		margin: auto;
+		max-width: 75%;
+		text-align: left;
 	}
 </style>

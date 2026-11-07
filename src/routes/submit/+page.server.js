@@ -309,78 +309,79 @@ export const actions = {
 				if (!shoutoutCheck.clear || (!shoutoutCheck.clearPlus && shoutoutCheck.clear && tier.rank))
 					continue;
 
-				// let roles = { clear: null, clearPlus: null };
-				// guildRoles.forEach((role) => {
-				// 	if (role.name === rankName(tier.name, side.name, tier.appendSideName, false)) {
-				// 		roles.clear = role;
-				// 	} else if (role.name === rankName(tier.name, side.name, tier.appendSideName, true)) {
-				// 		roles.clearPlus = role;
-				// 	}
-				// });
+				let roles = { clear: null, clearPlus: null };
+				guildRoles.forEach((role) => {
+					if (role.name === rankName(tier.name, side.name, tier.appendSideName, false)) {
+						roles.clear = role;
+					} else if (role.name === rankName(tier.name, side.name, tier.appendSideName, true)) {
+						roles.clearPlus = role;
+					}
+				});
 
-				// if (!roles.clear || !roles.clearPlus) {
-				// 	// return {
-				// 	// 	success: false,
-				// 	// 	error: `Error finding roles in CSR server. Please screenshot this message and send to a mod to allow them to do it on the site's behalf. Player ${locals.player.name} requires shoutouts for ${rankName(tier.name, side.name, tier.appendSideName, false)}${shoutoutCheck.clearPlus ? ` ${rankName(tier.name, side.name, tier.appendSideName, true)}` : ''}`
-				// 	// };
-				// 	continue;
-				// }
+				if (!roles.clear || !roles.clearPlus) {
+					// return {
+					// 	success: false,
+					// 	error: `Error finding roles in CSR server. Please screenshot this message and send to a mod to allow them to do it on the site's behalf. Player ${locals.player.name} requires shoutouts for ${rankName(tier.name, side.name, tier.appendSideName, false)}${shoutoutCheck.clearPlus ? ` ${rankName(tier.name, side.name, tier.appendSideName, true)}` : ''}`
+					// };
+					continue;
+				}
 
-				// try {
-				// 	let content = '';
-				// 	try {
-				// 		content = shoutoutMessage(locals.player.name, tier.rank, shoutoutCheck, roles, false);
-				// 	} catch (error) {
-				// 		console.error(error);
-				// 		return {
-				// 			success: true,
-				// 			error: 'Unable to find suitable roles for shoutout(s): ' + side.name
-				// 		};
-				// 	}
-				// 	const post = await rest.post(Routes.channelMessages(env.DISCORD_SHOUTOUT_CHANNEL_ID), {
-				// 		body: {
-				// 			content
-				// 		}
-				// 	});
+				try {
+					let content = '';
+					try {
+						content = shoutoutMessage(locals.player.name, tier.rank, shoutoutCheck, roles, false);
+					} catch (error) {
+						console.error(error);
+						// return {
+						// 	success: true,
+						// 	error: 'Unable to find suitable roles for shoutout(s): ' + side.name
+						// };
+						continue;
+					}
+					const post = await rest.post(Routes.channelMessages(env.DISCORD_SHOUTOUT_CHANNEL_ID), {
+						body: {
+							content
+						}
+					});
 
-				// 	content = shoutoutMessage(locals.player.name, tier.rank, shoutoutCheck, roles, true);
+					content = shoutoutMessage(locals.player.name, tier.rank, shoutoutCheck, roles, true);
 
-				// 	await rest.patch(Routes.channelMessage(env.DISCORD_SHOUTOUT_CHANNEL_ID, post.id), {
-				// 		body: {
-				// 			content
-				// 		}
-				// 	});
+					await rest.patch(Routes.channelMessage(env.DISCORD_SHOUTOUT_CHANNEL_ID, post.id), {
+						body: {
+							content
+						}
+					});
 
-				// if (shoutoutCheck.clearPlus) {
-				// 	for (const role in roles) {
-				// 		try {
-				// 			await rest.put(
-				// 				Routes.guildMemberRole(
-				// 					env.DISCORD_SERVER_ID,
-				// 					locals.player.discordId,
-				// 					roles[role].id
-				// 				)
-				// 			);
-				// 		} catch (error) {
-				// 			console.error(error);
-				// 		}
-				// 	}
-				// } else {
-				// 	try {
-				// 		await rest.put(
-				// 			Routes.guildMemberRole(
-				// 				env.DISCORD_SERVER_ID,
-				// 				locals.player.discordId,
-				// 				roles.clear.id
-				// 			)
-				// 		);
-				// 	} catch (error) {
-				// 		console.error(error);
-				// 	}
-				// }
-				// } catch (error) {
-				// 	console.error(error);
-				// }
+					if (shoutoutCheck.clearPlus) {
+						for (const role in roles) {
+							try {
+								await rest.put(
+									Routes.guildMemberRole(
+										env.DISCORD_SERVER_ID,
+										locals.player.discordId,
+										roles[role].id
+									)
+								);
+							} catch (error) {
+								console.error(error);
+							}
+						}
+					} else {
+						try {
+							await rest.put(
+								Routes.guildMemberRole(
+									env.DISCORD_SERVER_ID,
+									locals.player.discordId,
+									roles.clear.id
+								)
+							);
+						} catch (error) {
+							console.error(error);
+						}
+					}
+				} catch (error) {
+					console.error(error);
+				}
 			}
 
 			if (side.clearsForRank) {
@@ -401,78 +402,79 @@ export const actions = {
 				if (!shoutoutCheck.clear || (!shoutoutCheck.clearPlus && shoutoutCheck.clear && side.rank))
 					continue;
 
-				// let roles = { clear: null, clearPlus: null };
-				// guildRoles.forEach((role) => {
-				// 	if (role.name === rankName(side.name, '', false, false)) {
-				// 		roles.clear = role;
-				// 	} else if (role.name === rankName(side.name, '', false, true)) {
-				// 		roles.clearPlus = role;
-				// 	}
-				// });
+				let roles = { clear: null, clearPlus: null };
+				guildRoles.forEach((role) => {
+					if (role.name === rankName(side.name, '', false, false)) {
+						roles.clear = role;
+					} else if (role.name === rankName(side.name, '', false, true)) {
+						roles.clearPlus = role;
+					}
+				});
 
-				// if (!roles.clear || !roles.clearPlus) {
-				// 	// return {
-				// 	// 	success: true,
-				// 	// 	error: `Error finding roles in CSR server, please contact a mod to do them manually'
-				// 	// };
-				// 	continue;
-				// }
+				if (!roles.clear || !roles.clearPlus) {
+					// return {
+					// 	success: true,
+					// 	error: `Error finding roles in CSR server, please contact a mod to do them manually'
+					// };
+					continue;
+				}
 
-				// try {
-				// 	let content = '';
-				// 	try {
-				// 		content = shoutoutMessage(locals.player.name, side.rank, shoutoutCheck, roles, false);
-				// 	} catch (error) {
-				// 		console.error(error);
-				// 		return {
-				// 			success: true,
-				// 			error: 'Unable to find suitable roles for shoutout(s): ' + side.name + ', please contact a mod to do them manually'
-				// 		};
-				// 	}
-				// 	const post = await rest.post(Routes.channelMessages(env.DISCORD_SHOUTOUT_CHANNEL_ID), {
-				// 		body: {
-				// 			content
-				// 		}
-				// 	});
+				try {
+					let content = '';
+					try {
+						content = shoutoutMessage(locals.player.name, side.rank, shoutoutCheck, roles, false);
+					} catch (error) {
+						console.error(error);
+						// return {
+						// 	success: true,
+						// 	error: 'Unable to find suitable roles for shoutout(s): ' + side.name + ', please contact a mod to do them manually'
+						// };
+						continue;
+					}
+					const post = await rest.post(Routes.channelMessages(env.DISCORD_SHOUTOUT_CHANNEL_ID), {
+						body: {
+							content
+						}
+					});
 
-				// 	content = shoutoutMessage(locals.player.name, tier.rank, shoutoutCheck, roles, true);
+					content = shoutoutMessage(locals.player.name, tier.rank, shoutoutCheck, roles, true);
 
-				// 	await rest.patch(Routes.channelMessage(env.DISCORD_SHOUTOUT_CHANNEL_ID, post.id), {
-				// 		body: {
-				// 			content
-				// 		}
-				// 	});
+					await rest.patch(Routes.channelMessage(env.DISCORD_SHOUTOUT_CHANNEL_ID, post.id), {
+						body: {
+							content
+						}
+					});
 
-				// if (shoutoutCheck.clearPlus) {
-				// 	for (const role in roles) {
-				// 		try {
-				// 			await rest.put(
-				// 				Routes.guildMemberRole(
-				// 					env.DISCORD_SERVER_ID,
-				// 					locals.player.discordId,
-				// 					roles[role].id
-				// 				)
-				// 			);
-				// 		} catch (error) {
-				// 			console.error(error);
-				// 		}
-				// 	}
-				// } else {
-				// 	try {
-				// 		await rest.put(
-				// 			Routes.guildMemberRole(
-				// 				env.DISCORD_SERVER_ID,
-				// 				locals.player.discordId,
-				// 				roles.clear.id
-				// 			)
-				// 		);
-				// 	} catch (error) {
-				// 		console.error(error);
-				// 	}
-				// }
-				// } catch (error) {
-				// 	console.error(error);
-				// }
+					if (shoutoutCheck.clearPlus) {
+						for (const role in roles) {
+							try {
+								await rest.put(
+									Routes.guildMemberRole(
+										env.DISCORD_SERVER_ID,
+										locals.player.discordId,
+										roles[role].id
+									)
+								);
+							} catch (error) {
+								console.error(error);
+							}
+						}
+					} else {
+						try {
+							await rest.put(
+								Routes.guildMemberRole(
+									env.DISCORD_SERVER_ID,
+									locals.player.discordId,
+									roles.clear.id
+								)
+							);
+						} catch (error) {
+							console.error(error);
+						}
+					}
+				} catch (error) {
+					console.error(error);
+				}
 			} else if (side.shoutoutOnClear && side.clears >= side.modCount) {
 				updatedRanks.push({
 					playerId,
@@ -481,25 +483,25 @@ export const actions = {
 					clearPlus: true
 				});
 
-				// let addedRole = true;
-				// const frogRole = guildRoles.find((role) => role.name === `The Frog ${side.name}`);
+				let addedRole = true;
+				const frogRole = guildRoles.find((role) => role.name === `The Frog ${side.name}`);
 
-				// if (frogRole) {
-				// 	try {
-				// 		await rest.put(
-				// 			Routes.guildMemberRole(env.DISCORD_SERVER_ID, locals.player.discordId, frogRole.id)
-				// 		);
-				// 	} catch (error) {
-				// 		addedRole = false;
-				// 		console.error(error);
-				// 	}
-				// }
+				if (frogRole) {
+					try {
+						await rest.put(
+							Routes.guildMemberRole(env.DISCORD_SERVER_ID, locals.player.discordId, frogRole.id)
+						);
+					} catch (error) {
+						addedRole = false;
+						console.error(error);
+					}
+				}
 
-				// await rest.post(Routes.channelMessages(env.DISCORD_MOD_CHANNEL_ID), {
-				// 	body: {
-				// 		content: `${locals.player.name} has cleared all mods in ${side.name} and needs a shoutout${!addedRole ? '. Failed to add role automatically' : ''}`
-				// 	}
-				// });
+				await rest.post(Routes.channelMessages(env.DISCORD_MOD_CHANNEL_ID), {
+					body: {
+						content: `${locals.player.name} has cleared all mods in ${side.name} and needs a shoutout${!addedRole ? '. Failed to add role automatically' : ''}`
+					}
+				});
 			}
 		}
 

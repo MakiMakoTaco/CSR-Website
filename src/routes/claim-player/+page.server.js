@@ -16,11 +16,11 @@ export async function load({ locals }) {
 	const sql = locals.sql;
 
 	const playerList = await sql`
-    SELECT id, name
+    SELECT *
     FROM players
     WHERE
-      claimed = false
-			AND id != ${locals.player.id}
+			discord_id IS NULL
+			AND claimed = false
 		ORDER BY id ASC
   `;
 
