@@ -501,19 +501,19 @@ export const actions = {
 				// 	}
 				// });
 			}
+		}
 
-			if (updatedRanks && updatedRanks.length > 0) {
-				await sql`
-					INSERT INTO
-						player_roles
-					${sql(updatedRanks)}
-					ON CONFLICT (player_id, rank_id)
-					DO UPDATE
-					SET
-						clear = EXCLUDED.clear,
-						clear_plus = EXCLUDED.clear_plus
-				`;
-			}
+		if (updatedRanks && updatedRanks.length > 0) {
+			await sql`
+				INSERT INTO
+					player_roles
+				${sql(updatedRanks)}
+				ON CONFLICT (player_id, rank_id)
+				DO UPDATE
+				SET
+					clear = EXCLUDED.clear,
+					clear_plus = EXCLUDED.clear_plus
+			`;
 		}
 
 		return { success: true };
