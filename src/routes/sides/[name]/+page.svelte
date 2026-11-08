@@ -35,7 +35,7 @@
 	{/await}
 </svelte:head>
 
-<main>
+<main class={page.params.name === 'Catstare' ? 'catstare' : ''}>
 	{#await data.side}
 		Loading side data...
 	{:then side}
@@ -298,6 +298,14 @@
 		color: #3bb143;
 		grid-column: 2;
 		justify-self: end;
+	}
+
+	:global(:root:has(main.catstare)) {
+		color-scheme: dark;
+	}
+
+	.catstare #note-tag {
+		color: lightgrey;
 	}
 
 	#note-tag:hover {
