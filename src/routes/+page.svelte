@@ -139,6 +139,10 @@
 					however there's also the option to upload directly or use another site!
 				</p>
 				<p>
+					The only required data for submissions is the proof, along with the honor pledge.
+					Everything else is for your own personal stats.
+				</p>
+				<p>
 					You might notice when submitting mods, that there's the option to submit for mods you've
 					already beaten. This exists whilst a specific editing option gets worked on. Currently,
 					sending a submission to the already beaten mod will just replace the proof attachment,
