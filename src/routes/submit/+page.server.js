@@ -84,6 +84,8 @@ export const actions = {
 						return fail(400, { modId, error: 'does not have a valid URL as proof' });
 					}
 				}
+			} else if (dbKey === 'deaths' && value < 0) {
+				return fail(400, { error: 'Deaths cannot be less than 0' });
 			}
 
 			modMap[modId] = { ...modMap[modId], [dbKey]: value || null };
