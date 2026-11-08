@@ -126,37 +126,35 @@
 			<div class="submissions">
 				<h1>Submissions</h1>
 				<p>
-					To submit your clears, submit the proof of the map(s) to the google form. Journal
-					screenshots (uploaded to websites like imgur or catbox.moe) are most common and always
-					accepted.
+					To submit your clears, just go to the submit page and select a mod. Journal screenshots
+					(uploaded to websites like imgur or catbox.moe) are most common and always accepted,
+					however there's also the option to upload directly or use another site!
 				</p>
 				<p>
-					If your submission is not formatted correctly, or if it is a submission for the DLC tabs,
-					it will have to be manually reviewed by a moderator of the sheet, which can take some
-					time.
+					If you encounter any issues when submitting please contact a mod or go to the Discord's
+					help channel. If you receive a 4xx error, this will be fixed as soon as possible (we
+					likely just forgot a line in the code.)
 				</p>
 				<p>
-					Note, resubmitting will likely not make this faster. Be sure to format your submissions
-					properly, and be patient!
+					If you receive a 500 error, then when you contact a mod, they may tell you to do something
+					different in the meantime if you don't want to wait for a fix.
 				</p>
 				<p>
-					Common formatting mistakes include spelling mistakes of the map in question, and inputting
-					a tier without its letter, like "Gold" instead of "Gold A", "Bronze SuperSide" instead of
-					"Bronze Super". (The quotes are just for separation here and should not be used in
-					submissions.)
+					When submitting multiple links as proof for a mod, please seperate them with a space. If
+					you instead upload images directly, please make sure they are less than 4MB and that there
+					are no more than 4 images per mod.
 				</p>
 				<p>
-					Additionally, right now, server roles are not automated; mods will apply them as they come
-					up. If one ends up being missed after some time, ping a mod!
-				</p>
-				<p>
-					If you are totally new to Celeste, you can download the mod loader here:
-					https://everestapi.github.io/
+					If you are totally new to Celeste, you can download the mod loader <a
+						href="https://everestapi.github.io/">here</a
+					>
 				</p>
 				<p>
 					The Shrimp sheet is a collection of maps that did not make it onto the main CSR sheet.
-					Check it out here:
-					https://docs.google.com/spreadsheets/d/1ljc0gVIURrKP3qtStGnrcuBCSOE5P_R8jZZz7VQwN8U
+					<a
+						href="https://docs.google.com/spreadsheets/d/1ljc0gVIURrKP3qtStGnrcuBCSOE5P_R8jZZz7VQwN8U"
+						>Check it out here</a
+					>
 				</p>
 			</div>
 			<div class="start">
@@ -168,9 +166,9 @@
 				</p>
 				<h4>Q. What do the other sides mean?</h4>
 				<p>
-					A. The "sides" of the sheet correspond to the year those mods were released in. B-Side for
-					2022, C-Side for 2023, and so on. DLCs are from the current year, and the Catstare sheet
-					contains the GM+ maps.
+					A. The different sides under the "Sides" tab correspond to the year those mods were
+					released in. B-Side for 2022, C-Side for 2023, and so on. DLCs are from the current year,
+					and the Catstare sheet contains the GM+ maps.
 				</p>
 				<h4>Q. What counts as a clear?</h4>
 				<p>
@@ -178,10 +176,10 @@
 					practice a room, but you must eventually clear all rooms, front to back, properly. Clears
 					of any date are also accepted!
 				</p>
-				<h4>
+				<p>
 					A2. You do not have to full clear maps unless it is listed as mandatory. (You still should
 					try, though!)
-				</h4>
+				</p>
 			</div>
 		</div>
 	</div>
