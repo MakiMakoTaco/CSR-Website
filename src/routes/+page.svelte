@@ -15,7 +15,7 @@
 	<title>Celeste Skill Rating - Home</title>
 	<meta
 		name="description"
-		content="Get better at Celeste by beating mods organised into difficulty tiers"
+		content="Get better at Celeste by beating mods organised into difficulty tiers!"
 	/>
 	<meta name="keywords" content="CSR, Celeste, Skill, Rating, Progress, Improve" />
 </svelte:head>
@@ -29,7 +29,7 @@
 				target="_blank">Google Sheets</a
 			> is now legacy! There are so many things I've either forgotten about or planning to work on so.
 			Please feel free to contact hyrulemaki or a moderator in the Discord server about any questions
-			or feedback
+			or feedback!
 		</h3>
 	</div>
 	<div class="sides-info sides-info-container">
