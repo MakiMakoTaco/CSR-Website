@@ -12,6 +12,11 @@
 		localStorage.setItem('theme', lightMode ? 'light' : 'dark');
 	}
 
+	function lightDlc(color) {
+		const [r, g, b] = [0, 2, 4].map((i) => parseInt((color ?? '000000').slice(i, i + 2), 16));
+		return (r * 299 + g * 587 + b * 114) / 1000 > 210 ? 'light-dlc' : '';
+	}
+
 	function postitionDropdown(id) {
 		const anchor = event.currentTarget;
 		const menu = document.getElementById(id);
@@ -166,9 +171,11 @@
 	{#each data.sides.filter((side) => side.type === 'dlc' && !side.archived) as side}
 		<li class="dropdown-items">
 			<a
+				class={lightDlc(side.color)}
 				href="/sides/{side.name}"
 				onclick={() => dlc.togglePopover()}
-				style="--hover-color: #{side.colorPlus}; color: #{side.color};">{side.name}</a
+				style="--hover-color: #{side.colorPlus}; --dlc-color: #{side.color}; color: #{side.color};"
+				>{side.name}</a
 			>
 		</li>
 	{/each}
@@ -179,9 +186,11 @@
 		{#each data.sides.filter((side) => side.type === 'dlc' && side.archived) as side}
 			<li class="dropdown-items">
 				<a
+					class={lightDlc(side.color)}
 					href="/sides/{side.name}"
 					onclick={archived.togglePopover()}
-					style="--hover-color: #{side.colorPlus}; color: #{side.color};">{side.name}</a
+					style="--hover-color: #{side.colorPlus}; --dlc-color: #{side.color}; color: #{side.color};"
+					>{side.name}</a
 				>
 			</li>
 		{/each}
@@ -710,5 +719,8 @@
 				font-size: 16px;
 			}
 		}
+	}
+	:global(:root:not([data-theme='dark'])) .light-dlc:not(:hover) {
+		color: color-mix(in srgb, var(--dlc-color) 80%, black) !important;
 	}
 </style>

@@ -5,8 +5,8 @@
 		const [r, g, b] = [0, 2, 4].map((i) => parseInt((color ?? '000000').slice(i, i + 2), 16));
 		const brightness = (r * 299 + g * 587 + b * 114) / 1000;
 
-		if (brightness < 70) return 'dark-name';
-		if (brightness > 190) return 'light-name';
+		if (brightness < 55) return 'dark-name';
+		if (brightness > 205) return 'light-name';
 		return '';
 	}
 </script>
