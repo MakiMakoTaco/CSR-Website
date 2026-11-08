@@ -106,7 +106,12 @@
 									></td
 								>
 								<td
-									><div class="tier" style="background-color: #{submission.mod.tierColor};">
+									><div
+										class="tier {submission.mod.tierName.startsWith('Catstare')
+											? 'catstare-tier'
+											: ''}"
+										style="background-color: #{submission.mod.tierColor};"
+									>
 										{submission.mod.tierName}
 									</div></td
 								>
@@ -292,30 +297,35 @@
 			color: black;
 			border-radius: 20px;
 		}
+
+		.catstare-tier {
+			background-color: black !important;
+			color: white;
+		}
 	}
 
 	:global(:root[data-theme='dark']) .dark-name {
 		text-shadow:
-			-0.5px -0.5px 0 lightgrey,
-			0 -0.5px 0 lightgrey,
-			0.5px -0.5px 0 lightgrey,
-			-0.5px 0 0 lightgrey,
-			0.5px 0 0 lightgrey,
-			-0.5px 0.5px 0 lightgrey,
-			0 0.5px 0 lightgrey,
-			0.5px 0.5px 0 lightgrey;
+			0 0 1px lightgrey,
+			0 0 1px lightgrey,
+			0 0 1px lightgrey,
+			0 0 1px lightgrey,
+			0 0 1px lightgrey,
+			0 0 1px lightgrey,
+			0 0 1px lightgrey,
+			0 0 1px lightgrey;
 	}
 
 	:global(:root:not([data-theme='dark'])) .light-name {
 		text-shadow:
-			-0.5px -0.5px 0 dimgrey,
-			0 -0.5px 0 dimgrey,
-			0.5px -0.5px 0 dimgrey,
-			-0.5px 0 0 dimgrey,
-			0.5px 0 0 dimgrey,
-			-0.5px 0.5px 0 dimgrey,
-			0 0.5px 0 dimgrey,
-			0.5px 0.5px 0 dimgrey;
+			0 0 1px dimgrey,
+			0 0 1px dimgrey,
+			0 0 1px dimgrey,
+			0 0 1px dimgrey,
+			0 0 1px dimgrey,
+			0 0 1px dimgrey,
+			0 0 1px dimgrey,
+			0 0 1px dimgrey;
 	}
 
 	/* .questions {
