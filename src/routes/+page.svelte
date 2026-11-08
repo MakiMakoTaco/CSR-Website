@@ -1,5 +1,14 @@
 <script>
 	let { data } = $props();
+
+	function nameOutline(color) {
+		const [r, g, b] = [0, 2, 4].map((i) => parseInt((color ?? '000000').slice(i, i + 2), 16));
+		const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+
+		if (brightness < 70) return 'dark-name';
+		if (brightness > 190) return 'light-name';
+		return '';
+	}
 </script>
 
 <svelte:head>
@@ -20,7 +29,7 @@
 			questions or feedback
 		</h3>
 	</div>
-	<div class="sides-info">
+	<div class="sides-info sides-info-container">
 		<table class="sides-info">
 			<thead>
 				<tr>
@@ -88,7 +97,7 @@
 								<td align="left"><a href="/mods/{submission.mod.id}">{submission.mod.name}</a></td>
 								<td
 									><a
-										class="player"
+										class="player {nameOutline(submission.player.color)}"
 										style="color: #{submission.player.color};"
 										href="/players/{submission.player.id}">{submission.player.name}</a
 									></td
@@ -208,6 +217,20 @@
 		text-align: center;
 	}
 
+	.sides-info-container {
+		align-self: start;
+		border: 1px solid grey;
+		border-radius: 1rem;
+	}
+
+	.sides-info tr {
+		border-top: 1px solid grey;
+	}
+
+	.sides-info thead:first-child tr {
+		border-top: 0;
+	}
+
 	thead {
 		font-size: 20px;
 	}
@@ -223,7 +246,7 @@
 
 	.submission-table-container {
 		padding: 1rem;
-		border: 2px solid white;
+		border: 2px solid CanvasText;
 		border-radius: 20px;
 	}
 
@@ -262,10 +285,30 @@
 			color: black;
 			border-radius: 20px;
 		}
+	}
 
-		.player {
-			background-color: grey;
-		}
+	:global(:root[data-theme='dark']) .dark-name {
+		text-shadow:
+			-0.5px -0.5px 0 lightgrey,
+			0 -0.5px 0 lightgrey,
+			0.5px -0.5px 0 lightgrey,
+			-0.5px 0 0 lightgrey,
+			0.5px 0 0 lightgrey,
+			-0.5px 0.5px 0 lightgrey,
+			0 0.5px 0 lightgrey,
+			0.5px 0.5px 0 lightgrey;
+	}
+
+	:global(:root:not([data-theme='dark'])) .light-name {
+		text-shadow:
+			-0.5px -0.5px 0 dimgrey,
+			0 -0.5px 0 dimgrey,
+			0.5px -0.5px 0 dimgrey,
+			-0.5px 0 0 dimgrey,
+			0.5px 0 0 dimgrey,
+			-0.5px 0.5px 0 dimgrey,
+			0 0.5px 0 dimgrey,
+			0.5px 0.5px 0 dimgrey;
 	}
 
 	/* .questions {
