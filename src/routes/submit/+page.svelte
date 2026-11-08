@@ -414,8 +414,26 @@
 				grid-template-columns: 1fr;
 				justify-items: center;
 
+				@media (width < 1000px) {
+					width: 90vw;
+					grid-template-columns: minmax(0, 1fr);
+
+					span {
+						display: grid;
+						grid-template-columns: minmax(0, 1fr);
+						justify-items: center;
+						width: 100%;
+						max-width: none;
+					}
+				}
+
 				input {
 					font-size: 24px;
+
+					@media (width < 1000px) {
+						box-sizing: border-box;
+						max-width: calc(100% - 40px);
+					}
 				}
 			}
 
@@ -440,7 +458,7 @@
 					display: grid;
 					align-items: center;
 					grid-template-columns: 2fr 1fr;
-					border-top: 1px solid grey;
+					border-top: 1px solid color-mix(in srgb, grey 30%, transparent);
 
 					&:first-child {
 						border-top: 0;
