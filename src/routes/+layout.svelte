@@ -241,10 +241,6 @@
 			<a class="nav-link" href="/sides/{side.name}">{side.name}</a>
 		{/each}
 	</div>
-	<a
-		href="https://docs.google.com/spreadsheets/d/1XTAL3kgpX0bG6SBfznPX8z7Qdb7lGnQRuxeUfPZMFoU/edit?usp=sharing"
-		target="_blank">CSR Spreadsheet</a
-	>
 	<a href="https://discord.gg/rVYhpeRX2u" target="_blank">Discord Server</a>
 	<div tabindex="0" role="button" onclick={toggleLightMode} onkeypress={toggleLightMode}>
 		{lightMode ? 'Dark Mode' : 'Light Mode'}
