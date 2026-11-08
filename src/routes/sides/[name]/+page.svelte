@@ -54,7 +54,7 @@
 				{/await}
 			</nav>
 			<div class="content">
-				<h1 style="color: #{side.color};">
+				<h1 style="color: {side.color ? `#${side.color}` : 'CanvasText'};">
 					<div style="text-align: center;">{side.name}</div>
 					<div style="text-align: center;">
 						{#if data.player}
@@ -236,6 +236,10 @@
 		display: grid;
 		gap: 1rem;
 		width: 80vw;
+
+		@media (width < 1000px) {
+			width: 95vw;
+		}
 	}
 
 	.side {

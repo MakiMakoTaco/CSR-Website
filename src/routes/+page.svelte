@@ -211,6 +211,7 @@
 		gap: 10px;
 
 		@media (width < 1130px) {
+			margin: 10px 15px;
 			grid-template-columns: 1fr;
 		}
 	}
@@ -264,6 +265,10 @@
 		padding: 1rem;
 		border: 2px solid CanvasText;
 		border-radius: 20px;
+
+		@media (width < 1130px) {
+			padding: 0.5rem;
+		}
 	}
 
 	.submission-table {
@@ -345,6 +350,12 @@
 	.submissions {
 		margin: auto;
 		max-width: 75%;
+	}
+
+	.submissions:has(.submission-table) {
+		@media (width < 1130px) {
+			max-width: 100%;
+		}
 	}
 	.start {
 		margin: auto;

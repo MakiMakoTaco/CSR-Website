@@ -9,7 +9,7 @@
 
 	// Boolean states
 	let submitting = $state(false); // Set the submitting trigger for form enhance
-	let displayMods = $state(false); // The switch for showing mod selection
+	let displayMods = $state(true); // The switch for showing mod selection
 	// let hasFocus = $state(false);
 
 	// String states
@@ -132,7 +132,9 @@
 			<div class="mod-search-border">
 				<div class="search-bar">
 					<span>
+						<label for="mod-search">Search Mods:</label>
 						<input
+							id="mod-search"
 							class="mod-selection"
 							bind:value={searchFilter}
 							onfocusin={() => {
@@ -158,7 +160,6 @@
 										);
 										break;
 									case 'Escape':
-										displayMods = false;
 										searchFilter = '';
 
 										event.target.blur();
@@ -166,14 +167,6 @@
 								}
 							}}
 						/>
-						<button
-							class="close-mod-filter"
-							onclick={() => {
-								displayMods = false;
-								searchFilter = '';
-							}}
-							hidden={!displayMods}>Close</button
-						>
 					</span>
 				</div>
 
@@ -189,7 +182,6 @@
 											mod.submitting = true;
 
 											searchFilter = '';
-											displayMods = false;
 										}}>Add mod</button
 									>
 								</div>
@@ -424,13 +416,6 @@
 		justify-self: center;
 
 		margin: 20px;
-	}
-
-	.close-mod-filter {
-		width: fit-content;
-		padding: 2px 5px;
-		border-radius: 20px;
-		border-color: transparent;
 	}
 
 	.submission-container {
