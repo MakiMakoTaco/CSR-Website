@@ -96,12 +96,6 @@
 		</li>
 	</ul>
 	<ul class="nav-center">
-		<li>
-			<a
-				href="https://docs.google.com/spreadsheets/d/1XTAL3kgpX0bG6SBfznPX8z7Qdb7lGnQRuxeUfPZMFoU/edit?usp=sharing"
-				target="_blank">CSR Spreadsheet</a
-			>
-		</li>
 		<li><a href="https://discord.gg/rVYhpeRX2u" target="_blank">Discord Server</a></li>
 	</ul>
 	<ul class="nav-right">

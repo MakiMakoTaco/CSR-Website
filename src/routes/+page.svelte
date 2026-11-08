@@ -24,9 +24,12 @@
 	<div class="title">
 		<h1>Welcome to the Celeste Skill Rating!</h1>
 		<h3>
-			The site's now live! There are so many things I've either forgotten about or planning to work
-			on so. Please feel free to contact hyrulemaki or a moderator in the Discord server about any
-			questions or feedback
+			The site's now live! This means that the <a
+				href="https://docs.google.com/spreadsheets/d/1XTAL3kgpX0bG6SBfznPX8z7Qdb7lGnQRuxeUfPZMFoU/edit?usp=sharing"
+				target="_blank">Google Sheets</a
+			> is now legacy! There are so many things I've either forgotten about or planning to work on so.
+			Please feel free to contact hyrulemaki or a moderator in the Discord server about any questions
+			or feedback
 		</h3>
 	</div>
 	<div class="sides-info sides-info-container">
