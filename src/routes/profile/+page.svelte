@@ -51,7 +51,7 @@
 			</div>
 			<div class="form-field">
 				<label for="about">About Me:</label>
-				<textarea name="about" bind:value={about}></textarea>
+				<textarea name="about" maxlength="1000" bind:value={about}></textarea>
 			</div>
 
 			<button>Update Profile</button>
