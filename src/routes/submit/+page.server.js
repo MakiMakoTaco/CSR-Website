@@ -134,51 +134,61 @@ export const actions = {
 					}
 				}
 
-				const sightengineData = new FormData();
-				if (mod.images.length > 1) {
-					mod.images.forEach((image) => {
-						sightengineData.append('media[]', image);
-					});
-				} else {
-					sightengineData.append('media', image);
-				}
-				sightengineData.append('models', 'nudity-2.1,people-counting,type');
-				sightengineData.append('api_user', SIGHTENGINE_API_USER);
-				sightengineData.append('api_secret', SIGHTENGINE_API_SECRET);
+				// const sightengineData = new FormData();
+				// mod.images.forEach((image) => {
+				// 	sightengineData.append('media[]', image);
+				// });
+				// sightengineData.append('models', 'nudity-2.1,people-counting,type');
+				// sightengineData.append('api_user', SIGHTENGINE_API_USER);
+				// sightengineData.append('api_secret', SIGHTENGINE_API_SECRET);
 
-				const response = await fetch('https://api.sightengine.com/1.0/check.json', {
-					method: 'POST',
-					body: sightengineData
-				});
+				// const response = await fetch('https://api.sightengine.com/1.0/check.json', {
+				// 	method: 'POST',
+				// 	body: sightengineData
+				// });
 
-				const sightengineBody = await response.json();
-				if (sightengineBody.status === 'failure') {
-					console.error(sightengineBody.error);
-					return fail(400, {
-						error: 'Sightengine error'
-					});
-				}
-				if (mod.images.length > 1) {
-					for (const imageResult of sightengineBody.data) {
-						if (
-							imageResult.nudity.none !== 0.99 ||
-							imageResult['people-counting']['0'] !== 0.99 ||
-							imageResult.type.illustration < 0.95
-						) {
-							return fail(422, {
-								error: 'Image failed moderation checks'
-							});
-						}
-					}
-				} else if (
-					sightengineBody.nudity.none !== 0.99 ||
-					sightengineBody['people-counting']['0'] !== 0.99 ||
-					sightengineBody.type.illustration < 0.95
-				) {
-					return fail(422, {
-						error: 'Image failed moderation checks'
-					});
-				}
+				// const sightengineBody = await response.json();
+				// if (sightengineBody.status === 'failure') {
+				// 	console.error(sightengineBody.error);
+				// 	return fail(400, {
+				// 		error: 'Sightengine error'
+				// 	});
+				// }
+				// if (mod.images.length > 1) {
+				// 	for (const imageResult of sightengineBody.data) {
+				// 		if (
+				// 			imageResult.nudity.none < 0.95 ||
+				// 			imageResult.nudity.suggestive_classes.cleavage_categories.none < 0.95 ||
+				// 			imageResult.nudity.suggestive_classes.male_chest_categories.none < 0.95 ||
+				// 			imageResult.nudity.mildly_suggestive > 0.05 ||
+				// 			imageResult.nudity.suggestive > 0.03 ||
+				// 			imageResult.nudity.very_suggestive !== 0.001 ||
+				// 			imageResult.nudity.sexual_activity !== 0.001 ||
+				// 			imageResult.nudity.sexual_display !== 0.001 ||
+				// 			imageResult['people-counting']['0'] < 0.95 ||
+				// 			imageResult.type.illustration < 0.95
+				// 		) {
+				// 			return fail(422, {
+				// 				error: `Image "${imageResult.media.uri}" failed moderation checks`
+				// 			});
+				// 		}
+				// 	}
+				// } else if (
+				// 	sightengineBody.nudity.none < 0.95 ||
+				// 	sightengineBody.nudity.suggestive_classes.cleavage_categories.none < 0.95 ||
+				// 	sightengineBody.nudity.suggestive_classes.male_chest_categories.none < 0.95 ||
+				// 	sightengineBody.nudity.mildly_suggestive > 0.05 ||
+				// 	sightengineBody.nudity.suggestive > 0.03 ||
+				// 	sightengineBody.nudity.very_suggestive !== 0.001 ||
+				// 	sightengineBody.nudity.sexual_activity !== 0.001 ||
+				// 	sightengineBody.nudity.sexual_display !== 0.001 ||
+				// 	sightengineBody['people-counting']['0'] < 0.95 ||
+				// 	sightengineBody.type.illustration < 0.95
+				// ) {
+				// 	return fail(422, {
+				// 		error: `Image "${sightengineBody.media.uri}" failed moderation checks`
+				// 	});
+				// }
 
 				const uploads = mod.images.map(async (image, index) => {
 					let bytes;
