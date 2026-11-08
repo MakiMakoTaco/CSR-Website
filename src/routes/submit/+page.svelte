@@ -251,7 +251,7 @@
 					<span class="submission-border">
 						{#each sides.flatMap((side) => side.tiers.flatMap((tier) => tier.mods
 									.filter((mod) => mod.submitting)
-									.flat())) as mod}
+									.flat())) as mod (mod.id)}
 							<div class="submission">
 								<div class="mod-name">
 									<h2 style="color: #{mod.color};">
@@ -308,7 +308,8 @@
 
 													this.textContent = 'Use Link';
 												}
-											}}>Use Image</button
+											}}
+											aria-label="Switch between image/link">Use Image</button
 										>
 									</span>
 									<span id="date">
