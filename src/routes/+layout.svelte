@@ -721,6 +721,6 @@
 		}
 	}
 	:global(:root:not([data-theme='dark'])) .light-dlc:not(:hover) {
-		color: color-mix(in srgb, var(--dlc-color) 80%, black) !important;
+		color: color-mix(in srgb, var(--dlc-color) 90%, black) !important;
 	}
 </style>
