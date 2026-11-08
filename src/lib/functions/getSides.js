@@ -61,7 +61,7 @@ export async function getSideByName(sql, name, playerId = null, shorthand = fals
 						${playerId ? sql`, 'cleared', pp.cleared` : sql``}
 						${shorthand ? sql`, 'shorthand', md.shorthand` : sql``}
 					)
-					ORDER BY m.name
+					ORDER BY lower(m.name)
 				) AS mods
 			FROM mods m
 			${
