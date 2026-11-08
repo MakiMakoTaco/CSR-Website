@@ -4,6 +4,14 @@
 
 	let { data, children } = $props();
 
+	let lightMode = $state(true);
+
+	function toggleLightMode() {
+		lightMode = !lightMode;
+		document.documentElement.dataset.theme = lightMode ? 'light' : 'dark';
+		localStorage.setItem('theme', lightMode ? 'light' : 'dark');
+	}
+
 	function postitionDropdown(id) {
 		const anchor = event.currentTarget;
 		const menu = document.getElementById(id);
@@ -31,6 +39,8 @@
 	}
 
 	onMount(() => {
+		lightMode = document.documentElement.dataset.theme !== 'dark';
+
 		document.addEventListener('touchstart', (e) => {
 			console.log(e.target.parentElement.id);
 
@@ -95,6 +105,9 @@
 		<li><a href="https://discord.gg/rVYhpeRX2u" target="_blank">Discord Server</a></li>
 	</ul>
 	<ul class="nav-right">
+		<li>
+			<button onclick={toggleLightMode}>{lightMode ? 'Dark Mode' : 'Light Mode'}</button>
+		</li>
 		<li>
 			<a class="submit" href="/submit">Submit Mods</a>
 		</li>
@@ -239,6 +252,9 @@
 		target="_blank">CSR Spreadsheet</a
 	>
 	<a href="https://discord.gg/rVYhpeRX2u" target="_blank">Discord Server</a>
+	<div tabindex="0" role="button" onclick={toggleLightMode} onkeypress={toggleLightMode}>
+		{lightMode ? 'Dark Mode' : 'Light Mode'}
+	</div>
 	<a class="submit nav-link" href="/submit">Submit Mods</a>
 	{#if data?.player?.name}
 		{#if data.player.role}
