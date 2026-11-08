@@ -1,8 +1,14 @@
 <script>
 	import { page } from '$app/state';
 	import { onMount } from 'svelte';
+	import { exportSide } from '$lib/functions/exportSide.js';
 
 	let { data } = $props();
+
+	function lightDlc(color) {
+		const [r, g, b] = [0, 2, 4].map((i) => parseInt((color ?? '000000').slice(i, i + 2), 16));
+		return (r * 299 + g * 587 + b * 114) / 1000 > 210 ? 'light-dlc' : '';
+	}
 
 	function scroll(id) {
 		const navbar = document.getElementById('navbar');
@@ -41,6 +47,7 @@
 	{:then side}
 		{#if side}
 			<nav>
+				<button class="export" onclick={() => exportSide(side, data.player?.name)}>Export</button>
 				<button onclick={() => (location = '#')}><h3>{side.name}</h3></button>
 				{#await side.tiers then tiers}
 					{#each tiers as tier}
@@ -48,13 +55,19 @@
 							style="color: #{tier.color}; --tier-color: #{tier.color};"
 							onclick={() => {
 								scroll(tier.name);
-							}}>{tier.name}</button
+							}}>{tier.name.replace(/^Catstare: /, '')}</button
 						>
 					{/each}
 				{/await}
 			</nav>
 			<div class="content">
-				<h1 style="color: {side.color ? `#${side.color}` : 'CanvasText'};">
+				<button class="export mobile-export" onclick={() => exportSide(side, data.player?.name)}
+					>Export</button
+				>
+				<h1
+					class={lightDlc(side.color)}
+					style="--dlc-color: #{side.color}; color: {side.color ? `#${side.color}` : 'CanvasText'};"
+				>
 					<div style="text-align: center;">{side.name}</div>
 					<div style="text-align: center;">
 						{#if data.player}
@@ -82,7 +95,7 @@
 							<div id={tier.name} class="tier-name">
 								{#if side.showTierNames}
 									<h2 style="color: #{tier.color};">
-										{tier.name}{#if data.player}:
+										{tier.name.replace(/^Catstare: /, '')}{#if data.player}:
 											<small
 												>{tier.mods.filter((mod) => mod.cleared).length ?? 0}/{tier.mods.filter(
 													(mod) => !mod.isChild
@@ -242,6 +255,21 @@
 		}
 	}
 
+	.export {
+		all: revert;
+		width: fit-content;
+	}
+
+	.mobile-export {
+		display: none;
+		justify-self: end;
+		margin-right: 10px;
+
+		@media (width < 1000px) {
+			display: block;
+		}
+	}
+
 	.side {
 		margin: 10px;
 		border: 1px solid var(--side-color);
@@ -264,7 +292,7 @@
 	}
 
 	:global(:root:not([data-theme='dark'])) main:not(.catstare) {
-		nav button,
+		nav button:not(.export),
 		.tier:not(.catstare-tier) h2,
 		.tier:not(.catstare-tier) #mod,
 		.mod-container #mod,
@@ -287,6 +315,14 @@
 		display: grid;
 		font-size: 20px;
 		justify-content: center;
+
+		@media (width < 1000px) {
+			text-align: center;
+
+			h2 small:last-child {
+				display: block;
+			}
+		}
 	}
 
 	.mod-info {
@@ -330,6 +366,10 @@
 		color: #3bb143;
 		grid-column: 2;
 		justify-self: end;
+	}
+
+	:global(:root:not([data-theme='dark'])) .light-dlc {
+		color: color-mix(in srgb, var(--dlc-color) 90%, black) !important;
 	}
 
 	:global(:root:has(main.catstare)) {
