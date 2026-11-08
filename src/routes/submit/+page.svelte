@@ -319,10 +319,10 @@
 										<label for="{mod.id}-death-count">Deaths:</label>
 										<input id="{mod.id}-death-count" name="{mod.id}-deaths" type="number" />
 									</span>
-									<span id="time">
+									<!-- <span id="time">
 										<label for="{mod.id}-time-taken">Clear Time:</label>
 										<input id="{mod.id}-time-taken" name="{mod.id}-timeTaken" type="text" />
-									</span>
+									</span> -->
 									<!-- <label for="{mod.id}-full-clear">Full Clear:</label>
 					<input id="{mod.id}-full-clear" name="{mod.id}-fc" type="checkbox" /> -->
 									<!-- <label for="{mod.id}-private">Private:</label>
