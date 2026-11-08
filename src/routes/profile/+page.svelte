@@ -1,14 +1,27 @@
 <!-- use the journal and flip page animation to see stats -->
 
 <script>
-	import { get } from 'svelte/store';
+	import { onMount } from 'svelte';
 
 	let { data, form } = $props();
-	let { name, color, avatar, about } = $derived({
+	let { name, nameColor, avatar, about } = $derived({
 		name: data.player.name,
-		color: `#${data.player.nameColor}`,
+		nameColor: data.player.nameColor,
 		avatar: data.player.avatar,
 		about: data.player.about
+	});
+	let color = $derived(nameColor);
+
+	$effect(() => {
+		if (nameColor && !nameColor.includes('#')) {
+			color = `#${nameColor}`;
+		}
+	});
+
+	onMount(() => {
+		if (nameColor && !nameColor.includes('#')) {
+			nameColor = `#${nameColor}`;
+		}
 	});
 
 	let apiKey = $state(0);
@@ -29,7 +42,7 @@
 {#if form?.success}
 	<dialog class="toast">Successfully updated player info</dialog>
 {:else if form?.error}
-	<div>Failed to update player data: {form?.message ?? 'Unable to find reason'}</div>
+	<div>{form?.error}</div>
 {/if}
 
 <main>
@@ -43,7 +56,10 @@
 		<form method="POST" action="?/update">
 			<div class="form-field">
 				<label for="nameColor">Color:</label>
-				<input name="nameColor" type="color" bind:value={color} />
+				<div class="color-picker">
+					<input type="text" name="nameColor" bind:value={nameColor} />
+					<input type="color" value={color} onchange={(nameColor = this.value)} />
+				</div>
 			</div>
 			<div class="form-field">
 				<label for="name">Name:</label>
@@ -63,7 +79,7 @@
 
 	<div class="preview">
 		<img class="profile-pic" alt="player" src={avatar} />
-		<h1 style="color: {color};">{name}</h1>
+		<h1 style="color: {nameColor};">{name}</h1>
 		<p class="about">{about}</p>
 	</div>
 </main>
@@ -101,6 +117,12 @@
 				max-width: 25cqw;
 			}
 		}
+	}
+
+	.color-picker {
+		display: grid;
+		grid-auto-flow: column;
+		gap: 1rem;
 	}
 
 	.logout {

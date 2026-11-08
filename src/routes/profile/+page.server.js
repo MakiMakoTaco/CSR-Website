@@ -24,9 +24,19 @@ export const actions = {
 		let newData = {};
 		for (let [key, value] of data) {
 			if (key === 'nameColor') {
-				value = value.substring(1);
+				const validHex = value.match(/^#?(?<hex>[0-9A-F]{6})$/i);
+
+				if (!validHex?.groups || !validHex.groups.hex) {
+					return fail(400, { error: 'Name color must be a valid hex code' });
+				}
+
+				value = validHex.groups.hex;
 			} else if (key === 'name' && !value.trim()) {
 				value = player.name;
+			} else if (key === 'about' && value.length > 1000) {
+				return fail(400, {
+					error: 'About me exceeded character limit. Must be under 1000 characters long'
+				});
 			}
 
 			if (value !== (player[key] ?? '')) {
@@ -46,7 +56,7 @@ export const actions = {
 				return { success: true };
 			} catch (error) {
 				console.error(error);
-				return { error: true, message: error.message };
+				return fail(400, { error: error.message });
 			}
 		}
 	},
