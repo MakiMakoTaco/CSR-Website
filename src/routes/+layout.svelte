@@ -44,7 +44,7 @@
 		document.addEventListener('touchstart', (e) => {
 			console.log(e.target.parentElement.id);
 
-			if (!e.target.parentElement || !e.target.parentElement.id.includes('sidebar')) {
+			if (!sidebar.contains(e.target)) {
 				if (sidebar.style.width && sidebar.style.width == '250px') {
 					e.preventDefault();
 					sidebar.style.width = '';
@@ -200,8 +200,18 @@
 </div>
 
 <div id="sidebar" class="nav-sidebar">
+	<div
+		class="close-sidebar"
+		tabindex="0"
+		role="button"
+		onclick={() => (sidebar.style.width = '')}
+		onkeypress={() => (sidebar.style.width = '')}
+	>
+		Close Sidebar
+	</div>
 	<a class="nav-link" href="/">Home</a>
 	<div
+		class="dropdown-toggle"
 		tabindex="0"
 		role="button"
 		onclick={() => flipDropdown('sides-dropdown-test')}
@@ -216,6 +226,7 @@
 	</div>
 	<a href="/sides/Catstare">Catstare</a>
 	<div
+		class="dropdown-toggle"
 		tabindex="0"
 		role="button"
 		onclick={() => flipDropdown('dlc-dropdown-test')}
@@ -229,6 +240,7 @@
 		{/each}
 	</div>
 	<div
+		class="dropdown-toggle"
 		tabindex="0"
 		role="button"
 		onclick={() => flipDropdown('archived-dropdown-test')}
@@ -242,7 +254,13 @@
 		{/each}
 	</div>
 	<a href="https://discord.gg/rVYhpeRX2u" target="_blank">Discord Server</a>
-	<div tabindex="0" role="button" onclick={toggleLightMode} onkeypress={toggleLightMode}>
+	<div
+		class="theme-toggle"
+		tabindex="0"
+		role="button"
+		onclick={toggleLightMode}
+		onkeypress={toggleLightMode}
+	>
 		{lightMode ? 'Dark Mode' : 'Light Mode'}
 	</div>
 	<a class="submit nav-link" href="/submit">Submit Mods</a>
@@ -650,15 +668,47 @@
 		overflow-x: hidden;
 		background-color: Canvas;
 		transition: 0.5s;
-		padding-top: 60px;
 
-		a {
+		a,
+		.theme-toggle {
 			padding: 8px 8px 8px 32px;
 			text-decoration: none;
 			font-size: 25px;
 			color: plum;
 			display: block;
 			transition: 0.3s;
+		}
+
+		.theme-toggle {
+			cursor: pointer;
+		}
+
+		.close-sidebar {
+			padding: 68px 8px 8px 32px;
+			cursor: pointer;
+		}
+
+		> * + * {
+			border-top: 1px solid grey;
+		}
+
+		.dropdown-menu {
+			border-top: 0;
+			margin-left: 42px;
+			justify-items: start;
+		}
+
+		.dropdown-toggle {
+			padding: 8px 8px 8px 32px;
+			font-size: 22px;
+			color: color-mix(in srgb, plum 85%, black);
+			cursor: pointer;
+
+			&::after {
+				content: '▾';
+				margin-left: 6px;
+				font-size: 16px;
+			}
 		}
 	}
 </style>
