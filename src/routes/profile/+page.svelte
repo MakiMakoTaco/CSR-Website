@@ -99,6 +99,10 @@
 
 	.update-player {
 		display: grid;
+		align-self: start;
+		padding: 1rem;
+		border: 1px solid grey;
+		border-radius: 1rem;
 	}
 
 	.form-field {
@@ -109,6 +113,8 @@
 
 		> * {
 			field-sizing: content;
+			min-width: 0;
+			max-width: 100%;
 		}
 		textarea {
 			max-width: 50cqw;
@@ -122,6 +128,7 @@
 	.color-picker {
 		display: grid;
 		grid-auto-flow: column;
+		grid-template-columns: minmax(0, 1fr) auto;
 		gap: 1rem;
 	}
 
