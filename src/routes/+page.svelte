@@ -134,6 +134,12 @@
 					however there's also the option to upload directly or use another site!
 				</p>
 				<p>
+					You might notice when submitting mods, that there's the option to submit for mods you've
+					already beaten. This exists whilst a specific editing option gets worked on. Currently,
+					sending a submission to the already beaten mod will just replace the proof attachment,
+					along with setting an "update at" timestamp.
+				</p>
+				<p>
 					If you encounter any issues when submitting please contact a mod or go to the Discord's
 					help channel. If you receive a 4xx error, this will be fixed as soon as possible (we
 					likely just forgot a line in the code.)
