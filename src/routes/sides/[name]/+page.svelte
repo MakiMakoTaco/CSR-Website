@@ -45,7 +45,7 @@
 				{#await side.tiers then tiers}
 					{#each tiers as tier}
 						<button
-							style="color: #{tier.color};"
+							style="color: #{tier.color}; --tier-color: #{tier.color};"
 							onclick={() => {
 								scroll(tier.name);
 							}}>{tier.name}</button
@@ -75,7 +75,10 @@
 				</h1>
 				{#if side.showTierNames}
 					{#each side.tiers as tier}
-						<div class="tier" style="--tier-color: #{tier.color}; --hover-color: #{tier.colorPlus}">
+						<div
+							class="tier {tier.name === 'Catstare' ? 'catstare-tier' : ''}"
+							style="--tier-color: #{tier.color}; --hover-color: #{tier.colorPlus}"
+						>
 							<div id={tier.name} class="tier-name">
 								{#if side.showTierNames}
 									<h2 style="color: #{tier.color};">
@@ -249,6 +252,31 @@
 		margin: 10px;
 		border: 1px solid var(--tier-color);
 		border-radius: 1rem;
+	}
+
+	.catstare-tier {
+		background-color: black;
+		color: white;
+	}
+
+	:global(:root:not([data-theme='dark'])) main:not(.catstare) {
+		nav button,
+		.tier:not(.catstare-tier) h2,
+		.tier:not(.catstare-tier) #mod,
+		.mod-container #mod,
+		.tier:not(.catstare-tier) .download a,
+		.mod-container .download a {
+			color: color-mix(in srgb, var(--tier-color) 70%, black) !important;
+		}
+
+		.tier:not(.catstare-tier) .download a:hover,
+		.mod-container .download a:hover {
+			color: color-mix(in srgb, var(--hover-color) 70%, black) !important;
+		}
+
+		.tier:not(.catstare-tier) {
+			border-color: color-mix(in srgb, var(--tier-color) 70%, black);
+		}
 	}
 
 	.tier-name {
