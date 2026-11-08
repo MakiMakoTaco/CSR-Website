@@ -47,8 +47,6 @@
 		lightMode = document.documentElement.dataset.theme !== 'dark';
 
 		document.addEventListener('touchstart', (e) => {
-			console.log(e.target.parentElement.id);
-
 			if (!sidebar.contains(e.target)) {
 				if (sidebar.style.width && sidebar.style.width == '250px') {
 					e.preventDefault();
@@ -60,7 +58,7 @@
 		const navLinks = document.getElementsByClassName('nav-link');
 
 		for (const link of navLinks) {
-			link.addEventListener('touchend', () => {
+			link.addEventListener('click', () => {
 				sidebar.style.width = '';
 
 				const dropdowns = sidebar.getElementsByClassName('dropdown-menu');
@@ -233,7 +231,7 @@
 			<a class="nav-link" href="/sides/{side.name}">{side.name}</a>
 		{/each}
 	</div>
-	<a href="/sides/Catstare">Catstare</a>
+	<a class="nav-link" href="/sides/Catstare">Catstare</a>
 	<div
 		class="dropdown-toggle"
 		tabindex="0"
@@ -262,7 +260,7 @@
 			<a class="nav-link" href="/sides/{side.name}">{side.name}</a>
 		{/each}
 	</div>
-	<a href="https://discord.gg/rVYhpeRX2u" target="_blank">Discord Server</a>
+	<a class="nav-link" href="https://discord.gg/rVYhpeRX2u" target="_blank">Discord Server</a>
 	<div
 		class="theme-toggle"
 		tabindex="0"
