@@ -9,7 +9,7 @@
 
 	// Boolean states
 	let submitting = $state(false); // Set the submitting trigger for form enhance
-	let displayMods = $state(true); // The switch for showing mod selection
+	let displayMods = $state(false); // The switch for showing mod selection
 	// let hasFocus = $state(false);
 
 	// String states
@@ -94,6 +94,12 @@
 		return filtered;
 	});
 
+	let modsAdded = $derived(
+		sides.flatMap((side) =>
+			side.tiers.flatMap((tier) => tier.mods.filter((mod) => mod.submitting).flat())
+		).length > 0
+	);
+
 	let failedMod = $derived.by(() => {
 		if (!form?.error || !sides || sides.length <= 0) return;
 
@@ -160,6 +166,7 @@
 										);
 										break;
 									case 'Escape':
+										displayMods = false;
 										searchFilter = '';
 
 										event.target.blur();
@@ -167,27 +174,38 @@
 								}
 							}}
 						/>
+						<button
+							class="close-mod-filter"
+							onclick={() => {
+								displayMods = false;
+								searchFilter = '';
+							}}
+							hidden={!displayMods || !modsAdded}>Close</button
+						>
 					</span>
 				</div>
 
-				{#if displayMods}
-					{#await filteredMods then mods}
-						{#each mods as mod}
-							{#if !mod.hidden}
-								<div>
-									<span class="mod-search-name" style="color: #{mod.color};">{mod.fullName}</span>
-									<button
-										class="add-mod"
-										onclick={async () => {
-											mod.submitting = true;
+				{#if displayMods || !modsAdded}
+					<div class="mod-list">
+						{#await filteredMods then mods}
+							{#each mods as mod}
+								{#if !mod.hidden}
+									<div>
+										<span class="mod-search-name" style="color: #{mod.color};">{mod.fullName}</span>
+										<button
+											class="add-mod"
+											onclick={async () => {
+												mod.submitting = true;
 
-											searchFilter = '';
-										}}>Add mod</button
-									>
-								</div>
-							{/if}
-						{/each}
-					{/await}
+												searchFilter = '';
+												displayMods = false;
+											}}>Add mod</button
+										>
+									</div>
+								{/if}
+							{/each}
+						{/await}
+					</div>
 				{/if}
 			</div>
 		</div>
@@ -400,6 +418,35 @@
 					font-size: 24px;
 				}
 			}
+
+			.mod-list {
+				padding: 0;
+				grid-template-columns: 1fr;
+				grid-auto-flow: row;
+				border: 1px solid grey;
+				border-radius: 1rem;
+
+				@media (width < 1000px) {
+					width: 90vw;
+				}
+
+				&:empty {
+					display: none;
+				}
+
+				> div {
+					max-width: none;
+					padding: 0.5rem 10px;
+					display: grid;
+					align-items: center;
+					grid-template-columns: 2fr 1fr;
+					border-top: 1px solid grey;
+
+					&:first-child {
+						border-top: 0;
+					}
+				}
+			}
 		}
 	}
 
@@ -416,6 +463,13 @@
 		justify-self: center;
 
 		margin: 20px;
+	}
+
+	.close-mod-filter {
+		width: fit-content;
+		padding: 2px 5px;
+		border-radius: 20px;
+		border-color: transparent;
 	}
 
 	.submission-container {
