@@ -534,6 +534,6 @@ export const actions = {
 			`;
 		}
 
-		return { success: true };
+		return { success: true, modCount: modIds.length };
 	}
 };

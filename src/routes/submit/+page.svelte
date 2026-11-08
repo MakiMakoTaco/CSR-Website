@@ -125,6 +125,11 @@
 </svelte:head>
 
 <main>
+	{#if form?.success}
+		<div class="toast">
+			Successfully submitted for {form.modCount} mod{form.modCount > 1 ? 's' : ''}
+		</div>
+	{/if}
 	{#await sides}
 		Fetching mods...
 	{:then sides}
@@ -386,6 +391,20 @@
 </main>
 
 <style>
+	.toast {
+		opacity: 0;
+		position: absolute;
+
+		transition: opacity;
+		transition-behavior: allow-discrete;
+		transition-delay: 5s;
+		transition-duration: 1s;
+
+		@starting-style {
+			opacity: 1;
+		}
+	}
+
 	.mod-search-container {
 		display: grid;
 
