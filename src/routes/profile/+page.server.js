@@ -31,7 +31,12 @@ export const actions = {
 				}
 
 				value = validHex.groups.hex;
-			} else if (key === 'name' && !value.trim()) {
+			} else if (key === 'name') {
+				if (value.length > 50) {
+					return fail(400, {
+						error: 'Name exceeded character limit. Must be under 50 characters long'
+					});
+				}
 				value = player.name;
 			} else if (key === 'about' && value.length > 1000) {
 				return fail(400, {
