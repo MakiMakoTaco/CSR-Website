@@ -3,7 +3,7 @@
 ## Active version
 
 > [!NOTE]
-> This is where the site will be, however this current version is still in a testing state
+> Site now live!!
 
 [Celeste Skill Rating](https://celesteskillrating.net)
 
