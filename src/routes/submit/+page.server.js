@@ -135,9 +135,13 @@ export const actions = {
 				}
 
 				const sightengineData = new FormData();
-				mod.images.forEach((image) => {
-					sightengineData.append('media[]', image);
-				});
+				if (mod.images.length > 1) {
+					mod.images.forEach((image) => {
+						sightengineData.append('media[]', image);
+					});
+				} else {
+					sightengineData.append('media', image);
+				}
 				sightengineData.append('models', 'nudity-2.1,people-counting,type');
 				sightengineData.append('api_user', SIGHTENGINE_API_USER);
 				sightengineData.append('api_secret', SIGHTENGINE_API_SECRET);
