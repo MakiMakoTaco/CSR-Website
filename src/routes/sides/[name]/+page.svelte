@@ -54,7 +54,7 @@
 				{/await}
 			</nav>
 			<div class="content">
-				<h1 style="color: #{side.color ?? 'ffffff'};">
+				<h1 style="color: #{side.color};">
 					<div style="text-align: center;">{side.name}</div>
 					<div style="text-align: center;">
 						{#if data.player}
