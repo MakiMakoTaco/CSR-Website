@@ -1,25 +1,38 @@
+import { error } from '@sveltejs/kit';
+
 export async function load({ fetch, params, locals }) {
 	const sql = locals.sql;
 
-	const folderResponse = await fetch(`/proofs/${params.playerId}/${params.modId}`);
-	let imageUrls = (await folderResponse.json()).map((file) => `/proofs/${file.name}`);
+	const clear = (
+		await sql`
+		SELECT
+			pp.proof,
+			pp.is_local_proof,
+			pp.is_private,
+			p.name AS player_name,
+			m.name AS mod_name
+		FROM player_progress pp
+		JOIN players p
+			ON p.id = pp.player_id
+		JOIN mods m
+			ON m.id = pp.mod_id
+		WHERE
+			pp.player_id = ${params.playerId}
+			AND pp.mod_id = ${params.modId}
+	`
+	)[0];
 
-	if (!imageUrls || imageUrls.length < 1) {
-		const proof = (
-			await sql`
-			SELECT
-				proof
-			FROM player_progress
-			WHERE
-				player_id = ${params.playerId}
-				AND mod_id = ${params.modId}
-		`
-		)[0]?.proof;
-
-		if (proof) {
-			imageUrls = proof;
-		}
+	if (!clear || (clear.isPrivate && locals.player?.id !== Number(params.playerId))) {
+		error(404, 'Clear not found');
 	}
 
-	return { imageUrls };
+	const folderResponse = await fetch(`/proofs/${params.playerId}/${params.modId}`);
+	const imageUrls = (await folderResponse.json()).map((file) => `/proofs/${file.name}`);
+
+	return {
+		playerName: clear.playerName,
+		modName: clear.modName,
+		proofLink: clear.isLocalProof ? null : clear.proof,
+		imageUrls
+	};
 }
