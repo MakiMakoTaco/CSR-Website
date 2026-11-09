@@ -395,6 +395,16 @@
 	.toast {
 		opacity: 0;
 		position: absolute;
+		z-index: 1;
+		left: 50%;
+		translate: -50%;
+		width: max-content;
+		max-width: 90vw;
+		margin-top: 0.5rem;
+		padding: 0.5rem 1rem;
+		border: 2px solid pink;
+		border-radius: 1rem;
+		background-color: Canvas;
 
 		transition: opacity;
 		transition-behavior: allow-discrete;
