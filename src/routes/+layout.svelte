@@ -1,5 +1,5 @@
 <script>
-	import { page } from '$app/state';
+	import { page, updated } from '$app/state';
 	import { onMount } from 'svelte';
 
 	let { data, children } = $props();
@@ -372,7 +372,17 @@
 	</div>
 </div> -->
 
-{@render children()}
+{#if updated}
+	<div>
+		<p>
+			A new version of the site is available
+
+			<button onclick={() => location.reload()}>Reload page</button>
+		</p>
+	</div>
+{:else}
+	{@render children()}
+{/if}
 
 <style>
 	:global(a) {
