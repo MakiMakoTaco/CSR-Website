@@ -58,15 +58,18 @@
 					{/if}
 				{/each}
 			</tbody>
-			<thead><tr><th colspan="3">DLC & Catstare</th></tr></thead>
+			<thead><tr><th scope="col">Catstare & DLC</th><th></th><th></th></tr></thead>
 			<tbody>
 				{#each data.sides as side}
 					{#if (side.type === 'catstare' || side.type === 'dlc') && !side.archived}
 						<tr>
 							<th scope="row"
 								><a
+									class={side.type === 'catstare' ? '' : 'dlc-side'}
 									href="/sides/{side.name}"
-									style="color: {side.type === 'catstare' ? 'CanvasText' : `#${side.colorPlus}`};"
+									style="color: {side.type === 'catstare'
+										? 'CanvasText'
+										: `#${side.color}`}; --dlc-color: #{side.color}; --hover-color: #{side.colorPlus};"
 									>{side.name}</a
 								></th
 							>
@@ -76,13 +79,18 @@
 					{/if}
 				{/each}
 			</tbody>
-			<thead><tr><th colspan="3">Archived</th></tr></thead>
+			<thead><tr><th scope="col">Archived</th><th></th><th></th></tr></thead>
 			<tbody>
 				{#each data.sides as side}
 					{#if side.archived}
 						<tr>
 							<th scope="row"
-								><a href="/sides/{side.name}" style="color: #{side.colorPlus};">{side.name}</a></th
+								><a
+									class="dlc-side"
+									href="/sides/{side.name}"
+									style="color: #{side.color}; --dlc-color: #{side.color}; --hover-color: #{side.colorPlus};"
+									>{side.name}</a
+								></th
 							>
 							<td>{side.clearCount}</td>
 							<td>{side.uniquePlayers}</td>
@@ -233,6 +241,18 @@
 
 	:global(:root:not([data-theme='dark'])) .standard-side {
 		color: color-mix(in srgb, #a2c4c9 70%, black) !important;
+	}
+
+	.dlc-side:hover {
+		color: var(--hover-color) !important;
+	}
+
+	:global(:root:not([data-theme='dark'])) .dlc-side {
+		color: color-mix(in srgb, var(--dlc-color) 70%, black) !important;
+
+		&:hover {
+			color: color-mix(in srgb, var(--hover-color) 70%, black) !important;
+		}
 	}
 
 	div {
