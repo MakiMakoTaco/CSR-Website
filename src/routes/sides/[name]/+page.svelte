@@ -51,7 +51,6 @@
 	{:then side}
 		{#if side}
 			<nav>
-				<button class="export" onclick={() => exportSide(side, data.player?.name)}>Export</button>
 				<button onclick={() => (location = '#')}><h3>{side.name}</h3></button>
 				{#await side.tiers then tiers}
 					{#each tiers as tier}
@@ -68,9 +67,7 @@
 				{/await}
 			</nav>
 			<div class="content">
-				<button class="export mobile-export" onclick={() => exportSide(side, data.player?.name)}
-					>Export</button
-				>
+				<button class="export" onclick={() => exportSide(side, data.player?.name)}>Export</button>
 				<h1
 					class={lightDlc(side.color)}
 					style="--dlc-color: #{side.color}; color: {side.color ? `#${side.color}` : 'CanvasText'};"
@@ -225,7 +222,11 @@
 		right: 1rem;
 		display: grid;
 		position: fixed;
-		padding-right: 1rem;
+		margin-top: 1rem;
+		padding: 0.5rem;
+		border: 1px solid grey;
+		border-radius: 1rem;
+		background-color: Canvas;
 
 		justify-self: right;
 		justify-items: center;
@@ -237,7 +238,34 @@
 		}
 
 		@media (width < 1000px) {
-			display: none;
+			top: 3px;
+			left: 126px;
+			right: 3px;
+			margin: 0;
+			display: flex;
+			flex-wrap: wrap;
+			justify-content: center;
+			align-items: baseline;
+			padding: 2px;
+			border-radius: 0.5rem;
+
+			> * {
+				padding: 1px 2px;
+				font-size: 13px;
+
+				@media (width < 380px) {
+					padding: 1px;
+					font-size: 11px;
+				}
+			}
+
+			h3 {
+				font-size: 14px;
+
+				@media (width < 380px) {
+					font-size: 12px;
+				}
+			}
 		}
 	}
 
@@ -252,11 +280,14 @@
 	}
 
 	h1 {
+		grid-row: 1;
+		grid-column: 1;
 		justify-self: center;
 		font-size: 42px;
 	}
 
 	h3 {
+		margin-top: 0;
 		margin-bottom: 0;
 	}
 
@@ -273,20 +304,12 @@
 	.export {
 		all: revert;
 		width: fit-content;
-	}
-
-	nav .export {
-		margin-top: 24px;
-	}
-
-	.mobile-export {
-		display: none;
+		grid-row: 1;
+		grid-column: 1;
 		justify-self: end;
-		margin-right: 10px;
-
-		@media (width < 1000px) {
-			display: block;
-		}
+		align-self: end;
+		margin-right: 20px;
+		margin-bottom: -0.75rem;
 	}
 
 	.side {

@@ -548,7 +548,8 @@
 	}
 
 	.mod-name {
-		justify-self: left;
+		justify-self: center;
+		text-align: center;
 
 		button {
 			vertical-align: 0.3em;
