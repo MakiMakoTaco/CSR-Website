@@ -103,7 +103,7 @@
 							</div>
 						</div>
 						<div id="{mod.id}-mod-edit" hidden>
-							<form method="POST" action="?/updateMod" onsubmit={(e) => e.requestSubmit()}>
+							<form method="POST" action="?/updateMod">
 								<input type="number" name="id" value={mod.id} hidden />
 								<input id="{mod.id}-name" type="text" name="name" value={mod.name} />
 								<select id="tier-selector" name="tierId">
@@ -112,6 +112,12 @@
 									{/each}
 								</select>
 								<textarea name="notes" value={mod.notes ?? ''} id="{mod.id}-notes"></textarea>
+								<input
+									type="text"
+									name="manualLink"
+									value={mod.manualLink ?? ''}
+									placeholder="Manual download link"
+								/>
 								<button
 									onclick={(e) => {
 										e.preventDefault();
@@ -152,7 +158,7 @@
 		}
 	}
 
-	button {
+	nav button {
 		border-style: none;
 		background-color: transparent;
 	}

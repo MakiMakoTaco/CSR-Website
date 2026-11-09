@@ -20,7 +20,7 @@
 	}
 </script>
 
-<button class="back" onclick={() => (location = './')}>Back to Mod</button>
+<button class="back" onclick={() => (location = './')}>Return to Mod</button>
 <div class="clears">
 	{#if playerSubmission}
 		<div class="player-submission">
@@ -65,8 +65,18 @@
 </div>
 
 <style>
+	a:is(:link, :visited) {
+		color: light-dark(#0000ee, #9e9eff);
+	}
+
+	a:hover {
+		color: color-mix(in srgb, light-dark(#0000ee, #9e9eff) 50%, CanvasText);
+	}
+
 	.back {
 		margin: 1rem 15px;
+		padding: 4px 10px;
+		font-size: 16px;
 	}
 
 	.clears {

@@ -2,8 +2,8 @@
 	<title>Admin Panel - CSR</title>
 </svelte:head>
 
-<a href="/admin/create-side">Create a Side</a>
+<button onclick={() => (location = '/admin/create-side')}>Create a Side</button>
 <br />
-<a href="/admin/edit-side">Edit a Side</a>
+<button onclick={() => (location = '/admin/edit-side')}>Edit a Side</button>
 <br />
-<a href="/admin/confirm-claims">Confirm player claims</a>
+<button onclick={() => (location = '/admin/confirm-claims')}>Confirm player claims</button>

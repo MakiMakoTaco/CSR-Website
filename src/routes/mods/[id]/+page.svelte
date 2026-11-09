@@ -24,7 +24,7 @@
 </svelte:head>
 
 <button class="back" onclick={() => (location = `/sides/${mod.sideName}`)}
-	>Back to {mod.sideName}</button
+	>Return to {mod.sideName}</button
 >
 {#if page.url.searchParams.get('player')}
 	<button
@@ -54,7 +54,7 @@
 			> -->
 		</h1>
 		<div class="clears">
-			<a href="{id}/clears">view {data.clears} clears</a>
+			<button onclick={() => (location = `/mods/${id}/clears`)}>View Clears</button>
 		</div>
 	</div>
 	<div class="description">{data.mod.description}</div>
@@ -100,6 +100,13 @@
 								<td>{formatBytes(download.size)}</td>
 							</tr>
 						{/each}
+						{#if mod.manualLink}
+							<tr>
+								<td></td>
+								<td><a href={mod.manualLink}>Google Drive</a></td>
+								<td></td>
+							</tr>
+						{/if}
 					</tbody>
 				</table>
 			</div>
@@ -165,6 +172,8 @@
 
 	.back {
 		margin: 1rem 15px;
+		padding: 4px 10px;
+		font-size: 16px;
 	}
 
 	.return {
@@ -262,6 +271,11 @@
 
 	.clears {
 		font-size: 24px;
+
+		button {
+			padding: 5px 14px;
+			font-size: 20px;
+		}
 	}
 
 	.children {
