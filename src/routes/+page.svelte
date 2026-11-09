@@ -45,7 +45,13 @@
 				{#each data.sides as side}
 					{#if side.type === 'standard'}
 						<tr>
-							<th scope="row"><a href="/sides/{side.name}">{side.name}</a></th>
+							<th scope="row"
+								><a
+									class={side.name === 'Super-Side' ? '' : 'standard-side'}
+									href="/sides/{side.name}"
+									style={side.name === 'Super-Side' ? '' : 'color: #a2c4c9;'}>{side.name}</a
+								></th
+							>
 							<td>{side.clearCount}</td>
 							<td>{side.uniquePlayers}</td>
 						</tr>
@@ -58,7 +64,11 @@
 					{#if (side.type === 'catstare' || side.type === 'dlc') && !side.archived}
 						<tr>
 							<th scope="row"
-								><a href="/sides/{side.name}" style="color: #{side.colorPlus};">{side.name}</a></th
+								><a
+									href="/sides/{side.name}"
+									style="color: {side.type === 'catstare' ? 'CanvasText' : `#${side.colorPlus}`};"
+									>{side.name}</a
+								></th
 							>
 							<td>{side.clearCount}</td>
 							<td>{side.uniquePlayers}</td>
@@ -101,7 +111,8 @@
 								<td
 									><a
 										class="player {nameOutline(submission.player.color)}"
-										style="color: #{submission.player.color};"
+										style="color: #{submission.player.color}; --player-color: #{submission.player
+											.color || '000000'};"
 										href="/players/{submission.player.id}">{submission.player.name}</a
 									></td
 								>
@@ -216,6 +227,14 @@
 		}
 	}
 
+	table a:visited {
+		color: LinkText;
+	}
+
+	:global(:root:not([data-theme='dark'])) .standard-side {
+		color: color-mix(in srgb, #a2c4c9 70%, black) !important;
+	}
+
 	div {
 		text-align: center;
 	}
@@ -300,6 +319,10 @@
 			&:hover {
 				color: color-mix(in srgb, LinkText 75%, CanvasText);
 			}
+		}
+
+		.player:hover {
+			color: color-mix(in srgb, var(--player-color) 75%, grey) !important;
 		}
 
 		.player,
