@@ -316,12 +316,12 @@
 													url.hidden = false;
 													image.hidden = true;
 
-													this.textContent = 'Use Image';
+													e.currentTarget.textContent = 'Use Image';
 												} else {
 													url.hidden = true;
 													image.hidden = false;
 
-													this.textContent = 'Use Link';
+													e.currentTarget.textContent = 'Use Link';
 												}
 											}}
 											aria-label="Switch between image/link">Use Image</button
