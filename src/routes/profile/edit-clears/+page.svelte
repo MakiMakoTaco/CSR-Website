@@ -187,16 +187,19 @@
 											name="hours"
 											min="0"
 											value={clear.timeTaken != null ? Math.floor(clear.timeTaken / 3600) : ''}
+											placeholder="H"
 										/>:<input
 											type="number"
 											name="minutes"
 											min="0"
 											value={clear.timeTaken != null ? Math.floor(clear.timeTaken / 60) % 60 : ''}
+											placeholder="M"
 										/>:<input
 											type="number"
 											name="seconds"
 											min="0"
 											value={clear.timeTaken != null ? clear.timeTaken % 60 : ''}
+											placeholder="S"
 										/>
 									</span>
 								</label>
@@ -422,7 +425,12 @@
 		}
 
 		.time-inputs input {
-			width: 1.8em;
+			width: 2rem;
+			margin: 0 3px;
+
+			&:first-child {
+				width: 2.5rem;
+			}
 		}
 	}
 
