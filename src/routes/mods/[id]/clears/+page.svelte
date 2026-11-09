@@ -62,7 +62,7 @@
 
 <style>
 	.back {
-		margin: 1rem 0;
+		margin: 1rem 15px;
 	}
 
 	.clears {

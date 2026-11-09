@@ -361,31 +361,33 @@
 					</span>
 				</div>
 				<br />
-				<input type="checkbox" id="honor-pledge" required /><label for="honor-pledge"
-					>I swear that my clear is legitimate, that I am following the rules of this event, and
-					that I am respecting other Celeste players by not cheating or faking my clear.</label
-				>
-				<br />
-				<button
-					class="submit-button"
-					onclick={(e) => {
-						const submittingMods = sides.flatMap((side) =>
-							side.tiers.flatMap((tier) => tier.mods.filter((mod) => mod.submitting).flat())
-						);
+				<div class="pledge">
+					<input type="checkbox" id="honor-pledge" required /><label for="honor-pledge"
+						>I swear that my clear is legitimate, that I am following the rules of this event, and
+						that I am respecting other Celeste players by not cheating or faking my clear.</label
+					>
+					<br />
+					<button
+						class="submit-button"
+						onclick={(e) => {
+							const submittingMods = sides.flatMap((side) =>
+								side.tiers.flatMap((tier) => tier.mods.filter((mod) => mod.submitting).flat())
+							);
 
-						submittingMods.forEach((mod) => {
-							const url = document.getElementById(`${mod.id}-proof`);
-							const image = document.getElementById(`${mod.id}-image`);
+							submittingMods.forEach((mod) => {
+								const url = document.getElementById(`${mod.id}-proof`);
+								const image = document.getElementById(`${mod.id}-image`);
 
-							if (url.hidden) {
-								url.firstChild.value = '';
-							} else {
-								image.firstChild.value = '';
-							}
-						});
-					}}
-					disabled={submitting}>Submit</button
-				>
+								if (url.hidden) {
+									url.firstChild.value = '';
+								} else {
+									image.firstChild.value = '';
+								}
+							});
+						}}
+						disabled={submitting}>Submit</button
+					>
+				</div>
 			</form>
 		{/if}
 	{/await}
@@ -513,9 +515,12 @@
 		margin: 20px;
 	}
 
+	.pledge {
+		text-align: center;
+	}
+
 	.submit-button {
 		margin-top: 0.5rem;
-		margin-left: 4px;
 	}
 
 	.close-mod-filter {
@@ -544,6 +549,10 @@
 
 	.mod-name {
 		justify-self: left;
+
+		button {
+			vertical-align: 0.3em;
+		}
 	}
 
 	.mod-data {

@@ -122,6 +122,10 @@
 		color: light-dark(#0000ee, #9e9eff);
 	}
 
+	a:hover {
+		color: color-mix(in srgb, light-dark(#0000ee, #9e9eff) 50%, CanvasText);
+	}
+
 	main {
 		width: 80vw;
 		text-align: center;
@@ -153,7 +157,7 @@
 	}
 
 	.back {
-		margin: 1rem 0;
+		margin: 1rem 15px;
 	}
 
 	.title {
