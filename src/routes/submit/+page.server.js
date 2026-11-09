@@ -11,6 +11,14 @@ import { getSideByName, getSubmitData } from '$lib/functions/getSides.js';
 import { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v10';
 
+async function deleteImages(platform, folderName) {
+	const images = await platform.env.R2.list({ prefix: `${folderName}/` });
+
+	if (images.objects.length > 0) {
+		await platform.env.R2.delete(images.objects.map((image) => image.key));
+	}
+}
+
 async function getData(sql, parent, playerId) {
 	const parentSides = (await parent()).sides;
 	const sides = [];
@@ -75,8 +83,9 @@ export const actions = {
 						value
 							.split(' ')
 							.map((link) => link.trim())
+							.filter((link) => link)
 							.forEach((url) => {
-								urls.push(new URL(value).href);
+								urls.push(new URL(url).href);
 							});
 
 						value = urls.join(' ');
@@ -93,7 +102,7 @@ export const actions = {
 			modMap[modId] = { ...modMap[modId], [dbKey]: value || null };
 		}
 
-		const allowedTypes = ['image/webp', 'image/png', 'image/jpg'];
+		const allowedTypes = ['image/webp', 'image/png', 'image/jpeg', 'image/jpg'];
 		for (const modId in modMap) {
 			const mod = modMap[modId];
 			const folderName = `${playerId}/${modId}`;
@@ -114,9 +123,11 @@ export const actions = {
 			mod.isPrivate = mod.isPrivate ? true : false;
 
 			if (mod.proof) {
-				await platform.env.R2.delete(folderName);
+				mod.isLocalProof = false;
+				await deleteImages(platform, folderName);
 			} else {
 				mod.isLocalProof = true;
+				mod.proof = `/players/${playerId}/clears/${modId}`;
 				mod.images = formData.getAll(`${modId}-image`);
 
 				if (mod.images.length > 4) {
@@ -203,6 +214,8 @@ export const actions = {
 				// 	});
 				// }
 
+				await deleteImages(platform, folderName);
+
 				const uploads = mod.images.map(async (image, index) => {
 					let bytes;
 
@@ -216,7 +229,6 @@ export const actions = {
 						bytes = await image.arrayBuffer();
 					}
 
-					await platform.env.R2.delete(folderName);
 					const fileName = `${folderName}/${index + 1}.webp`;
 					await platform.env.R2.put(fileName, bytes, {
 						httpMetadata: { contentType: 'image/webp' }

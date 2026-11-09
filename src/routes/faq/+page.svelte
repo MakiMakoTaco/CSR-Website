@@ -35,9 +35,8 @@
 			</p>
 			<p>
 				You might notice that when submitting mods, you can submit for mods you've already beaten.
-				This exists whilst a specific editing option gets worked on. Currently, sending a submission
-				to the already beaten mod will just replace whatever fields you fill out, along with setting
-				an "update at" timestamp.
+				Currently, sending a submission to the already beaten mod will just replace whatever fields
+				you fill out, along with setting an "update at" timestamp.
 			</p>
 			<p>
 				If you encounter any issues when submitting please contact a mod or go to the Discord's help

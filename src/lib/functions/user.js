@@ -66,11 +66,36 @@ export async function getPlayerFromId(sql, playerId) {
 
 export async function getPlayerClears(sql, playerId) {
 	const clears = await sql`
-    SELECT *
+    SELECT
+      pp.id,
+      pp.mod_id,
+      pp.proof,
+      pp.is_local_proof,
+      pp.cleared_date,
+      pp.deaths,
+      pp.time_taken,
+      pp.is_fc,
+      pp.public_notes,
+      pp.is_private,
+      pp.submitted_at,
+      m.name,
+      tp.name AS tier_name,
+      tp.color AS tier_color,
+      tp.color_plus AS tier_color_plus,
+      tp.side_index,
+      s.id AS side_id,
+      s.name AS side_name
     FROM player_progress pp
     JOIN mods m
       ON pp.mod_id = m.id
+    JOIN tiers t
+      ON t.id = m.tier_id
+    JOIN tier_presets tp
+      ON tp.id = t.preset_id
+    JOIN sides s
+      ON s.id = t.side_id
     WHERE player_id = ${playerId}
+    ORDER BY pp.submitted_at DESC NULLS LAST, pp.id DESC
   `;
 
 	return clears;

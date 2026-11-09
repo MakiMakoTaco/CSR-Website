@@ -86,9 +86,16 @@ export async function load({ params, locals }) {
 
 	return {
 		player,
+		isOwner,
 		privateStats,
 		clears: clears
 			.filter((clear) => !clear.isPrivate || isOwner)
+			.map((clear) => ({
+				...clear,
+				proof: clear.isLocalProof
+					? `/players/${params.playerId}/clears/${clear.modId}`
+					: clear.proof
+			}))
 			.map((clear) =>
 				privateStats
 					? { ...clear, timeTaken: null, deaths: null, isFc: null, publicNotes: null }
