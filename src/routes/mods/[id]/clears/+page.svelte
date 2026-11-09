@@ -20,7 +20,7 @@
 	}
 </script>
 
-<button onclick={() => (location = './')}>Back To Mod</button>
+<button class="back" onclick={() => (location = './')}>Back to Mod</button>
 <div class="clears">
 	{#if playerSubmission}
 		<div class="player-submission">
@@ -61,9 +61,13 @@
 </div>
 
 <style>
+	.back {
+		margin: 1rem 0;
+	}
+
 	.clears {
 		width: 80vw;
-		margin: 1rem auto;
+		margin: 0 auto 1rem;
 		border: 1px solid grey;
 		border-radius: 1rem;
 
