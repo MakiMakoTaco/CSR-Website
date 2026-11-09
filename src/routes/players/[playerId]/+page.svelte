@@ -222,6 +222,7 @@
 		gap: 0 1rem;
 
 		img {
+			padding: 1rem;
 			border-radius: 50%;
 		}
 

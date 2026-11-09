@@ -364,7 +364,7 @@
 												onclick={(e) => {
 													e.preventDefault();
 
-													document.getElementById(`${mod.id}-proof`).hidden = false;
+													document.getElementById(`${mod.id}-url`).hidden = false;
 													document.getElementById(`${mod.id}-image`).hidden = true;
 
 													e.currentTarget.classList.add('active');
@@ -377,7 +377,7 @@
 												onclick={(e) => {
 													e.preventDefault();
 
-													document.getElementById(`${mod.id}-proof`).hidden = true;
+													document.getElementById(`${mod.id}-url`).hidden = true;
 													document.getElementById(`${mod.id}-image`).hidden = false;
 
 													e.currentTarget.classList.add('active');
@@ -657,7 +657,7 @@
 						<button
 							onclick={(e) => {
 								submittingEntries.forEach((mod) => {
-									const url = document.getElementById(`${mod.id}-proof`);
+									const url = document.getElementById(`${mod.id}-url`);
 									const image = document.getElementById(`${mod.id}-image`);
 
 									if (url.hidden) {
