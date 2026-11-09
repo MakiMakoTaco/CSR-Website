@@ -66,72 +66,68 @@
 						</h2>
 					{/if}
 				</div>
-				{#each tier.mods as tierMod}
-					{#await tierMod.data}
-						Loading mod data...
-					{:then mod}
-						<div class="mod-info">
-							<div id="{mod.id}-mod-data">
-								<div>
-									<a
-										id="mod"
-										href="/mods/{mod.id}"
-										style="text-decoration: none; color: #{tier.color ?? 'ffffff'};">{mod.name}</a
+				{#each tier.mods as mod}
+					<div class="mod-info">
+						<div id="{mod.id}-mod-data">
+							<div>
+								<a
+									id="mod"
+									href="/mods/{mod.id}"
+									style="text-decoration: none; color: #{tier.color ?? 'ffffff'};">{mod.name}</a
+								>
+								{#if mod.notes}
+									<sup
+										id="note-tag"
+										onmouseenter={() => {
+											note.textContent = mod.notes;
+											note.showPopover();
+										}}
+										onmouseleave={() => note.hidePopover()}>notes</sup
 									>
-									{#if mod.notes}
-										<sup
-											id="note-tag"
-											onmouseenter={() => {
-												note.textContent = mod.notes;
-												note.showPopover();
-											}}
-											onmouseleave={() => note.hidePopover()}>notes</sup
-										>
-									{/if}
-									<button
-										onclick={(e) => {
-											e.preventDefault();
+								{/if}
+								<button
+									onclick={(e) => {
+										e.preventDefault();
 
-											const data = document.getElementById(`${mod.id}-mod-data`);
-											const edit = document.getElementById(`${mod.id}-mod-edit`);
+										const data = document.getElementById(`${mod.id}-mod-data`);
+										const edit = document.getElementById(`${mod.id}-mod-edit`);
 
-											edit.querySelector('#tier-selector').value = tier.id;
+										edit.querySelector('#tier-selector').value = tier.id;
 
-											data.hidden = true;
-											edit.hidden = false;
-										}}>Edit</button
-									>
-									<!-- <button>Replace</button>
+										data.hidden = true;
+										edit.hidden = false;
+									}}>Edit</button
+								>
+								<!-- <button>Replace</button>
 									<button>Remove</button> -->
-								</div>
-							</div>
-							<div id="{mod.id}-mod-edit" hidden>
-								<form method="POST" action="?/updateMod" onsubmit={(e) => e.requestSubmit()}>
-									<input type="number" name="id" value={mod.id} hidden />
-									<input id="{mod.id}-name" type="text" name="name" value={mod.name} />
-									<select id="tier-selector" name="tierId">
-										{#each tiers as tierOptions}
-											<option value={tierOptions.id}>{tierOptions.name}</option>
-										{/each}
-									</select>
-									<textarea name="notes" value={mod.notes ?? ''} id="{mod.id}-notes"></textarea>
-									<button
-										onclick={(e) => {
-											e.preventDefault();
-											const data = document.getElementById(`${mod.id}-mod-data`);
-											const edit = document.getElementById(`${mod.id}-mod-edit`);
-											const name = document.getElementById(`${mod.id}-name`);
-
-											data.hidden = false;
-											edit.hidden = true;
-											name.value = mod.name;
-										}}>Cancel</button
-									>
-									<button>Save</button>
-								</form>
 							</div>
 						</div>
-					{/await}
+						<div id="{mod.id}-mod-edit" hidden>
+							<form method="POST" action="?/updateMod" onsubmit={(e) => e.requestSubmit()}>
+								<input type="number" name="id" value={mod.id} hidden />
+								<input id="{mod.id}-name" type="text" name="name" value={mod.name} />
+								<select id="tier-selector" name="tierId">
+									{#each tiers as tierOptions}
+										<option value={tierOptions.id}>{tierOptions.name}</option>
+									{/each}
+								</select>
+								<textarea name="notes" value={mod.notes ?? ''} id="{mod.id}-notes"></textarea>
+								<button
+									onclick={(e) => {
+										e.preventDefault();
+										const data = document.getElementById(`${mod.id}-mod-data`);
+										const edit = document.getElementById(`${mod.id}-mod-edit`);
+										const name = document.getElementById(`${mod.id}-name`);
+
+										data.hidden = false;
+										edit.hidden = true;
+										name.value = mod.name;
+									}}>Cancel</button
+								>
+								<button>Save</button>
+							</form>
+						</div>
+					</div>
 				{/each}
 			{/each}
 		{/await}

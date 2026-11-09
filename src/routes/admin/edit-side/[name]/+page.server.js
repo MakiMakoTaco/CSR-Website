@@ -1,6 +1,5 @@
 import { getSides } from '$lib/functions/getSides';
 import { getTiers } from '$lib/functions/getTiers.js';
-import { getModData, getMods } from '$lib/functions/getMods.js';
 
 import { error, fail } from '@sveltejs/kit';
 
@@ -9,9 +8,17 @@ async function getData(locals, id) {
 
 	const tiers = await getTiers(sql, id);
 
+	if (tiers.length === 0) return tiers;
+
+	const mods = await sql`
+		SELECT *
+		FROM mods
+		WHERE tier_id IN ${sql(tiers.map((tier) => tier.id))}
+		ORDER BY UPPER(name) ASC
+	`;
+
 	for (let i = 0; i < tiers.length; i++) {
-		const mods = [...(await getMods(sql, tiers[i].id))];
-		tiers[i].mods = mods.map((mod) => ({ data: getModData(sql, mod.id) }));
+		tiers[i].mods = mods.filter((mod) => mod.tierId === tiers[i].id);
 	}
 
 	return tiers;
@@ -45,19 +52,25 @@ export const actions = {
 
 		const modId = form.get('id');
 		if (!modId) {
-			fail(412, { error: 'Missing modID' });
+			return fail(412, { error: 'Missing modID' });
 		}
 
-		const mod = await getModData(sql, modId);
+		const mod = (
+			await sql`
+			SELECT *
+			FROM mods
+			WHERE id = ${modId}
+		`
+		)[0];
 		if (!mod) {
-			fail(404, { error: 'Error finding mod with requested ID' });
+			return fail(404, { error: 'Error finding mod with requested ID' });
 		}
 
 		let updates = {};
 
 		for (const [key, value] of form) {
 			if (key === 'id' && (mod[key] ?? '').toString().trim() != value.trim()) {
-				fail(417, {
+				return fail(417, {
 					error: "Something went wrong, received and fetched mod IDs somehow don't match"
 				});
 			}
