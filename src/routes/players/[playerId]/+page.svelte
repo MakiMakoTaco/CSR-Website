@@ -2,6 +2,15 @@
 	import { page } from '$app/state';
 
 	let { data } = $props();
+
+	let fullClears = $derived(data.clears.filter((clear) => clear.isFc).length);
+	let timedClears = $derived(data.clears.filter((clear) => clear.timeTaken != null));
+	let deathClears = $derived(data.clears.filter((clear) => clear.deaths != null));
+
+	function formatTime(seconds) {
+		const pad = (n) => String(n).padStart(2, '0');
+		return `${Math.floor(seconds / 3600)}:${pad(Math.floor(seconds / 60) % 60)}:${pad(seconds % 60)}`;
+	}
 </script>
 
 <title>
@@ -19,6 +28,39 @@
 		<p>
 			About me: {data.player.about}
 		</p>
+	{/if}
+</div>
+
+<div class="stats">
+	<h2>Total Clears: {data.clears.length}</h2>
+	{#if fullClears > 0 || timedClears.length > 0 || deathClears.length > 0}
+		<div class="totals">
+			{#if fullClears > 0}
+				<span>Full Clears: {fullClears}</span>
+			{/if}
+			{#if timedClears.length > 0}
+				<span
+					>Total Time: {formatTime(
+						timedClears.reduce((total, clear) => total + clear.timeTaken, 0)
+					)}</span
+				>
+			{/if}
+			{#if deathClears.length > 0}
+				<span>Total Deaths: {deathClears.reduce((total, clear) => total + clear.deaths, 0)}</span>
+			{/if}
+		</div>
+	{/if}
+	{#if data.roles.length > 0}
+		<div class="roles">
+			{#each data.roles as role}
+				<div
+					class="role {role.catstare ? 'catstare-role' : ''} {role.plus ? 'plus-role' : ''}"
+					style="background-color: #{role.color};"
+				>
+					{role.name}
+				</div>
+			{/each}
+		</div>
 	{/if}
 </div>
 
@@ -44,10 +86,19 @@
 							<a href="/mods/{clear.modId}?player={page.params.playerId}">{clear.name}</a>
 						</td>
 						<td class="proof"><a href={clear.proof}>Proof</a></td>
-						<td class="time">{clear.timeTaken ?? 'N/A'}</td>
+						<td class="time">{clear.timeTaken != null ? formatTime(clear.timeTaken) : 'N/A'}</td>
 						<td class="deaths">{clear.deaths ?? 'N/A'}</td>
-						<td class="full-clear">{clear.isFc}</td>
-						<td class="clear-date">{clear.clearedDate ?? 'N/A'}</td>
+						<td class="full-clear">{clear.isFc ? 'Yes' : 'N/A'}</td>
+						<td class="clear-date">
+							{clear.clearedDate
+								? new Date(clear.clearedDate).toLocaleDateString('en-US', {
+										year: 'numeric',
+										month: 'short',
+										day: 'numeric',
+										timeZone: 'UTC'
+									})
+								: 'N/A'}
+						</td>
 						<td class="player-notes">{clear.publicNotes}</td>
 					</tr>
 				{/each}
@@ -81,6 +132,57 @@
 		p {
 			flex-basis: 100%;
 			text-align: center;
+		}
+	}
+
+	.stats {
+		width: 80vw;
+		margin: 0 auto 1rem;
+		padding: 0 1rem 1rem;
+		box-sizing: border-box;
+		border: 1px solid grey;
+		border-radius: 1rem;
+		text-align: center;
+
+		@media (width < 1000px) {
+			width: 95vw;
+		}
+
+		h2 {
+			margin: 0.5rem 0;
+			padding: 0.5rem;
+		}
+	}
+
+	.totals {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: 0.25rem 2rem;
+		margin-bottom: 1rem;
+		font-size: 18px;
+		font-weight: bold;
+	}
+
+	.roles {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: 0.5rem;
+	}
+
+	.role {
+		padding: 5px;
+		color: black;
+		border-radius: 20px;
+	}
+
+	.catstare-role {
+		background-color: #3a3a3a !important;
+		color: white;
+
+		&.plus-role {
+			background-color: black !important;
 		}
 	}
 

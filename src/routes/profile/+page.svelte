@@ -51,6 +51,14 @@
 		{apiKey}
 	{/if} -->
 
+	<div class="preview">
+		<img class="profile-pic" alt="player" src={avatar} />
+		<h1 style="color: {nameColor};">{name}</h1>
+		<p class="about">
+			{#if about}About me: {about}{/if}
+		</p>
+	</div>
+
 	<div class="update-player">
 		<button class="reset-avatar" onclick={() => (location = '/login/discord')}>Reset avatar</button>
 		<form method="POST" action="?/update">
@@ -75,14 +83,6 @@
 		<form class="logout" method="POST" action="?/logout">
 			<button>Logout</button>
 		</form>
-	</div>
-
-	<div class="preview">
-		<img class="profile-pic" alt="player" src={avatar} />
-		<h1 style="color: {nameColor};">{name}</h1>
-		<p class="about">
-			{#if about}About me: {about}{/if}
-		</p>
 	</div>
 </main>
 

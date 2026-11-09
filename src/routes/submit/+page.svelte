@@ -281,30 +281,7 @@
 								</div>
 								<div class="mod-data">
 									<span id="proofs">
-										<label for="{mod.id}-proof">Proof:</label>
-										<div id="{mod.id}-url">
-											<input
-												id="{mod.id}-proof"
-												name="{mod.id}-proof"
-												placeholder="https://imgur.com/a/BaxjPdY"
-											/>
-										</div>
-										<div id="{mod.id}-image" hidden>
-											<input
-												id="{mod.id}-proof"
-												name="{mod.id}-image"
-												type="file"
-												accept="image/webp, image/png, image/jpg"
-												multiple
-											/>
-											<button
-												onclick={(e) => {
-													e.preventDefault();
-
-													document.getElementById(`${mod.id}-image`).firstChild.value = '';
-												}}>Reset</button
-											>
-										</div>
+										<label for="{mod.id}-proof">Proof</label>
 										<span class="proof-toggles">
 											<button
 												class="proof-toggle active"
@@ -331,14 +308,65 @@
 												}}>Use Image</button
 											>
 										</span>
+										<div id="{mod.id}-url">
+											<input
+												id="{mod.id}-proof"
+												name="{mod.id}-proof"
+												placeholder="https://imgur.com/a/BaxjPdY"
+											/>
+										</div>
+										<div id="{mod.id}-image" hidden>
+											<input
+												id="{mod.id}-proof"
+												name="{mod.id}-image"
+												type="file"
+												accept="image/webp, image/png, image/jpg"
+												multiple
+											/>
+											<button
+												onclick={(e) => {
+													e.preventDefault();
+
+													document.getElementById(`${mod.id}-image`).firstChild.value = '';
+												}}>Reset</button
+											>
+										</div>
 									</span>
 									<span id="date">
-										<label for="{mod.id}-clear-date">Clear Date:</label>
+										<label for="{mod.id}-clear-date">Clear Date<span>(Optional)</span></label>
 										<input id="{mod.id}-clear-date" name="{mod.id}-clearedDate" type="date" />
 									</span>
 									<span id="deaths">
-										<label for="{mod.id}-death-count">Deaths:</label>
+										<label for="{mod.id}-death-count">Deaths<span>(Optional)</span></label>
 										<input id="{mod.id}-death-count" name="{mod.id}-deaths" type="number" />
+									</span>
+									<span id="time">
+										<label for="{mod.id}-hours">Time Taken<span>(Optional)</span></label>
+										<span class="time-inputs">
+											<input
+												id="{mod.id}-hours"
+												name="{mod.id}-hours"
+												type="number"
+												min="0"
+												placeholder="H"
+											/>:<input
+												name="{mod.id}-minutes"
+												type="number"
+												min="0"
+												max="59"
+												placeholder="M"
+											/>:<input
+												name="{mod.id}-seconds"
+												type="number"
+												min="0"
+												max="59"
+												placeholder="S"
+											/>
+										</span>
+									</span>
+									<span id="full-clear">
+										<label for="{mod.id}-full-clear">Full Clear?<span>(Optional)</span></label>
+										<input id="{mod.id}-full-clear" name="{mod.id}-isFc" type="checkbox" />
 									</span>
 									<!-- <span id="time">
 										<label for="{mod.id}-time-taken">Clear Time:</label>
@@ -349,7 +377,7 @@
 									<!-- <label for="{mod.id}-private">Private:</label>
 					<input id="{mod.id}-private" name="{mod.id}-private" type="checkbox" /> -->
 									<span id="notes">
-										<label for="{mod.id}-notes">Notes:</label>
+										<label for="{mod.id}-notes">Notes<span>(Optional)</span></label>
 										<input id="{mod.id}-notes" name="{mod.id}-publicNotes" type="text" />
 									</span>
 									<!-- <label for="{mod.id}-private-notes">Private Notes:</label>
@@ -451,6 +479,11 @@
 				grid-template-columns: 1fr;
 				justify-items: center;
 
+				span {
+					display: flex;
+					align-items: center;
+				}
+
 				@media (width < 1000px) {
 					width: 90vw;
 					grid-template-columns: minmax(0, 1fr);
@@ -524,6 +557,37 @@
 		text-align: center;
 	}
 
+	.mod-data input:not([type='checkbox'], [type='date'], [type='file'], .time-inputs input) {
+		box-sizing: border-box;
+		width: 150px;
+		max-width: 100%;
+	}
+
+	.time-inputs {
+		white-space: nowrap;
+
+		input {
+			width: 1.8em;
+			margin: 0 3px;
+		}
+	}
+
+	#proofs {
+		min-width: min(310px, 100%);
+
+		> label {
+			min-height: 0;
+
+			@media (width >= 1000px) {
+				margin-top: -8px;
+			}
+		}
+	}
+
+	.mod-data input[type='number'][name$='-deaths'] {
+		width: 50px;
+	}
+
 	.proof-toggle.active {
 		background-color: light-dark(color-mix(in srgb, pink 50%, white), #5b2c6f);
 		color: light-dark(black, white);
@@ -569,27 +633,53 @@
 		justify-self: center;
 		text-align: center;
 
+		h2 {
+			margin-top: 0.375em;
+			margin-bottom: 0.7em;
+		}
+
 		button {
 			vertical-align: 0.3em;
 		}
 	}
 
 	.mod-data {
-		--min-col-size: 200px;
+		--row-gap: 2rem;
 
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(min(var(--min-col-size), 100%), 1fr));
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: var(--row-gap) 2rem;
+		overflow: hidden;
 		margin-bottom: 10px;
+		padding-top: calc(var(--row-gap) / 2);
 
 		> span {
+			position: relative;
 			display: grid;
+			align-content: start;
 			min-width: auto;
-			justify-self: center;
+
+			&::before {
+				content: '';
+				position: absolute;
+				top: calc(var(--row-gap) / -2);
+				left: -100vw;
+				right: -100vw;
+				border-top: 1px solid color-mix(in srgb, grey 60%, transparent);
+			}
 
 			> * {
 				max-width: fit-content;
 				justify-self: center;
 				margin-bottom: 5px;
+			}
+
+			> label {
+				display: grid;
+				justify-items: center;
+				align-content: end;
+				min-height: 2lh;
 			}
 		}
 

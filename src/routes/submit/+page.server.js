@@ -86,6 +86,8 @@ export const actions = {
 				}
 			} else if (dbKey === 'deaths' && value < 0) {
 				return fail(400, { error: 'Deaths cannot be less than 0' });
+			} else if (['hours', 'minutes', 'seconds'].includes(dbKey) && value < 0) {
+				return fail(400, { error: 'Time taken cannot be less than 0' });
 			}
 
 			modMap[modId] = { ...modMap[modId], [dbKey]: value || null };
@@ -99,6 +101,16 @@ export const actions = {
 			mod.playerId = playerId;
 			mod.modId = modId;
 			mod.cleared = true;
+
+			const { hours, minutes, seconds } = mod;
+			delete mod.hours;
+			delete mod.minutes;
+			delete mod.seconds;
+			mod.timeTaken =
+				hours || minutes || seconds
+					? (Number(hours ?? 0) * 60 + Number(minutes ?? 0)) * 60 + Number(seconds ?? 0)
+					: null;
+			mod.isFc = mod.isFc ? true : null;
 
 			if (mod.proof) {
 				await platform.env.R2.delete(folderName);
@@ -227,6 +239,11 @@ export const actions = {
 			SET
 				proof = EXCLUDED.proof,
 				is_local_proof = EXCLUDED.is_local_proof,
+				cleared_date = COALESCE(EXCLUDED.cleared_date, player_progress.cleared_date),
+				deaths = COALESCE(EXCLUDED.deaths, player_progress.deaths),
+				time_taken = COALESCE(EXCLUDED.time_taken, player_progress.time_taken),
+				is_fc = COALESCE(EXCLUDED.is_fc, player_progress.is_fc),
+				public_notes = COALESCE(EXCLUDED.public_notes, player_progress.public_notes),
 				updated_at = CURRENT_TIMESTAMP
 		`;
 
