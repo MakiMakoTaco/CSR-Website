@@ -853,9 +853,18 @@
 		.tier-deaths {
 			width: 50px;
 		}
+	}
 
-		.time-inputs input {
-			width: 1.8em;
+	.time-inputs {
+		white-space: nowrap;
+
+		input {
+			width: 2rem;
+			margin: 0 3px;
+
+			&:first-child {
+				width: 2.5rem;
+			}
 		}
 	}
 
@@ -882,19 +891,6 @@
 		box-sizing: border-box;
 		width: 150px;
 		max-width: 100%;
-	}
-
-	.time-inputs {
-		white-space: nowrap;
-
-		input {
-			width: 2rem;
-			margin: 0 3px;
-
-			&:first-child {
-				width: 2.5rem;
-			}
-		}
 	}
 
 	#proofs {
