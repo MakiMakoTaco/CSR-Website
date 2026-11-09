@@ -364,37 +364,29 @@
 												onclick={(e) => {
 													e.preventDefault();
 
-													document.getElementById(`${mod.id}-proof`).hidden = false;
-													document.getElementById(`${mod.id}-image`).hidden = true;
+													document.getElementById(`${mod.id}-url`).hidden = true;
+													document.getElementById(`${mod.id}-image`).hidden = false;
 
 													e.currentTarget.classList.add('active');
 													e.currentTarget.nextElementSibling.classList.remove('active');
-													setTierProofMode(mod, false);
-												}}>Use Link</button
+													setTierProofMode(mod, true);
+												}}>Use Image</button
 											>
 											<button
 												class="proof-toggle"
 												onclick={(e) => {
 													e.preventDefault();
 
-													document.getElementById(`${mod.id}-proof`).hidden = true;
-													document.getElementById(`${mod.id}-image`).hidden = false;
+													document.getElementById(`${mod.id}-url`).hidden = false;
+													document.getElementById(`${mod.id}-image`).hidden = true;
 
 													e.currentTarget.classList.add('active');
 													e.currentTarget.previousElementSibling.classList.remove('active');
-													setTierProofMode(mod, true);
-												}}>Use Image</button
+													setTierProofMode(mod, false);
+												}}>Use Link</button
 											>
 										</span>
-										<div id="{mod.id}-url">
-											<input
-												id="{mod.id}-proof"
-												name="{mod.id}-proof"
-												oninput={(e) => fillColumn(mod, 'proof', e)}
-												placeholder="https://imgur.com/a/BaxjPdY"
-											/>
-										</div>
-										<div id="{mod.id}-image" hidden>
+										<div id="{mod.id}-image">
 											<input
 												id="{mod.id}-proof"
 												name="{mod.id}-image"
@@ -409,6 +401,14 @@
 													document.getElementById(`${mod.id}-image`).firstChild.value = '';
 												}}>Reset</button
 											>
+										</div>
+										<div id="{mod.id}-url" hidden>
+											<input
+												id="{mod.id}-proof"
+												name="{mod.id}-proof"
+												oninput={(e) => fillColumn(mod, 'proof', e)}
+												placeholder="https://imgur.com/a/BaxjPdY"
+											/>
 										</div>
 									</span>
 									<span id="date">
@@ -657,7 +657,7 @@
 						<button
 							onclick={(e) => {
 								submittingEntries.forEach((mod) => {
-									const url = document.getElementById(`${mod.id}-proof`);
+									const url = document.getElementById(`${mod.id}-url`);
 									const image = document.getElementById(`${mod.id}-image`);
 
 									if (url.hidden) {
