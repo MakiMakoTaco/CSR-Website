@@ -869,6 +869,14 @@
 
 		.time-inputs input {
 			width: 1.8em;
+
+			@media (width >= 1000px) {
+				width: 2rem;
+
+				&:first-child {
+					width: 2.5rem;
+				}
+			}
 		}
 	}
 
@@ -903,6 +911,14 @@
 		input {
 			width: 1.8em;
 			margin: 0 3px;
+
+			@media (width >= 1000px) {
+				width: 2rem;
+
+				&:first-child {
+					width: 2.5rem;
+				}
+			}
 		}
 	}
 
