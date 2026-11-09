@@ -983,6 +983,12 @@
 
 	.submission {
 		width: 75vw;
+
+		&:not(:first-child) {
+			border-top: 3px solid color-mix(in srgb, #767676 60%, transparent);
+			padding: 10px;
+			margin: 0 -10px;
+		}
 	}
 
 	.mod-name {
