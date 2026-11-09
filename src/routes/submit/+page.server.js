@@ -102,10 +102,37 @@ export const actions = {
 			modMap[modId] = { ...modMap[modId], [dbKey]: value || null };
 		}
 
+		for (const entryId of Object.keys(modMap).filter((key) => key.startsWith('t'))) {
+			delete modMap[entryId];
+		}
+
+		if (Object.keys(modMap).length === 0) {
+			return fail(400, { error: 'There are no uncleared mods left to submit' });
+		}
+
+		const existingIds = Object.keys(modMap).filter((modId) => modMap[modId].existing);
+		const existingClears = new Map(
+			(existingIds.length > 0
+				? await sql`
+					SELECT
+						id, mod_id, proof, is_local_proof, cleared_date, deaths, time_taken, is_fc, public_notes, is_private
+					FROM player_progress
+					WHERE
+						player_id = ${playerId}
+						AND mod_id IN ${sql(existingIds)}
+				`
+				: []
+			).map((clear) => [String(clear.modId), clear])
+		);
+		const updates = [];
+
 		const allowedTypes = ['image/webp', 'image/png', 'image/jpeg', 'image/jpg'];
 		for (const modId in modMap) {
 			const mod = modMap[modId];
 			const folderName = `${playerId}/${modId}`;
+			const current = existingClears.get(modId);
+			let newImages = false;
+			delete mod.existing;
 
 			mod.playerId = playerId;
 			mod.modId = modId;
@@ -125,10 +152,17 @@ export const actions = {
 			if (mod.proof) {
 				mod.isLocalProof = false;
 				await deleteImages(platform, folderName);
+			} else if (
+				current &&
+				formData.getAll(`${mod.imageKey ?? modId}-image`).every((image) => image.size === 0)
+			) {
+				mod.proof = current.proof;
+				mod.isLocalProof = current.isLocalProof;
 			} else {
+				newImages = true;
 				mod.isLocalProof = true;
 				mod.proof = `/players/${playerId}/clears/${modId}`;
-				mod.images = formData.getAll(`${modId}-image`);
+				mod.images = formData.getAll(`${mod.imageKey ?? modId}-image`);
 
 				if (mod.images.length > 4) {
 					return fail(400, { modId, error: 'has too many images' });
@@ -239,27 +273,70 @@ export const actions = {
 			}
 
 			delete mod.images;
+			delete mod.imageKey;
+
+			if (current) {
+				const formats = {
+					proof: (value) => value ?? null,
+					isLocalProof: Boolean,
+					clearedDate: (value) => (value ? new Date(value).toISOString().slice(0, 10) : null),
+					deaths: (value) => (value == null ? null : Number(value)),
+					timeTaken: (value) => (value == null ? null : Number(value)),
+					isFc: Boolean,
+					publicNotes: (value) => value ?? null,
+					isPrivate: Boolean
+				};
+
+				const changes = {};
+				for (const [key, format] of Object.entries(formats)) {
+					if (format(mod[key]) !== format(current[key]) || (key === 'proof' && newImages)) {
+						changes[key] = mod[key];
+					}
+				}
+
+				if (Object.keys(changes).length > 0) {
+					updates.push({ id: current.id, changes });
+				}
+
+				continue;
+			}
 
 			mods.push(mod);
 		}
 
-		await sql`
-			INSERT INTO
-				player_progress
-			${sql(mods)}
-			ON CONFLICT (player_id, mod_id)
-			DO UPDATE
-			SET
-				proof = EXCLUDED.proof,
-				is_local_proof = EXCLUDED.is_local_proof,
-				cleared_date = COALESCE(EXCLUDED.cleared_date, player_progress.cleared_date),
-				deaths = COALESCE(EXCLUDED.deaths, player_progress.deaths),
-				time_taken = COALESCE(EXCLUDED.time_taken, player_progress.time_taken),
-				is_fc = COALESCE(EXCLUDED.is_fc, player_progress.is_fc),
-				public_notes = COALESCE(EXCLUDED.public_notes, player_progress.public_notes),
-				is_private = player_progress.is_private OR EXCLUDED.is_private,
-				updated_at = CURRENT_TIMESTAMP
-		`;
+		if (mods.length === 0 && updates.length === 0) {
+			return { success: true, modCount: 0 };
+		}
+
+		if (mods.length > 0) {
+			await sql`
+				INSERT INTO
+					player_progress
+				${sql(mods)}
+				ON CONFLICT (player_id, mod_id)
+				DO UPDATE
+				SET
+					proof = EXCLUDED.proof,
+					is_local_proof = EXCLUDED.is_local_proof,
+					cleared_date = COALESCE(EXCLUDED.cleared_date, player_progress.cleared_date),
+					deaths = COALESCE(EXCLUDED.deaths, player_progress.deaths),
+					time_taken = COALESCE(EXCLUDED.time_taken, player_progress.time_taken),
+					is_fc = COALESCE(EXCLUDED.is_fc, player_progress.is_fc),
+					public_notes = COALESCE(EXCLUDED.public_notes, player_progress.public_notes),
+					is_private = player_progress.is_private OR EXCLUDED.is_private,
+					updated_at = CURRENT_TIMESTAMP
+			`;
+		}
+
+		for (const update of updates) {
+			await sql`
+				UPDATE player_progress
+				SET
+					${sql(update.changes)},
+					updated_at = CURRENT_TIMESTAMP
+				WHERE id = ${update.id}
+			`;
+		}
 
 		const modIds = Object.keys(modMap);
 		const clearData = await sql`
@@ -565,6 +642,6 @@ export const actions = {
 			`;
 		}
 
-		return { success: true, modCount: modIds.length };
+		return { success: true, modCount: mods.length + updates.length };
 	}
 };

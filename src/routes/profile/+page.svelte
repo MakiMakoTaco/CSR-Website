@@ -60,10 +60,7 @@
 	</div>
 
 	<div class="update-player">
-		<button class="reset-avatar" onclick={() => (location = '/login/discord')}>Reset avatar</button>
-		<button class="view-profile" onclick={() => (location = `/players/${data.player.id}`)}
-			>View Your Profile</button
-		>
+		<button class="reset-avatar" onclick={() => (location = '/login/discord')}>Reset Avatar</button>
 		<form method="POST" action="?/update">
 			<div class="form-field">
 				<label for="nameColor">Color:</label>
@@ -91,7 +88,12 @@
 				</p>
 			</div>
 
-			<button>Update Profile</button>
+			<div class="form-buttons">
+				<button>Update Profile</button>
+				<button type="button" onclick={() => (location = `/players/${data.player.id}`)}
+					>View Your Profile</button
+				>
+			</div>
 		</form>
 		<form class="logout" method="POST" action="?/logout">
 			<button>Logout</button>
@@ -147,9 +149,23 @@
 		gap: 1rem;
 	}
 
-	.reset-avatar,
-	.view-profile {
+	.reset-avatar {
 		justify-self: start;
+	}
+
+	.form-buttons {
+		display: flex;
+		justify-content: space-between;
+		gap: 0.75rem;
+
+		@media (width <= 1000px) {
+			flex-direction: column;
+			align-items: center;
+		}
+
+		button {
+			width: 10.5em;
+		}
 	}
 
 	.private-stats {

@@ -36,6 +36,7 @@ export async function getSideByName(sql, name, playerId = null, shorthand = fals
 			s.show_tier_names,
 			json_agg(
 				json_build_object(
+					'id', t.id,
 					'name', tp.name,
 					'color', tp.color,
 					'color_plus', tp.color_plus,
@@ -114,8 +115,66 @@ export async function getSideByName(sql, name, playerId = null, shorthand = fals
 export async function getSubmitData(sql, name, playerId) {
 	const side = await getSideByName(sql, name, playerId, true);
 
+	const clears = new Map(
+		(
+			await sql`
+			SELECT
+				pp.mod_id,
+				pp.proof,
+				pp.is_local_proof,
+				pp.cleared_date,
+				pp.deaths,
+				pp.time_taken,
+				pp.is_fc,
+				pp.public_notes,
+				pp.is_private
+			FROM player_progress pp
+			JOIN mods m
+				ON m.id = pp.mod_id
+			JOIN tiers t
+				ON t.id = m.tier_id
+			JOIN sides s
+				ON s.id = t.side_id
+			WHERE
+				pp.player_id = ${playerId}
+				AND s.name = ${name}
+		`
+		).map((clear) => [
+			clear.modId,
+			{
+				proof: clear.isLocalProof ? '' : clear.proof,
+				isLocalProof: clear.isLocalProof,
+				clearedDate: clear.clearedDate
+					? new Date(clear.clearedDate).toISOString().slice(0, 10)
+					: '',
+				deaths: clear.deaths ?? '',
+				hours: clear.timeTaken != null ? Math.floor(clear.timeTaken / 3600) : '',
+				minutes: clear.timeTaken != null ? Math.floor(clear.timeTaken / 60) % 60 : '',
+				seconds: clear.timeTaken != null ? clear.timeTaken % 60 : '',
+				isFc: Boolean(clear.isFc),
+				publicNotes: clear.publicNotes ?? '',
+				isPrivate: Boolean(clear.isPrivate)
+			}
+		])
+	);
+
 	side.tiers.forEach((tier) => {
+		const fullName = tier.name.startsWith(side.name)
+			? tier.name
+			: side.name.includes('-')
+				? `${tier.name} ${side.name.split('-')[0]}`
+				: `${side.name} ${tier.name}`;
+
+		tier.entry = {
+			id: `t${tier.id}`,
+			name: fullName,
+			fullName: `${fullName} (Full Tier)`,
+			matches: [...fullName.split(' '), ...tier.name.split(' '), side.name],
+			submitting: false
+		};
+
 		tier.mods.forEach((mod) => {
+			mod.clear = clears.get(mod.id);
 			mod.fullName = `${mod.name} - ${tier.name} ${side.name.split('-')[0]}`;
 			mod.matches = [
 				...mod.name.split(' '),

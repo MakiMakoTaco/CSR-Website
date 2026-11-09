@@ -36,7 +36,8 @@
 			<p>
 				You might notice that when submitting mods, you can submit for mods you've already beaten.
 				Currently, sending a submission to the already beaten mod will just replace whatever fields
-				you fill out, along with setting an "update at" timestamp.
+				you fill out, along with setting an "update at" timestamp. You can also edit your own clears
+				directly from the link to your profile in settings!
 			</p>
 			<p>
 				If you encounter any issues when submitting please contact a mod or go to the Discord's help

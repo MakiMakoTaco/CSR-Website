@@ -94,17 +94,71 @@
 		return filtered;
 	});
 
-	let modsAdded = $derived(
+	let filteredTiers = $derived.by(() => {
+		const filter = searchFilter.toLowerCase().trim();
+		if (!filter || !sides || sides.length <= 0) return [];
+
+		const words = filter.split(' ');
+
+		return sides
+			.flatMap((side) => side.tiers)
+			.filter((tier) => tier.entry && !tier.entry.submitting && tier.mods.length > 0)
+			.map((tier) => tier.entry)
+			.filter((entry) =>
+				words.every((word) => entry.matches.some((match) => match.toLowerCase().includes(word)))
+			)
+			.sort((a, b) => (b.name.toLowerCase() === filter) - (a.name.toLowerCase() === filter));
+	});
+
+	let submittingEntries = $derived(
 		sides.flatMap((side) =>
-			side.tiers.flatMap((tier) => tier.mods.filter((mod) => mod.submitting).flat())
-		).length > 0
+			side.tiers.flatMap((tier) => [
+				...(tier.entry?.submitting ? [tier.entry] : []),
+				...tier.mods.filter((mod) => mod.submitting)
+			])
+		)
 	);
+
+	let modsAdded = $derived(submittingEntries.length > 0);
+
+	function tierMods(entry) {
+		const tier = sides.flatMap((side) => side.tiers).find((tier) => tier.entry?.id === entry.id);
+
+		if (!tier) return [];
+
+		const mods = tier.mods.filter((mod) => !mod.submitting);
+		return mods.every((mod) => mod.cleared) ? mods : mods.filter((mod) => !mod.cleared);
+	}
+
+	function fillColumn(entry, column, event) {
+		if (!String(entry.id).startsWith('t')) return;
+
+		const source = event.currentTarget;
+		document.querySelectorAll(`#${entry.id}-mods [data-column='${column}']`).forEach((input) => {
+			if (input.type === 'checkbox') {
+				input.checked = source.checked;
+			} else {
+				input.value = source.value;
+			}
+		});
+	}
+
+	function setTierProofMode(entry, useImages) {
+		if (!String(entry.id).startsWith('t')) return;
+
+		document.querySelectorAll(`#${entry.id}-mods [data-column='proof']`).forEach((input) => {
+			input.value = useImages ? '' : input.defaultValue;
+			input.placeholder = useImages ? 'Uses tier images' : input.dataset.placeholder;
+		});
+	}
 
 	let failedMod = $derived.by(() => {
 		if (!form?.error || !sides || sides.length <= 0) return;
 
 		const modId = form.modId;
-		const mods = sides.flatMap((side) => side.tiers.flatMap((tier) => tier.mods));
+		const mods = sides.flatMap((side) =>
+			side.tiers.flatMap((tier) => [...(tier.entry ? [tier.entry] : []), ...tier.mods])
+		);
 		const matchedMod = mods.find((mod) => mod.id == modId);
 
 		return matchedMod;
@@ -127,7 +181,9 @@
 <main>
 	{#if form?.success}
 		<div class="toast">
-			Successfully submitted for {form.modCount} mod{form.modCount > 1 ? 's' : ''}
+			{form.modCount > 0
+				? `Successfully submitted for ${form.modCount} mod${form.modCount > 1 ? 's' : ''}`
+				: 'No changes to submit'}
 		</div>
 	{/if}
 	{#await sides}
@@ -192,6 +248,20 @@
 
 				{#if displayMods || !modsAdded}
 					<div class="mod-list">
+						{#each filteredTiers as entry}
+							<div>
+								<span class="mod-search-name tier-entry">{entry.fullName}</span>
+								<button
+									class="add-mod"
+									onclick={() => {
+										entry.submitting = true;
+
+										searchFilter = '';
+										displayMods = false;
+									}}>Add tier</button
+								>
+							</div>
+						{/each}
 						{#await filteredMods then mods}
 							{#each mods as mod}
 								{#if !mod.hidden}
@@ -220,9 +290,7 @@
 		{/if}
 
 		<br />
-		{#if sides.flatMap((side) => side.tiers.flatMap((tier) => tier.mods
-					.filter((mod) => mod.submitting)
-					.flat())).length > 0}
+		{#if submittingEntries.length > 0}
 			<form
 				method="POST"
 				enctype="multipart/form-data"
@@ -264,9 +332,7 @@
 
 				<div id="submissions" class="submission-container">
 					<span class="submission-border">
-						{#each sides.flatMap((side) => side.tiers.flatMap((tier) => tier.mods
-									.filter((mod) => mod.submitting)
-									.flat())) as mod (mod.id)}
+						{#each submittingEntries as mod (mod.id)}
 							<div class="submission">
 								<div class="mod-name">
 									<h2 style="color: #{mod.color};">
@@ -275,11 +341,14 @@
 											onclick={() => {
 												event.preventDefault();
 												mod.submitting = false;
-											}}>Remove mod</button
+											}}>{String(mod.id).startsWith('t') ? 'Remove tier' : 'Remove mod'}</button
 										>
 									</h2>
 								</div>
 								<div class="mod-data">
+									{#if String(mod.id).startsWith('t')}
+										<span class="affects-all">Affects All Rows</span>
+									{/if}
 									<span id="proofs">
 										<label for="{mod.id}-proof">Proof</label>
 										<span class="proof-toggles">
@@ -293,6 +362,7 @@
 
 													e.currentTarget.classList.add('active');
 													e.currentTarget.nextElementSibling.classList.remove('active');
+													setTierProofMode(mod, false);
 												}}>Use Link</button
 											>
 											<button
@@ -305,6 +375,7 @@
 
 													e.currentTarget.classList.add('active');
 													e.currentTarget.previousElementSibling.classList.remove('active');
+													setTierProofMode(mod, true);
 												}}>Use Image</button
 											>
 										</span>
@@ -312,6 +383,7 @@
 											<input
 												id="{mod.id}-proof"
 												name="{mod.id}-proof"
+												oninput={(e) => fillColumn(mod, 'proof', e)}
 												placeholder="https://imgur.com/a/BaxjPdY"
 											/>
 										</div>
@@ -334,39 +406,61 @@
 									</span>
 									<span id="date">
 										<label for="{mod.id}-clear-date">Clear Date<span>(Optional)</span></label>
-										<input id="{mod.id}-clear-date" name="{mod.id}-clearedDate" type="date" />
+										<input
+											id="{mod.id}-clear-date"
+											name="{mod.id}-clearedDate"
+											oninput={(e) => fillColumn(mod, 'clearedDate', e)}
+											type="date"
+										/>
 									</span>
-									<span id="deaths">
-										<label for="{mod.id}-death-count">Deaths<span>(Optional)</span></label>
-										<input id="{mod.id}-death-count" name="{mod.id}-deaths" type="number" />
-									</span>
-									<span id="time">
-										<label for="{mod.id}-hours">Time Taken<span>(Optional)</span></label>
-										<span class="time-inputs">
+									{#if !String(mod.id).startsWith('t')}
+										<span id="deaths">
+											<label for="{mod.id}-death-count">Deaths<span>(Optional)</span></label>
 											<input
-												id="{mod.id}-hours"
-												name="{mod.id}-hours"
+												id="{mod.id}-death-count"
+												name="{mod.id}-deaths"
+												oninput={(e) => fillColumn(mod, 'deaths', e)}
 												type="number"
-												min="0"
-												placeholder="H"
-											/>:<input
-												name="{mod.id}-minutes"
-												type="number"
-												min="0"
-												max="59"
-												placeholder="M"
-											/>:<input
-												name="{mod.id}-seconds"
-												type="number"
-												min="0"
-												max="59"
-												placeholder="S"
 											/>
 										</span>
-									</span>
+									{/if}
+									{#if !String(mod.id).startsWith('t')}
+										<span id="time">
+											<label for="{mod.id}-hours">Time Taken<span>(Optional)</span></label>
+											<span class="time-inputs">
+												<input
+													id="{mod.id}-hours"
+													name="{mod.id}-hours"
+													oninput={(e) => fillColumn(mod, 'hours', e)}
+													type="number"
+													min="0"
+													placeholder="H"
+												/>:<input
+													name="{mod.id}-minutes"
+													oninput={(e) => fillColumn(mod, 'minutes', e)}
+													type="number"
+													min="0"
+													max="59"
+													placeholder="M"
+												/>:<input
+													name="{mod.id}-seconds"
+													oninput={(e) => fillColumn(mod, 'seconds', e)}
+													type="number"
+													min="0"
+													max="59"
+													placeholder="S"
+												/>
+											</span>
+										</span>
+									{/if}
 									<span id="full-clear">
 										<label for="{mod.id}-full-clear">Full Clear?<span>(Optional)</span></label>
-										<input id="{mod.id}-full-clear" name="{mod.id}-isFc" type="checkbox" />
+										<input
+											id="{mod.id}-full-clear"
+											name="{mod.id}-isFc"
+											oninput={(e) => fillColumn(mod, 'isFc', e)}
+											type="checkbox"
+										/>
 									</span>
 									<!-- <span id="time">
 										<label for="{mod.id}-time-taken">Clear Time:</label>
@@ -376,13 +470,25 @@
 					<input id="{mod.id}-full-clear" name="{mod.id}-fc" type="checkbox" /> -->
 									<!-- <label for="{mod.id}-private">Private:</label>
 					<input id="{mod.id}-private" name="{mod.id}-private" type="checkbox" /> -->
-									<span id="notes">
-										<label for="{mod.id}-notes">Notes<span>(Optional)</span></label>
-										<input id="{mod.id}-notes" name="{mod.id}-publicNotes" type="text" />
-									</span>
+									{#if !String(mod.id).startsWith('t')}
+										<span id="notes">
+											<label for="{mod.id}-notes">Notes<span>(Optional)</span></label>
+											<input
+												id="{mod.id}-notes"
+												name="{mod.id}-publicNotes"
+												oninput={(e) => fillColumn(mod, 'publicNotes', e)}
+												type="text"
+											/>
+										</span>
+									{/if}
 									<span id="private">
 										<label for="{mod.id}-private">Private?<span>(Optional)</span></label>
-										<input id="{mod.id}-private" name="{mod.id}-isPrivate" type="checkbox" />
+										<input
+											id="{mod.id}-private"
+											name="{mod.id}-isPrivate"
+											oninput={(e) => fillColumn(mod, 'isPrivate', e)}
+											type="checkbox"
+										/>
 									</span>
 									<!-- <label for="{mod.id}-private-notes">Private Notes:</label>
 					<input id="{mod.id}-private-notes" name="{mod.id}-privateNotes" type="text" />
@@ -393,6 +499,136 @@
 						<input id="{mod.id}-mod-notes" name="{mod.id}-modNotes" type="text" />
 					{/if} -->
 								</div>
+								<p class="private-note">
+									The private option makes the entire clear private. The clear will not show up
+									publicly, but you can still view it normally.
+								</p>
+								{#if String(mod.id).startsWith('t')}
+									<div class="tier-mods" id="{mod.id}-mods">
+										<div class="tier-mods-panel">
+											<h3>
+												{tierMods(mod).length} mod{tierMods(mod).length === 1 ? '' : 's'} in this tier
+												{#if tierMods(mod).every((tierMod) => tierMod.cleared)}
+													<span>(all cleared, only changes will be saved)</span>
+												{/if}
+											</h3>
+											<div class="tier-mods-table">
+												<table>
+													<thead>
+														<tr>
+															<th>Mod</th>
+															<th>Proof</th>
+															<th>Clear Date</th>
+															<th>Deaths</th>
+															<th>Time Taken</th>
+															<th>Full Clear?</th>
+															<th>Notes</th>
+															<th>Private?</th>
+														</tr>
+													</thead>
+													<tbody>
+														{#each tierMods(mod) as tierMod (tierMod.id)}
+															<tr>
+																<td class="tier-mod-name">{tierMod.name}</td>
+																<td>
+																	<input
+																		name="{tierMod.id}-proof"
+																		data-column="proof"
+																		value={tierMod.clear?.proof ?? ''}
+																		placeholder={tierMod.clear?.isLocalProof
+																			? 'Uploaded images'
+																			: 'https://imgur.com/a/BaxjPdY'}
+																		data-placeholder={tierMod.clear?.isLocalProof
+																			? 'Uploaded images'
+																			: 'https://imgur.com/a/BaxjPdY'}
+																	/>
+																	<input
+																		type="hidden"
+																		name="{tierMod.id}-imageKey"
+																		value={mod.id}
+																	/>
+																	{#if tierMod.cleared}
+																		<input type="hidden" name="{tierMod.id}-existing" value="1" />
+																	{/if}
+																</td>
+																<td>
+																	<input
+																		name="{tierMod.id}-clearedDate"
+																		value={tierMod.clear?.clearedDate ?? ''}
+																		data-column="clearedDate"
+																		type="date"
+																	/>
+																</td>
+																<td>
+																	<input
+																		class="tier-deaths"
+																		name="{tierMod.id}-deaths"
+																		value={tierMod.clear?.deaths ?? ''}
+																		data-column="deaths"
+																		type="number"
+																		min="0"
+																	/>
+																</td>
+																<td>
+																	<span class="time-inputs">
+																		<input
+																			name="{tierMod.id}-hours"
+																			value={tierMod.clear?.hours ?? ''}
+																			data-column="hours"
+																			type="number"
+																			min="0"
+																			placeholder="H"
+																		/>:<input
+																			name="{tierMod.id}-minutes"
+																			value={tierMod.clear?.minutes ?? ''}
+																			data-column="minutes"
+																			type="number"
+																			min="0"
+																			max="59"
+																			placeholder="M"
+																		/>:<input
+																			name="{tierMod.id}-seconds"
+																			value={tierMod.clear?.seconds ?? ''}
+																			data-column="seconds"
+																			type="number"
+																			min="0"
+																			max="59"
+																			placeholder="S"
+																		/>
+																	</span>
+																</td>
+																<td>
+																	<input
+																		name="{tierMod.id}-isFc"
+																		checked={tierMod.clear?.isFc ?? false}
+																		data-column="isFc"
+																		type="checkbox"
+																	/>
+																</td>
+																<td>
+																	<input
+																		name="{tierMod.id}-publicNotes"
+																		value={tierMod.clear?.publicNotes ?? ''}
+																		data-column="publicNotes"
+																		type="text"
+																	/>
+																</td>
+																<td>
+																	<input
+																		name="{tierMod.id}-isPrivate"
+																		checked={tierMod.clear?.isPrivate ?? false}
+																		data-column="isPrivate"
+																		type="checkbox"
+																	/>
+																</td>
+															</tr>
+														{/each}
+													</tbody>
+												</table>
+											</div>
+										</div>
+									</div>
+								{/if}
 							</div>
 						{/each}
 					</span>
@@ -407,11 +643,7 @@
 					<button
 						class="submit-button"
 						onclick={(e) => {
-							const submittingMods = sides.flatMap((side) =>
-								side.tiers.flatMap((tier) => tier.mods.filter((mod) => mod.submitting).flat())
-							);
-
-							submittingMods.forEach((mod) => {
+							submittingEntries.forEach((mod) => {
 								const url = document.getElementById(`${mod.id}-proof`);
 								const image = document.getElementById(`${mod.id}-image`);
 
@@ -539,6 +771,91 @@
 					}
 				}
 			}
+		}
+	}
+
+	.tier-entry {
+		font-weight: bold;
+	}
+
+	.private-note {
+		margin: 0 1rem 10px;
+		font-size: 12px;
+		color: grey;
+		text-align: center;
+	}
+
+	.mod-data > .affects-all {
+		z-index: 1;
+		flex-basis: 100%;
+		margin-bottom: calc(12px - var(--row-gap));
+		padding-bottom: 0.5rem;
+		font-weight: bold;
+		text-decoration: underline;
+		text-align: center;
+		background: Canvas;
+	}
+
+	.tier-mods {
+		margin-top: 1rem;
+		padding-top: 1rem;
+		border-top: 1px solid color-mix(in srgb, grey 60%, transparent);
+	}
+
+	.tier-mods-panel {
+		h3 {
+			margin: 0;
+			padding: 0.5rem;
+			text-align: center;
+
+			span {
+				font-size: 14px;
+				font-weight: normal;
+			}
+		}
+	}
+
+	.tier-mods-table {
+		overflow-x: auto;
+
+		table {
+			width: 100%;
+			border-collapse: collapse;
+		}
+
+		tr {
+			border-top: 1px solid color-mix(in srgb, grey 60%, transparent);
+		}
+
+		thead tr {
+			border-top: none;
+		}
+
+		th,
+		td {
+			padding: 0.4rem 0.5rem;
+			text-align: center;
+			white-space: nowrap;
+		}
+
+		.tier-mod-name {
+			min-width: 150px;
+			text-align: left;
+			white-space: normal;
+			overflow-wrap: anywhere;
+		}
+
+		input[type='text'],
+		input:not([type]) {
+			width: 150px;
+		}
+
+		.tier-deaths {
+			width: 50px;
+		}
+
+		.time-inputs input {
+			width: 1.8em;
 		}
 	}
 
