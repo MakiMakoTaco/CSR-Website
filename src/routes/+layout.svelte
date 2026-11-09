@@ -428,6 +428,8 @@
 
 	.sidebar {
 		display: none;
+		width: fit-content;
+		z-index: 1;
 	}
 
 	@media (width < 1000px) {
@@ -659,10 +661,12 @@
 	}
 
 	.hamburger-menu {
-		border: none;
-		background: none;
+		border: 1px solid grey;
+		border-radius: 0.5rem;
+		background: Canvas;
 		justify-self: left;
-		margin: 10px 0 0 15px;
+		margin: 3px 0 0 7px;
+		padding: 6px 7px 2px;
 	}
 
 	.nav-sidebar {
