@@ -370,6 +370,10 @@
 {@render children()}
 
 <style>
+	:global(a) {
+		text-decoration: none;
+	}
+
 	button {
 		background: none;
 		border: none;
