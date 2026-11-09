@@ -367,6 +367,7 @@
 				>
 				<br />
 				<button
+					class="submit-button"
 					onclick={(e) => {
 						const submittingMods = sides.flatMap((side) =>
 							side.tiers.flatMap((tier) => tier.mods.filter((mod) => mod.submitting).flat())
@@ -500,6 +501,11 @@
 		justify-self: center;
 
 		margin: 20px;
+	}
+
+	.submit-button {
+		margin-top: 0.5rem;
+		margin-left: 4px;
 	}
 
 	.close-mod-filter {
