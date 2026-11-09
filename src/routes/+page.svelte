@@ -231,7 +231,7 @@
 	}
 
 	.submission-table-container {
-		padding: 1rem;
+		padding: 0.75rem 1rem;
 		border: 2px solid CanvasText;
 		border-radius: 20px;
 
