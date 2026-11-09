@@ -23,7 +23,9 @@
 	<title>{mod.name} - CSR</title>
 </svelte:head>
 
-<a href="/sides/{mod.sideName}">Back to {mod.sideName}</a>
+<button class="back" onclick={() => (location = `/sides/${mod.sideName}`)}
+	>Back to {mod.sideName}</button
+>
 <main>
 	<div class="title">
 		<h1>
@@ -116,19 +118,28 @@
 </main>
 
 <style>
+	a:visited {
+		color: LinkText;
+	}
+
 	main {
-		padding: 0 10vw;
+		width: 80vw;
 		text-align: center;
 		display: grid;
 		grid-template-areas:
 			'title title'
 			'description description'
 			'downloads credits';
-		grid-template-columns: 4fr 3fr;
+		grid-template-columns: 1fr 1fr;
 
 		justify-content: center;
-		gap: 2rem 4rem;
-		margin: auto 15px;
+		margin: 0 auto 1rem;
+		border: 1px solid grey;
+		border-radius: 1rem;
+
+		@media (width < 1000px) {
+			width: 95vw;
+		}
 
 		@media (width < 790px) {
 			grid-template-areas: 'title' 'description' 'downloads' 'credits';
@@ -137,7 +148,12 @@
 
 		> * {
 			text-align: center;
+			padding: 1rem;
 		}
+	}
+
+	.back {
+		margin: 1rem 0;
 	}
 
 	.title {
@@ -146,15 +162,23 @@
 
 	.description {
 		grid-area: description;
+		border-bottom: 1px solid color-mix(in srgb, grey 60%, transparent);
 	}
 
 	.downloads {
 		grid-area: downloads;
-		align-self: baseline;
+		align-self: stretch;
+		border-right: 1px solid color-mix(in srgb, grey 60%, transparent);
+
+		@media (width < 790px) {
+			border-right: 0;
+			border-bottom: 1px solid color-mix(in srgb, grey 60%, transparent);
+		}
 	}
 
 	.credits {
 		grid-area: credits;
+		box-sizing: border-box;
 		width: 100%;
 	}
 
