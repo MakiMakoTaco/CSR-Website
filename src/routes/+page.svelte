@@ -296,6 +296,10 @@
 
 		a {
 			text-decoration: none;
+
+			&:hover {
+				color: color-mix(in srgb, LinkText 75%, CanvasText);
+			}
 		}
 
 		.player,
