@@ -5,6 +5,7 @@ export async function getMinModData(sql, modId) {
 		await sql`
 		SELECT
 			m.name,
+			m.manual_link,
 			md.description,
 			md.id AS mod_data_id,
 			md.page,

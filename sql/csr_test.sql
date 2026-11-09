@@ -349,7 +349,8 @@ CREATE TABLE public.mods (
     name text NOT NULL,
     mod_data_id smallint,
     tier_id smallint NOT NULL,
-    notes text
+    notes text,
+    manual_link text
 );
 
 

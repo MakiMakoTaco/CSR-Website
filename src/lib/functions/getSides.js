@@ -56,7 +56,7 @@ export async function getSideByName(sql, name, playerId = null, shorthand = fals
 						'id', m.id,
 						'name', m.name,
 						'clears', c.clears,
-						'download', d.download,
+						'download', COALESCE(d.download, NULLIF(m.manual_link, '')),
 						'notes', m.notes
 						${playerId ? sql`, 'cleared', pp.cleared` : sql``}
 						${shorthand ? sql`, 'shorthand', md.shorthand` : sql``}
