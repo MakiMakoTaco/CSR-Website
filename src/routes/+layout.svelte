@@ -115,6 +115,9 @@
 					<a href="/admin">Admin Panel</a>
 				</li>
 			{/if}
+			{#if !data.player.claimed}
+				<li><a href="/claim-player">Claim Player</a></li>
+			{/if}
 			<li>
 				<a href="/profile" style="color: #{data.player.nameColor};">
 					<img src={data.player.avatar} alt="profile" class="profile-pic-nav" /><span
@@ -450,16 +453,16 @@
 
 	nav {
 		inset: 0;
-		padding: 15px 0;
+		padding: 15px 2.5vw 15px 2.7vw;
 		border-color: Canvas;
 		border-style: solid;
 		border-top-width: 1rem;
 
 		position: sticky;
 
-		display: grid;
-		grid-auto-flow: column;
-		grid-template-columns: repeat(3, 1fr);
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
 
 		background: url(/assets/navbar/ticket.png);
 		background-repeat: no-repeat;
@@ -499,11 +502,7 @@
 		}
 
 		> ul {
-			display: flex;
-			padding: 0;
-			margin: 0;
-			justify-self: center;
-			align-items: center;
+			display: contents;
 		}
 
 		li {
@@ -527,14 +526,8 @@
 		color: blueviolet;
 	}
 
-	.nav-left {
-		justify-self: left;
-		margin-left: 2.7vw;
-	}
-
-	.nav-right {
-		justify-self: right;
-		margin-right: 2.5vw;
+	.nav-center li {
+		margin: 0 1.5vw;
 	}
 
 	.nav-right a img {
