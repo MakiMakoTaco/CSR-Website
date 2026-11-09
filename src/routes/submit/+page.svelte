@@ -653,22 +653,23 @@
 						that I am respecting other Celeste players by not cheating or faking my clear.</label
 					>
 					<br />
-					<button
-						class="submit-button"
-						onclick={(e) => {
-							submittingEntries.forEach((mod) => {
-								const url = document.getElementById(`${mod.id}-proof`);
-								const image = document.getElementById(`${mod.id}-image`);
+					<div class="submit-button">
+						<button
+							onclick={(e) => {
+								submittingEntries.forEach((mod) => {
+									const url = document.getElementById(`${mod.id}-proof`);
+									const image = document.getElementById(`${mod.id}-image`);
 
-								if (url.hidden) {
-									url.firstChild.value = '';
-								} else {
-									image.firstChild.value = '';
-								}
-							});
-						}}
-						disabled={submitting}>Submit</button
-					>
+									if (url.hidden) {
+										url.firstChild.value = '';
+									} else {
+										image.firstChild.value = '';
+									}
+								});
+							}}
+							disabled={submitting}>Submit</button
+						>
+					</div>
 				</div>
 			</form>
 		{/if}
@@ -953,6 +954,11 @@
 
 	.submit-button {
 		margin-top: 0.5rem;
+
+		button {
+			padding: 5px 14px;
+			font-size: 18px;
+		}
 	}
 
 	.close-mod-filter {
