@@ -435,8 +435,12 @@
 		color: color-mix(in srgb, var(--dlc-color) 90%, black) !important;
 	}
 
-	:global(:root:has(main.catstare)) {
+	.catstare nav,
+	.catstare .side,
+	.catstare .tier {
 		color-scheme: dark;
+		background-color: Canvas;
+		color: CanvasText;
 	}
 
 	.catstare #note-tag {
