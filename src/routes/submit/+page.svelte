@@ -143,6 +143,13 @@
 		});
 	}
 
+	function syncColumnCheckbox(entry, column) {
+		const rows = [...document.querySelectorAll(`#${entry.id}-mods [data-column='${column}']`)];
+		document.querySelector(`[name='${entry.id}-${column}']`).checked = rows.every(
+			(input) => input.checked
+		);
+	}
+
 	function setTierProofMode(entry, useImages) {
 		if (!String(entry.id).startsWith('t')) return;
 
@@ -458,6 +465,8 @@
 										<input
 											id="{mod.id}-full-clear"
 											name="{mod.id}-isFc"
+											checked={String(mod.id).startsWith('t') &&
+												tierMods(mod).every((tierMod) => tierMod.clear?.isFc)}
 											oninput={(e) => fillColumn(mod, 'isFc', e)}
 											type="checkbox"
 										/>
@@ -486,6 +495,8 @@
 										<input
 											id="{mod.id}-private"
 											name="{mod.id}-isPrivate"
+											checked={String(mod.id).startsWith('t') &&
+												tierMods(mod).every((tierMod) => tierMod.clear?.isPrivate)}
 											oninput={(e) => fillColumn(mod, 'isPrivate', e)}
 											type="checkbox"
 										/>
@@ -601,6 +612,7 @@
 																	<input
 																		name="{tierMod.id}-isFc"
 																		checked={tierMod.clear?.isFc ?? false}
+																		oninput={() => syncColumnCheckbox(mod, 'isFc')}
 																		data-column="isFc"
 																		type="checkbox"
 																	/>
@@ -617,6 +629,7 @@
 																	<input
 																		name="{tierMod.id}-isPrivate"
 																		checked={tierMod.clear?.isPrivate ?? false}
+																		oninput={() => syncColumnCheckbox(mod, 'isPrivate')}
 																		data-column="isPrivate"
 																		type="checkbox"
 																	/>
@@ -853,18 +866,9 @@
 		.tier-deaths {
 			width: 50px;
 		}
-	}
 
-	.time-inputs {
-		white-space: nowrap;
-
-		input {
-			width: 2rem;
-			margin: 0 3px;
-
-			&:first-child {
-				width: 2.5rem;
-			}
+		.time-inputs input {
+			width: 1.8em;
 		}
 	}
 
@@ -891,6 +895,15 @@
 		box-sizing: border-box;
 		width: 150px;
 		max-width: 100%;
+	}
+
+	.time-inputs {
+		white-space: nowrap;
+
+		input {
+			width: 1.8em;
+			margin: 0 3px;
+		}
 	}
 
 	#proofs {
@@ -1007,6 +1020,12 @@
 		input {
 			width: minmax(min(150px, 100%), 1fr);
 			height: fit-content;
+		}
+
+		input[type='checkbox'] {
+			width: 20px;
+			height: 20px;
+			max-width: none;
 		}
 	}
 </style>
