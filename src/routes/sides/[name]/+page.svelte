@@ -381,6 +381,10 @@
 		grid-auto-flow: column;
 		grid-template-columns: repeat(3, 1fr);
 
+		@media (width < 1000px) {
+			grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+		}
+
 		border: 1px solid grey;
 		border-left: 0;
 		border-right: 0;
@@ -405,11 +409,20 @@
 
 			display: grid;
 			grid-template-columns: repeat(2, 1fr);
+
+			@media (width < 1000px) {
+				display: flex;
+			}
 		}
 	}
 
 	.clear-count {
 		justify-self: end;
+
+		@media (width < 1000px) {
+			flex: 1;
+			text-align: center;
+		}
 	}
 
 	.cleared {
