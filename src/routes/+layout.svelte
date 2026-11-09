@@ -70,68 +70,69 @@
 	});
 </script>
 
-<nav id="navbar" class="nav navbar">
-	<ul class="nav-left">
-		<li><a href="/">Home</a></li>
-		<li><a href="/faq">FAQ</a></li>
-		<li>
-			<button class="sides" popovertarget="sides">Sides</button>
-		</li>
-		<!-- <li id="sides-dropdown">
+<div class="app" data-sveltekit-reload={updated.current ? '' : 'off'}>
+	<nav id="navbar" class="nav navbar">
+		<ul class="nav-left">
+			<li><a href="/">Home</a></li>
+			<li><a href="/faq">FAQ</a></li>
+			<li>
+				<button class="sides" popovertarget="sides">Sides</button>
+			</li>
+			<!-- <li id="sides-dropdown">
 			<button popovertarget="sides-menu" class="sides-dropdown" tabindex="0" href="/">Sides</button> -->
-		<!-- <img
+			<!-- <img
 					id="side-cassette"
 					class="cassette"
 					alt="cassette tape"
 					onerror={() => (this.src = '/assets/navbar/cassettes/default.png')}
 					style="visibility: {page.url.pathname.startsWith('/sides') ? 'visible' : 'hidden'};"
 				/> -->
-		<!-- </li> -->
-		<li>
-			<a href="/sides/Catstare">Catstare</a>
-		</li>
-		{#if data.sides.filter((side) => side.type === 'dlc' && side.archived).length > 0}
+			<!-- </li> -->
 			<li>
-				<button class="dlc" popovertarget="dlc">Active DLC</button>
+				<a href="/sides/Catstare">Catstare</a>
 			</li>
-		{/if}
-		<li>
-			<button class="archived" popovertarget="archived">Archived</button>
-		</li>
-	</ul>
-	<ul class="nav-center">
-		<li><a href="https://discord.gg/rVYhpeRX2u" target="_blank">Discord Server</a></li>
-	</ul>
-	<ul class="nav-right">
-		<li>
-			<button onclick={toggleLightMode}>{lightMode ? 'Dark Mode' : 'Light Mode'}</button>
-		</li>
-		<li>
-			<a class="submit" href="/submit">Submit Mods</a>
-		</li>
-		{#if data?.player?.name}
-			{#if data.player.role}
+			{#if data.sides.filter((side) => side.type === 'dlc' && side.archived).length > 0}
 				<li>
-					<a href="/admin">Admin Panel</a>
+					<button class="dlc" popovertarget="dlc">Active DLC</button>
 				</li>
 			{/if}
-			{#if !data.player.claimed}
-				<li><a href="/claim-player">Claim Player</a></li>
-			{/if}
 			<li>
-				<a href="/profile" style="color: #{data.player.nameColor};">
-					<img src={data.player.avatar} alt="profile" class="profile-pic-nav" /><span
-						>{data.player.name}</span
-					>
-				</a>
+				<button class="archived" popovertarget="archived">Archived</button>
 			</li>
-		{:else}
-			<li><a href="/login">Login</a></li>
-		{/if}
-	</ul>
-</nav>
+		</ul>
+		<ul class="nav-center">
+			<li><a href="https://discord.gg/rVYhpeRX2u" target="_blank">Discord Server</a></li>
+		</ul>
+		<ul class="nav-right">
+			<li>
+				<button onclick={toggleLightMode}>{lightMode ? 'Dark Mode' : 'Light Mode'}</button>
+			</li>
+			<li>
+				<a class="submit" href="/submit">Submit Mods</a>
+			</li>
+			{#if data?.player?.name}
+				{#if data.player.role}
+					<li>
+						<a href="/admin">Admin Panel</a>
+					</li>
+				{/if}
+				{#if !data.player.claimed}
+					<li><a href="/claim-player">Claim Player</a></li>
+				{/if}
+				<li>
+					<a href="/profile" style="color: #{data.player.nameColor};">
+						<img src={data.player.avatar} alt="profile" class="profile-pic-nav" /><span
+							>{data.player.name}</span
+						>
+					</a>
+				</li>
+			{:else}
+				<li><a href="/login">Login</a></li>
+			{/if}
+		</ul>
+	</nav>
 
-<!-- <div popover id="sides-menu" class="sides-menu">
+	<!-- <div popover id="sides-menu" class="sides-menu">
 	<img class="background" src="/assets/navbar/sides/card.png" alt="sides-background" />
 	<div class="content">
 		<div id="summary" class="summary">
@@ -161,138 +162,138 @@
 	</div>
 </div> -->
 
-<div popover id="sides" class="sides-dropdown" role="menu" tabindex="0">
-	{#each data.sides.filter((side) => side.type === 'standard') as side}
-		<li class="dropdown-items">
-			<a href="/sides/{side.name}" onclick={() => sides.togglePopover()}>{side.name}</a>
-		</li>
-	{/each}
-</div>
+	<div popover id="sides" class="sides-dropdown" role="menu" tabindex="0">
+		{#each data.sides.filter((side) => side.type === 'standard') as side}
+			<li class="dropdown-items">
+				<a href="/sides/{side.name}" onclick={() => sides.togglePopover()}>{side.name}</a>
+			</li>
+		{/each}
+	</div>
 
-<div popover id="dlc" class="dlc-dropdown" role="menu" tabindex="0">
-	{#each data.sides.filter((side) => side.type === 'dlc' && !side.archived) as side}
-		<li class="dropdown-items">
-			<a
-				class={lightDlc(side.color)}
-				href="/sides/{side.name}"
-				onclick={() => dlc.togglePopover()}
-				style="--hover-color: #{side.colorPlus}; --dlc-color: #{side.color}; color: #{side.color};"
-				>{side.name}</a
-			>
-		</li>
-	{/each}
-</div>
-
-<div popover id="archived" class="archived-dropdown" role="menu" tabindex="0">
-	<div class="side-container">
-		{#each data.sides.filter((side) => side.type === 'dlc' && side.archived) as side}
+	<div popover id="dlc" class="dlc-dropdown" role="menu" tabindex="0">
+		{#each data.sides.filter((side) => side.type === 'dlc' && !side.archived) as side}
 			<li class="dropdown-items">
 				<a
 					class={lightDlc(side.color)}
 					href="/sides/{side.name}"
-					onclick={archived.togglePopover()}
+					onclick={() => dlc.togglePopover()}
 					style="--hover-color: #{side.colorPlus}; --dlc-color: #{side.color}; color: #{side.color};"
 					>{side.name}</a
 				>
 			</li>
 		{/each}
 	</div>
-</div>
 
-<div id="sidebar-togge" class="nav sidebar">
-	<button
-		class="hamburger-menu"
-		aria-label="show nav menu"
-		onclick={() => (sidebar.style.width = '250px')}
-		ontouchstart={() => (sidebar.style.width = '250px')}
-	>
-		Open Sidebar
-	</button>
-</div>
+	<div popover id="archived" class="archived-dropdown" role="menu" tabindex="0">
+		<div class="side-container">
+			{#each data.sides.filter((side) => side.type === 'dlc' && side.archived) as side}
+				<li class="dropdown-items">
+					<a
+						class={lightDlc(side.color)}
+						href="/sides/{side.name}"
+						onclick={archived.togglePopover()}
+						style="--hover-color: #{side.colorPlus}; --dlc-color: #{side.color}; color: #{side.color};"
+						>{side.name}</a
+					>
+				</li>
+			{/each}
+		</div>
+	</div>
 
-<div id="sidebar" class="nav-sidebar">
-	<div
-		class="close-sidebar"
-		tabindex="0"
-		role="button"
-		onclick={() => (sidebar.style.width = '')}
-		onkeypress={() => (sidebar.style.width = '')}
-	>
-		Close Sidebar
+	<div id="sidebar-togge" class="nav sidebar">
+		<button
+			class="hamburger-menu"
+			aria-label="show nav menu"
+			onclick={() => (sidebar.style.width = '250px')}
+			ontouchstart={() => (sidebar.style.width = '250px')}
+		>
+			Open Sidebar
+		</button>
 	</div>
-	<a class="nav-link" href="/">Home</a>
-	<a class="nav-link" href="/faq">FAQ</a>
-	<div
-		class="dropdown-toggle"
-		tabindex="0"
-		role="button"
-		onclick={() => flipDropdown('sides-dropdown-test')}
-		onkeypress={() => flipDropdown('sides-dropdown-test')}
-	>
-		Sides
-	</div>
-	<div id="sides-dropdown-test" class="sides dropdown-menu" role="menu" tabindex="0" hidden>
-		{#each data.sides.filter((side) => side.type === 'standard') as side}
-			<a class="nav-link" href="/sides/{side.name}">{side.name}</a>
-		{/each}
-	</div>
-	<a class="nav-link" href="/sides/Catstare">Catstare</a>
-	<div
-		class="dropdown-toggle"
-		tabindex="0"
-		role="button"
-		onclick={() => flipDropdown('dlc-dropdown-test')}
-		onkeypress={() => flipDropdown('dlc-dropdown-test')}
-	>
-		DLC
-	</div>
-	<div id="dlc-dropdown-test" class="dlc dropdown-menu" role="menu" tabindex="0" hidden>
-		{#each data.sides.filter((side) => side.type === 'dlc' && !side.archived) as side}
-			<a class="nav-link" href="/sides/{side.name}">{side.name}</a>
-		{/each}
-	</div>
-	<div
-		class="dropdown-toggle"
-		tabindex="0"
-		role="button"
-		onclick={() => flipDropdown('archived-dropdown-test')}
-		onkeypress={() => flipDropdown('archived-dropdown-test')}
-	>
-		Archived
-	</div>
-	<div id="archived-dropdown-test" class="archived dropdown-menu" role="menu" tabindex="0" hidden>
-		{#each data.sides.filter((side) => side.type === 'dlc' && side.archived) as side}
-			<a class="nav-link" href="/sides/{side.name}">{side.name}</a>
-		{/each}
-	</div>
-	<a class="nav-link" href="https://discord.gg/rVYhpeRX2u" target="_blank">Discord Server</a>
-	<div
-		class="theme-toggle"
-		tabindex="0"
-		role="button"
-		onclick={toggleLightMode}
-		onkeypress={toggleLightMode}
-	>
-		{lightMode ? 'Dark Mode' : 'Light Mode'}
-	</div>
-	<a class="submit nav-link" href="/submit">Submit Mods</a>
-	{#if data?.player?.name}
-		{#if data.player.role}
-			<a class="nav-link" href="/admin">Admin Panel</a>
+
+	<div id="sidebar" class="nav-sidebar">
+		<div
+			class="close-sidebar"
+			tabindex="0"
+			role="button"
+			onclick={() => (sidebar.style.width = '')}
+			onkeypress={() => (sidebar.style.width = '')}
+		>
+			Close Sidebar
+		</div>
+		<a class="nav-link" href="/">Home</a>
+		<a class="nav-link" href="/faq">FAQ</a>
+		<div
+			class="dropdown-toggle"
+			tabindex="0"
+			role="button"
+			onclick={() => flipDropdown('sides-dropdown-test')}
+			onkeypress={() => flipDropdown('sides-dropdown-test')}
+		>
+			Sides
+		</div>
+		<div id="sides-dropdown-test" class="sides dropdown-menu" role="menu" tabindex="0" hidden>
+			{#each data.sides.filter((side) => side.type === 'standard') as side}
+				<a class="nav-link" href="/sides/{side.name}">{side.name}</a>
+			{/each}
+		</div>
+		<a class="nav-link" href="/sides/Catstare">Catstare</a>
+		<div
+			class="dropdown-toggle"
+			tabindex="0"
+			role="button"
+			onclick={() => flipDropdown('dlc-dropdown-test')}
+			onkeypress={() => flipDropdown('dlc-dropdown-test')}
+		>
+			DLC
+		</div>
+		<div id="dlc-dropdown-test" class="dlc dropdown-menu" role="menu" tabindex="0" hidden>
+			{#each data.sides.filter((side) => side.type === 'dlc' && !side.archived) as side}
+				<a class="nav-link" href="/sides/{side.name}">{side.name}</a>
+			{/each}
+		</div>
+		<div
+			class="dropdown-toggle"
+			tabindex="0"
+			role="button"
+			onclick={() => flipDropdown('archived-dropdown-test')}
+			onkeypress={() => flipDropdown('archived-dropdown-test')}
+		>
+			Archived
+		</div>
+		<div id="archived-dropdown-test" class="archived dropdown-menu" role="menu" tabindex="0" hidden>
+			{#each data.sides.filter((side) => side.type === 'dlc' && side.archived) as side}
+				<a class="nav-link" href="/sides/{side.name}">{side.name}</a>
+			{/each}
+		</div>
+		<a class="nav-link" href="https://discord.gg/rVYhpeRX2u" target="_blank">Discord Server</a>
+		<div
+			class="theme-toggle"
+			tabindex="0"
+			role="button"
+			onclick={toggleLightMode}
+			onkeypress={toggleLightMode}
+		>
+			{lightMode ? 'Dark Mode' : 'Light Mode'}
+		</div>
+		<a class="submit nav-link" href="/submit">Submit Mods</a>
+		{#if data?.player?.name}
+			{#if data.player.role}
+				<a class="nav-link" href="/admin">Admin Panel</a>
+			{/if}
+			{#if !data.player.claimed}
+				<a class="nav-link" href="/claim-player">Claim Player</a>
+			{/if}
+			<a class="nav-link" href="/profile" style="color: #{data.player.nameColor};">
+				<img src={data.player.avatar} alt="profile" class="profile-pic-nav" /><span
+					>{data.player.name}</span
+				>
+			</a>
+		{:else}
+			<a class="nav-link" href="/login">Login</a>
 		{/if}
-		{#if !data.player.claimed}
-			<a class="nav-link" href="/claim-player">Claim Player</a>
-		{/if}
-		<a class="nav-link" href="/profile" style="color: #{data.player.nameColor};">
-			<img src={data.player.avatar} alt="profile" class="profile-pic-nav" /><span
-				>{data.player.name}</span
-			>
-		</a>
-	{:else}
-		<a class="nav-link" href="/login">Login</a>
-	{/if}
-</div>
-<!-- <div id="sidebar" class="nav-sidebar">
+	</div>
+	<!-- <div id="sidebar" class="nav-sidebar">
 	<div>
 		<li><a href="/">Home</a></li>
 		<li id="sides-dropdown">
@@ -372,17 +373,8 @@
 	</div>
 </div> -->
 
-{#if updated}
-	<div>
-		<p>
-			A new version of the site is available
-
-			<button onclick={() => location.reload()}>Reload page</button>
-		</p>
-	</div>
-{:else}
 	{@render children()}
-{/if}
+</div>
 
 <style>
 	:global(a) {

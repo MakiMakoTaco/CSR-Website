@@ -11,7 +11,10 @@ const config = {
 				include: ['/*'],
 				exclude: ['<all>']
 			}
-		})
+		}),
+		version: {
+			pollInterval: 5000
+		}
 	},
 	vitePlugin: {
 		dynamicCompileOptions: ({ filename }) =>
