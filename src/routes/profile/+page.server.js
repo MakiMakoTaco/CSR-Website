@@ -23,7 +23,9 @@ export const actions = {
 		let update = false;
 		let newData = {};
 		for (let [key, value] of data) {
-			if (key === 'nameColor') {
+			if (key === 'privateStats') continue;
+
+			if (key === 'nameColor' && value !== '') {
 				const validHex = value.match(/^#?(?<hex>[0-9A-F]{6})$/i);
 
 				if (!validHex?.groups || !validHex.groups.hex) {
@@ -48,6 +50,12 @@ export const actions = {
 				newData[key] = value;
 				update = true;
 			}
+		}
+
+		const privateStats = data.has('privateStats');
+		if (privateStats !== (player.privateStats ?? false)) {
+			newData.privateStats = privateStats;
+			update = true;
 		}
 
 		if (update) {

@@ -61,6 +61,9 @@
 
 	<div class="update-player">
 		<button class="reset-avatar" onclick={() => (location = '/login/discord')}>Reset avatar</button>
+		<button class="view-profile" onclick={() => (location = `/players/${data.player.id}`)}
+			>View Your Profile</button
+		>
 		<form method="POST" action="?/update">
 			<div class="form-field">
 				<label for="nameColor">Color:</label>
@@ -76,6 +79,16 @@
 			<div class="form-field">
 				<label for="about">About Me:</label>
 				<textarea name="about" maxlength="1000" bind:value={about}></textarea>
+			</div>
+			<div class="private-stats">
+				<label>
+					<input type="checkbox" name="privateStats" checked={data.player.privateStats} />
+					Private Optional Stats
+				</label>
+				<p>
+					Only you will be able to view your optional stats: death count, time taken, full clear
+					status, and personal notes!
+				</p>
 			</div>
 
 			<button>Update Profile</button>
@@ -134,8 +147,19 @@
 		gap: 1rem;
 	}
 
-	.reset-avatar {
+	.reset-avatar,
+	.view-profile {
 		justify-self: start;
+	}
+
+	.private-stats {
+		margin-bottom: 1rem;
+
+		p {
+			margin: 0.25rem 0 0;
+			font-size: 14px;
+			color: grey;
+		}
 	}
 
 	.logout {

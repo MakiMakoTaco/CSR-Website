@@ -54,7 +54,7 @@ export async function getPlayerFromDiscordId(sql, discordId) {
 export async function getPlayerFromId(sql, playerId) {
 	const player = (
 		await sql`
-    SELECT name, discord_id, avatar, name_color, about
+    SELECT name, discord_id, avatar, name_color, about, private_stats
     FROM players
     WHERE id = ${playerId}
     LIMIT 1

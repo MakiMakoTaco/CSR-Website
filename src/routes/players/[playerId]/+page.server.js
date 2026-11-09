@@ -81,9 +81,19 @@ export async function load({ params, locals }) {
 
 	if (!player || player.length === 0) error(404);
 
+	const isOwner = locals.player?.id === Number(params.playerId);
+	const privateStats = player.privateStats && !isOwner;
+
 	return {
 		player,
-		clears: clears.filter((clear) => !clear.is_private),
+		privateStats,
+		clears: clears
+			.filter((clear) => !clear.isPrivate || isOwner)
+			.map((clear) =>
+				privateStats
+					? { ...clear, timeTaken: null, deaths: null, isFc: null, publicNotes: null }
+					: clear
+			),
 		roles: await getPlayerRoles(sql, params.playerId)
 	};
 }

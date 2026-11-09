@@ -111,6 +111,7 @@ export const actions = {
 					? (Number(hours ?? 0) * 60 + Number(minutes ?? 0)) * 60 + Number(seconds ?? 0)
 					: null;
 			mod.isFc = mod.isFc ? true : null;
+			mod.isPrivate = mod.isPrivate ? true : false;
 
 			if (mod.proof) {
 				await platform.env.R2.delete(folderName);
@@ -244,6 +245,7 @@ export const actions = {
 				time_taken = COALESCE(EXCLUDED.time_taken, player_progress.time_taken),
 				is_fc = COALESCE(EXCLUDED.is_fc, player_progress.is_fc),
 				public_notes = COALESCE(EXCLUDED.public_notes, player_progress.public_notes),
+				is_private = player_progress.is_private OR EXCLUDED.is_private,
 				updated_at = CURRENT_TIMESTAMP
 		`;
 

@@ -431,7 +431,8 @@ CREATE TABLE public.players (
     name_color character varying(6),
     about bpchar,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone
+    updated_at timestamp with time zone,
+    private_stats boolean DEFAULT false NOT NULL
 );
 
 

@@ -191,7 +191,7 @@ export async function getModData(sql, modId) {
 	return mod;
 }
 
-export async function getClearedPlayers(sql, modId) {
+export async function getClearedPlayers(sql, modId, playerId = null) {
 	if (!modId) {
 		throw new Error('Getting clears for a mod requires a mod ID');
 	}
@@ -205,6 +205,7 @@ export async function getClearedPlayers(sql, modId) {
 		WHERE
 			mod_id = ${modId}
 			AND cleared = true
+			AND (NOT is_private OR p.id = ${playerId})
 		ORDER BY submitted_at ASC
 	`;
 

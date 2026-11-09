@@ -29,6 +29,8 @@ export async function load({ locals }) {
       ON tp.id = t.preset_id
     JOIN sides s
       ON s.id = t.side_id
+    WHERE NOT pp.is_private
+      OR pp.player_id = ${locals.player?.id ?? null}
     ORDER BY pp.id DESC
     LIMIT 10
   `

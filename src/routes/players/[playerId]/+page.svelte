@@ -33,7 +33,7 @@
 
 <div class="stats">
 	<h2>Total Clears: {data.clears.length}</h2>
-	{#if fullClears > 0 || timedClears.length > 0 || deathClears.length > 0}
+	{#if !data.privateStats && (fullClears > 0 || timedClears.length > 0 || deathClears.length > 0)}
 		<div class="totals">
 			{#if fullClears > 0}
 				<span>Full Clears: {fullClears}</span>
@@ -72,11 +72,15 @@
 				<tr>
 					<th class="mod-name">Mod Name</th>
 					<th class="proof">Proof</th>
-					<th class="time">Time Taken</th>
-					<th class="deaths">Deaths</th>
-					<th class="full-clear">Full Clear</th>
+					{#if !data.privateStats}
+						<th class="time">Time Taken</th>
+						<th class="deaths">Deaths</th>
+						<th class="full-clear">Full Clear</th>
+					{/if}
 					<th class="clear-date">Clear Date</th>
-					<th class="player-notes">Notes</th>
+					{#if !data.privateStats}
+						<th class="player-notes">Notes</th>
+					{/if}
 				</tr>
 			</thead>
 			<tbody>
@@ -86,9 +90,11 @@
 							<a href="/mods/{clear.modId}?player={page.params.playerId}">{clear.name}</a>
 						</td>
 						<td class="proof"><a href={clear.proof}>Proof</a></td>
-						<td class="time">{clear.timeTaken != null ? formatTime(clear.timeTaken) : 'N/A'}</td>
-						<td class="deaths">{clear.deaths ?? 'N/A'}</td>
-						<td class="full-clear">{clear.isFc ? 'Yes' : 'N/A'}</td>
+						{#if !data.privateStats}
+							<td class="time">{clear.timeTaken != null ? formatTime(clear.timeTaken) : 'N/A'}</td>
+							<td class="deaths">{clear.deaths ?? 'N/A'}</td>
+							<td class="full-clear">{clear.isFc ? 'Yes' : 'N/A'}</td>
+						{/if}
 						<td class="clear-date">
 							{clear.clearedDate
 								? new Date(clear.clearedDate).toLocaleDateString('en-US', {
@@ -99,7 +105,9 @@
 									})
 								: 'N/A'}
 						</td>
-						<td class="player-notes">{clear.publicNotes}</td>
+						{#if !data.privateStats}
+							<td class="player-notes">{clear.publicNotes}</td>
+						{/if}
 					</tr>
 				{/each}
 			</tbody>

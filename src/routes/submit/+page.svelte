@@ -380,6 +380,10 @@
 										<label for="{mod.id}-notes">Notes<span>(Optional)</span></label>
 										<input id="{mod.id}-notes" name="{mod.id}-publicNotes" type="text" />
 									</span>
+									<span id="private">
+										<label for="{mod.id}-private">Private?<span>(Optional)</span></label>
+										<input id="{mod.id}-private" name="{mod.id}-isPrivate" type="checkbox" />
+									</span>
 									<!-- <label for="{mod.id}-private-notes">Private Notes:</label>
 					<input id="{mod.id}-private-notes" name="{mod.id}-privateNotes" type="text" />
 					<label for="{mod.id}-public-notes">Public Notes:</label>

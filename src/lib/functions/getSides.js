@@ -17,6 +17,7 @@ export async function getSidesWithStats(sql) {
 		LEFT JOIN player_progress pp
 			ON pp.mod_id = m.id
 			AND pp.cleared = true
+			AND NOT pp.is_private
 		GROUP BY s.id, s.name, s.type, s.archived, s.color_plus
 	`;
 
@@ -82,6 +83,7 @@ export async function getSideByName(sql, name, playerId = null, shorthand = fals
 					COUNT(pp.id) AS clears
 				FROM player_progress pp
 				WHERE pp.mod_id = m.id
+					AND NOT pp.is_private
 			) c ON true
 			LEFT JOIN LATERAL (
 				SELECT
