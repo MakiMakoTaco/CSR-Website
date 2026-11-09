@@ -110,6 +110,13 @@ export const actions = {
 			return fail(400, { id: clear.id, error: 'Time taken cannot be less than 0' });
 		}
 
+		if (minutes > 59 || seconds > 59) {
+			return fail(400, {
+				id: clear.id,
+				error: 'Time taken (minutes, seconds) cannot be greater than 59'
+			});
+		}
+
 		newData.clearedDate = data.get('clearedDate') || null;
 		newData.deaths = deaths || null;
 		newData.timeTaken =
