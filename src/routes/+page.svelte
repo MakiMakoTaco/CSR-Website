@@ -49,7 +49,8 @@
 								><a
 									class={side.name === 'Super-Side' ? '' : 'standard-side'}
 									href="/sides/{side.name}"
-									style={side.name === 'Super-Side' ? '' : 'color: #a2c4c9;'}>{side.name}</a
+									style={side.name === 'Super-Side' ? 'color: blueviolet;' : 'color: #a2c4c9;'}
+									>{side.name}</a
 								></th
 							>
 							<td>{side.clearCount}</td>
