@@ -888,8 +888,12 @@
 		white-space: nowrap;
 
 		input {
-			width: 1.8em;
+			width: 2rem;
 			margin: 0 3px;
+
+			&:first-child {
+				width: 2.5rem;
+			}
 		}
 	}
 

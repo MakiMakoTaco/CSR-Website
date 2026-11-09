@@ -60,7 +60,7 @@
 	{#if data.player.avatar}
 		<img alt="player profile" src={data.player.avatar} />
 	{/if}
-	<h1 style="color: {data.player.nameColor ?? 'CanvasText'};">
+	<h1 style="color: {`#${data.player.nameColor}` ?? 'CanvasText'};">
 		{data.player.name}
 	</h1>
 
@@ -221,9 +221,17 @@
 		align-items: center;
 		gap: 0 1rem;
 
+		img {
+			border-radius: 50%;
+		}
+
 		p {
 			flex-basis: 100%;
 			text-align: center;
+
+			overflow-wrap: break-word;
+			word-break: break-word;
+			white-space: pre-line;
 		}
 	}
 

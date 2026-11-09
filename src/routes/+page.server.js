@@ -32,7 +32,7 @@ export async function load({ locals }) {
     WHERE NOT pp.is_private
       OR pp.player_id = ${locals.player?.id ?? null}
     ORDER BY pp.id DESC
-    LIMIT 10
+    LIMIT 18
   `
 	).map((row) => row.submission);
 
