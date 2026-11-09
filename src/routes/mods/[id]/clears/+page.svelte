@@ -25,7 +25,11 @@
 	{#if playerSubmission}
 		<div class="player-submission">
 			<h2>Your submission:</h2>
-			<a href={playerSubmission.proof}>{playerSubmission.proof}</a>
+			{#if playerSubmission.proof}
+				<a href={playerSubmission.proof}>{playerSubmission.proof}</a>
+			{:else}
+				<span class="no-submission">None (for now!)</span>
+			{/if}
 		</div>
 	{/if}
 	<table>
@@ -87,6 +91,15 @@
 
 		h2 {
 			margin: 0.5rem 0;
+		}
+
+		.no-submission {
+			font-size: 1.5em;
+		}
+
+		a {
+			position: relative;
+			top: -0.16em;
 		}
 	}
 

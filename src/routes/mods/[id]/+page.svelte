@@ -26,6 +26,13 @@
 <button class="back" onclick={() => (location = `/sides/${mod.sideName}`)}
 	>Back to {mod.sideName}</button
 >
+{#if page.url.searchParams.get('player')}
+	<button
+		class="back return"
+		onclick={() => (location = `/players/${page.url.searchParams.get('player')}`)}
+		>Return to Player</button
+	>
+{/if}
 <main>
 	<div class="title">
 		<h1>
@@ -158,6 +165,10 @@
 
 	.back {
 		margin: 1rem 15px;
+	}
+
+	.return {
+		float: right;
 	}
 
 	.title {

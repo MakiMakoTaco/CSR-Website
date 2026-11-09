@@ -52,7 +52,7 @@
 	{/if} -->
 
 	<div class="update-player">
-		<a href="/login/discord">Reset avatar</a>
+		<button class="reset-avatar" onclick={() => (location = '/login/discord')}>Reset avatar</button>
 		<form method="POST" action="?/update">
 			<div class="form-field">
 				<label for="nameColor">Color:</label>
@@ -80,7 +80,9 @@
 	<div class="preview">
 		<img class="profile-pic" alt="player" src={avatar} />
 		<h1 style="color: {nameColor};">{name}</h1>
-		<p class="about">{about}</p>
+		<p class="about">
+			{#if about}About me: {about}{/if}
+		</p>
 	</div>
 </main>
 
@@ -132,6 +134,10 @@
 		gap: 1rem;
 	}
 
+	.reset-avatar {
+		justify-self: start;
+	}
+
 	.logout {
 		margin: 1rem;
 		place-self: center;
@@ -160,12 +166,18 @@
 
 	.preview {
 		container: test;
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		align-self: start;
+		gap: 0 1rem;
 
 		p {
 			/* text-wrap: wrap; */
 			overflow-wrap: break-word;
 			word-break: break-word;
 			white-space: pre-line;
+			flex-basis: 100%;
 		}
 	}
 </style>

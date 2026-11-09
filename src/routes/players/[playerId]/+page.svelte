@@ -1,15 +1,17 @@
 <script>
+	import { page } from '$app/state';
+
 	let { data } = $props();
 </script>
 
 <title>
 	{data.player.name} - Profile
 </title>
-<div>
+<div class="player-header">
 	{#if data.player.avatar}
 		<img alt="player profile" src={data.player.avatar} />
 	{/if}
-	<h1 style="color: {data.player.nameColor ?? 'black'};">
+	<h1 style="color: {data.player.nameColor ?? 'CanvasText'};">
 		{data.player.name}
 	</h1>
 
@@ -20,9 +22,9 @@
 	{/if}
 </div>
 
-<div>
+<div class="clears">
 	{#if data.clears.length > 0}
-		<h2>Clears:</h2>
+		<h2>Clears</h2>
 		<table>
 			<thead>
 				<tr>
@@ -38,7 +40,9 @@
 			<tbody>
 				{#each data.clears as clear}
 					<tr>
-						<td class="mod-name">{clear.name}</td>
+						<td class="mod-name">
+							<a href="/mods/{clear.modId}?player={page.params.playerId}">{clear.name}</a>
+						</td>
 						<td class="proof"><a href={clear.proof}>Proof</a></td>
 						<td class="time">{clear.timeTaken ?? 'N/A'}</td>
 						<td class="deaths">{clear.deaths ?? 'N/A'}</td>
@@ -55,14 +59,76 @@
 </div>
 
 <style>
-	table {
-		margin: auto;
+	a:is(:link, :visited) {
+		color: light-dark(#0000ee, #9e9eff);
 	}
+
+	a:hover {
+		color: color-mix(in srgb, light-dark(#0000ee, #9e9eff) 50%, CanvasText);
+	}
+
+	.mod-name a {
+		text-decoration: none;
+	}
+
+	.player-header {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		align-items: center;
+		gap: 0 1rem;
+
+		p {
+			flex-basis: 100%;
+			text-align: center;
+		}
+	}
+
+	.clears {
+		width: 80vw;
+		margin: 0 auto 1rem;
+		border: 1px solid grey;
+		border-radius: 1rem;
+
+		@media (width < 1000px) {
+			width: 95vw;
+		}
+
+		> h2,
+		> p {
+			margin: 0.5rem 0;
+			padding: 0.5rem;
+			text-align: center;
+		}
+	}
+
+	table {
+		width: 100%;
+		border-collapse: collapse;
+
+		@media (width < 1000px) {
+			font-size: 14px;
+		}
+	}
+
+	tr {
+		border-top: 1px solid grey;
+	}
+
 	th,
 	td {
-		padding-right: 25px;
-	}
-	td:not(.mod-name, .player-notes) {
+		padding: 0.5rem;
 		text-align: center;
+		overflow-wrap: break-word;
+
+		@media (width < 1000px) {
+			padding: 0.5rem 0.25rem;
+		}
+	}
+
+	th:first-child,
+	td:first-child {
+		text-align: left;
+		overflow-wrap: anywhere;
 	}
 </style>
