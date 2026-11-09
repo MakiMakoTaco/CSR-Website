@@ -5,6 +5,10 @@
 
 	let { data } = $props();
 
+	function hoverColor(tier) {
+		return tier.colorPlus === tier.color ? 'bfbfbf' : tier.colorPlus;
+	}
+
 	function lightDlc(color) {
 		const [r, g, b] = [0, 2, 4].map((i) => parseInt((color ?? '000000').slice(i, i + 2), 16));
 		return (r * 299 + g * 587 + b * 114) / 1000 > 210 ? 'light-dlc' : '';
@@ -52,7 +56,10 @@
 				{#await side.tiers then tiers}
 					{#each tiers as tier}
 						<button
-							style="color: #{tier.color}; --tier-color: #{tier.color};"
+							class="tier-link"
+							style="color: #{tier.color}; --tier-color: #{tier.color}; --hover-color: #{hoverColor(
+								tier
+							)};"
 							onclick={() => {
 								scroll(tier.name);
 							}}>{tier.name.replace(/^Catstare: /, '')}</button
@@ -121,8 +128,8 @@
 											<a
 												id="mod"
 												href="/mods/{mod.id}"
-												style="text-decoration: none; color: #{tier.color ?? 'ffffff'};"
-												>{mod.name}</a
+												style="text-decoration: none; color: #{tier.color ??
+													'ffffff'}; --hover-color: #{hoverColor(tier)};">{mod.name}</a
 											>
 											{#if mod.notes}
 												<sup
@@ -137,7 +144,11 @@
 										</div>
 
 										{#if mod.download}
-											<span class="download"><a href={mod.download}>Download</a></span>
+											<span class="download"
+												><a href={mod.download} style="--hover-color: #{hoverColor(tier)};"
+													>Download</a
+												></span
+											>
 										{/if}
 
 										<div class="clears">
@@ -165,8 +176,8 @@
 											<a
 												id="mod"
 												href="/mods/{mod.id}"
-												style="text-decoration: none; color: #{tier.color ?? 'ffffff'};"
-												>{mod.name}</a
+												style="text-decoration: none; color: #{tier.color ??
+													'ffffff'}; --hover-color: #{hoverColor(tier)};">{mod.name}</a
 											>
 											{#if mod.notes}
 												<sup
@@ -181,7 +192,11 @@
 										</div>
 
 										{#if mod.download}
-											<span class="download"><a href={mod.download}>Download</a></span>
+											<span class="download"
+												><a href={mod.download} style="--hover-color: #{hoverColor(tier)};"
+													>Download</a
+												></span
+											>
 										{/if}
 
 										<div class="clears">
@@ -260,6 +275,10 @@
 		width: fit-content;
 	}
 
+	nav .export {
+		margin-top: 24px;
+	}
+
 	.mobile-export {
 		display: none;
 		justify-self: end;
@@ -301,6 +320,9 @@
 			color: color-mix(in srgb, var(--tier-color) 70%, black) !important;
 		}
 
+		nav .tier-link:hover,
+		.tier:not(.catstare-tier) #mod:hover,
+		.mod-container #mod:hover,
 		.tier:not(.catstare-tier) .download a:hover,
 		.mod-container .download a:hover {
 			color: color-mix(in srgb, var(--hover-color) 70%, black) !important;
@@ -309,6 +331,11 @@
 		.tier:not(.catstare-tier) {
 			border-color: color-mix(in srgb, var(--tier-color) 70%, black);
 		}
+	}
+
+	nav .tier-link:hover,
+	#mod:hover {
+		color: var(--hover-color) !important;
 	}
 
 	.tier-name {
