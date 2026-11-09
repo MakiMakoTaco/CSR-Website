@@ -305,27 +305,32 @@
 												}}>Reset</button
 											>
 										</div>
-										<button
-											onclick={(e) => {
-												e.preventDefault();
+										<span class="proof-toggles">
+											<button
+												class="proof-toggle active"
+												onclick={(e) => {
+													e.preventDefault();
 
-												const url = document.getElementById(`${mod.id}-proof`);
-												const image = document.getElementById(`${mod.id}-image`);
+													document.getElementById(`${mod.id}-proof`).hidden = false;
+													document.getElementById(`${mod.id}-image`).hidden = true;
 
-												if (url.hidden) {
-													url.hidden = false;
-													image.hidden = true;
+													e.currentTarget.classList.add('active');
+													e.currentTarget.nextElementSibling.classList.remove('active');
+												}}>Use Link</button
+											>
+											<button
+												class="proof-toggle"
+												onclick={(e) => {
+													e.preventDefault();
 
-													e.currentTarget.textContent = 'Use Image';
-												} else {
-													url.hidden = true;
-													image.hidden = false;
+													document.getElementById(`${mod.id}-proof`).hidden = true;
+													document.getElementById(`${mod.id}-image`).hidden = false;
 
-													e.currentTarget.textContent = 'Use Link';
-												}
-											}}
-											aria-label="Switch between image/link">Use Image</button
-										>
+													e.currentTarget.classList.add('active');
+													e.currentTarget.previousElementSibling.classList.remove('active');
+												}}>Use Image</button
+											>
+										</span>
 									</span>
 									<span id="date">
 										<label for="{mod.id}-clear-date">Clear Date:</label>
@@ -517,6 +522,19 @@
 
 	.pledge {
 		text-align: center;
+	}
+
+	.proof-toggle.active {
+		background-color: light-dark(color-mix(in srgb, pink 50%, white), #5b2c6f);
+		color: light-dark(black, white);
+		border: 1px solid light-dark(#767676, #6b6b6b);
+		border-radius: 3px;
+		padding: 2px 7px;
+	}
+
+	:global(:root[data-theme='dark']) .proof-toggle.active {
+		background-color: color-mix(in srgb, blueviolet 45%, black);
+		color: white;
 	}
 
 	.submit-button {
