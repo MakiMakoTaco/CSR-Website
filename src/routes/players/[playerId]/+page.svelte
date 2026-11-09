@@ -169,7 +169,7 @@
 										>{clear.tierName.startsWith('Catstare') ? 'Catstare' : clear.tierName}</span
 									>
 								</td>
-								<td class="proof"><a href={clear.proof}>Proof</a></td>
+								<td class="proof"><a href={clear.proof} target="_blank">Proof</a></td>
 								{#if !data.privateStats}
 									<td class="time"
 										>{clear.timeTaken != null ? formatTime(clear.timeTaken) : 'N/A'}</td
