@@ -154,7 +154,7 @@
 
 		@media (width < 790px) {
 			grid-template-areas: 'title' 'description' 'downloads' 'credits';
-			grid-template-columns: 1fr;
+			grid-template-columns: minmax(0, 1fr);
 		}
 
 		> * {
@@ -183,6 +183,8 @@
 	.downloads {
 		grid-area: downloads;
 		align-self: stretch;
+		padding: 0;
+		overflow: hidden;
 		border-right: 1px solid color-mix(in srgb, grey 60%, transparent);
 
 		@media (width < 790px) {
@@ -195,10 +197,16 @@
 		grid-area: credits;
 		box-sizing: border-box;
 		width: 100%;
+		padding: 0;
 	}
 
 	.credit-group {
 		display: grid;
+		padding: 1rem;
+
+		& + .credit-group {
+			border-top: 1px solid color-mix(in srgb, grey 60%, transparent);
+		}
 
 		.credit-group-title {
 			grid-column: 1 / -1;
@@ -218,18 +226,38 @@
 	}
 
 	table {
-		table-layout: fixed;
 		border-collapse: collapse;
-		margin: 10px auto;
+		width: 100%;
+
+		@media (width >= 790px) {
+			margin-bottom: -1px;
+		}
 	}
 
 	caption {
 		font-size: 18px;
+		font-weight: bold;
+		padding: 1rem;
+		border-bottom: 1px solid color-mix(in srgb, grey 60%, transparent);
+	}
+
+	tbody tr {
+		border-top: 1px solid color-mix(in srgb, grey 60%, transparent);
+
+		&:last-child {
+			@media (width >= 790px) {
+				border-bottom: 1px solid color-mix(in srgb, grey 60%, transparent);
+			}
+		}
 	}
 
 	th,
 	td {
-		padding: 0.4em;
+		padding: 0.5rem;
+	}
+
+	td:nth-child(2) {
+		overflow-wrap: anywhere;
 	}
 
 	.clears {
