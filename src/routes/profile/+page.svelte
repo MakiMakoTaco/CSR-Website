@@ -143,6 +143,11 @@
 		place-self: center;
 	}
 
+	form button {
+		padding: 5px 14px;
+		font-size: 18px;
+	}
+
 	.profile-pic {
 		width: 100px;
 		height: 100px;

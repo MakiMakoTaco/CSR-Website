@@ -27,9 +27,10 @@
 			The site's now live! This means that the <a
 				href="https://docs.google.com/spreadsheets/d/1XTAL3kgpX0bG6SBfznPX8z7Qdb7lGnQRuxeUfPZMFoU/edit?usp=sharing"
 				target="_blank">Google Sheets</a
-			> is now legacy! There are so many things I've either forgotten about or planning to work on so.
-			Please feel free to contact hyrulemaki or a moderator in the Discord server about any questions
-			or feedback!
+			>
+			is now legacy! There are so many things I've either forgotten about or planning to work on so. Please
+			feel free to contact hyrulemaki or a moderator in the Discord server about any questions or feedback!
+			If you're new to CSR, check out the <a href="/faq">FAQ page</a>!
 		</h3>
 	</div>
 	<div class="sides-info sides-info-container">
@@ -138,85 +139,6 @@
 						{/each}
 					</tbody>
 				</table>
-			</div>
-		</div>
-		<div class="what-is">
-			<h2>What is CSR?</h2>
-			<p>
-				CSR is a list of Celeste maps, collabs and contests that you can play through at your own
-				pace, & feel a sense of accomplishment once you beat them! Have you just started playing and
-				want to see how far you can get? Or are you a veteran celeste player and want to show off?
-				There's something for every player in CSR!
-			</p>
-		</div>
-		<div class="questions">
-			<div class="submissions">
-				<h1>Submissions</h1>
-				<p>
-					To submit your clears, just go to the submit page and select a mod. Journal screenshots
-					(uploaded to websites like imgur or catbox.moe) are most common and always accepted,
-					however there's also the option to upload directly or use another site!
-				</p>
-				<p>
-					The only required data for submissions is the proof, along with the honor pledge.
-					Everything else is for your own personal stats.
-				</p>
-				<p>
-					You might notice when submitting mods, that there's the option to submit for mods you've
-					already beaten. This exists whilst a specific editing option gets worked on. Currently,
-					sending a submission to the already beaten mod will just replace the proof attachment,
-					along with setting an "update at" timestamp.
-				</p>
-				<p>
-					If you encounter any issues when submitting please contact a mod or go to the Discord's
-					help channel. If you receive a 4xx error, this will be fixed as soon as possible (we
-					likely just forgot a line in the code.)
-				</p>
-				<p>
-					If you receive a 500 error, then when you contact a mod, they may tell you to do something
-					different in the meantime if you don't want to wait for a fix.
-				</p>
-				<p>
-					When submitting multiple links as proof for a mod, please seperate them with a space. If
-					you instead upload images directly, please make sure they are less than 4MB and that there
-					are no more than 4 images per mod.
-				</p>
-				<p>
-					If you are totally new to Celeste, you can download the mod loader <a
-						href="https://everestapi.github.io/">here</a
-					>
-				</p>
-				<p>
-					The Shrimp sheet is a collection of maps that did not make it onto the main CSR sheet.
-					<a
-						href="https://docs.google.com/spreadsheets/d/1ljc0gVIURrKP3qtStGnrcuBCSOE5P_R8jZZz7VQwN8U"
-						>Check it out here</a
-					>
-				</p>
-			</div>
-			<div class="start">
-				<h1>Common Questions</h1>
-				<h4>Q. Where should I start?</h4>
-				<p>
-					A. The Super-Side is a collection of 250 of the most polished mods from A-Side to E-Side;
-					I highly recommend starting out there!
-				</p>
-				<h4>Q. What do the other sides mean?</h4>
-				<p>
-					A. The different sides under the "Sides" tab correspond to the year those mods were
-					released in. B-Side for 2022, C-Side for 2023, and so on. DLCs are from the current year,
-					and the Catstare sheet contains the GM+ maps.
-				</p>
-				<h4>Q. What counts as a clear?</h4>
-				<p>
-					A1. A clear is a clear, within reason. You can use savestates or toy with variants to
-					practice a room, but you must eventually clear all rooms, front to back, properly. Clears
-					of any date are also accepted!
-				</p>
-				<p>
-					A2. You do not have to full clear maps unless it is listed as mandatory. (You still should
-					try, though!)
-				</p>
 			</div>
 		</div>
 	</div>
@@ -411,10 +333,5 @@
 		@media (width < 1130px) {
 			max-width: 100%;
 		}
-	}
-	.start {
-		margin: auto;
-		max-width: 75%;
-		text-align: left;
 	}
 </style>

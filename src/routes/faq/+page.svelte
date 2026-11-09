@@ -1,0 +1,129 @@
+<svelte:head>
+	<title>FAQ - CSR</title>
+</svelte:head>
+
+<main>
+	<div class="what-is">
+		<h1>What is CSR?</h1>
+		<p>
+			CSR is a list of Celeste maps, collabs and contests that you can play through at your own
+			pace, & feel a sense of accomplishment once you beat them!
+		</p>
+		<p>
+			Have you just started, interested in a good starting point to the world of Celeste maps? Are
+			you a veteran searching for some hidden gems? There's something for every player in CSR!
+		</p>
+	</div>
+	<div class="questions">
+		<div class="submissions">
+			<h1>How to Submit</h1>
+			<p>
+				To submit your clears, just go to the submit page and select a mod. Journal screenshots
+				(uploaded to websites like imgur or catbox.moe) are most common and always accepted, however
+				there's also the option to upload directly or use another site!
+			</p>
+			<p>
+				The only required data for submissions is the proof, along with the honor pledge. Everything
+				else is for your own personal stats.
+			</p>
+			<p>
+				You might notice when submitting mods, that there's the option to submit for mods you've
+				already beaten. This exists whilst a specific editing option gets worked on. Currently,
+				sending a submission to the already beaten mod will just replace the proof attachment, along
+				with setting an "update at" timestamp.
+			</p>
+			<p>
+				If you encounter any issues when submitting please contact a mod or go to the Discord's help
+				channel. If you receive a 4xx error, this will be fixed as soon as possible (we likely just
+				forgot a line in the code.)
+			</p>
+			<p>
+				If you receive a 500 error, then when you contact a mod, they may tell you to do something
+				different in the meantime if you don't want to wait for a fix.
+			</p>
+			<p>
+				When submitting multiple links as proof for a mod, please seperate them with a space. If you
+				instead upload images directly, please make sure they are less than 4MB and that there are
+				no more than 4 images per mod.
+			</p>
+			<p>
+				If you are totally new to Celeste, you can download the mod loader <a
+					href="https://everestapi.github.io/">here</a
+				>!
+			</p>
+			<p>
+				The Shrimp sheet is a collection of maps that did not make it onto the main CSR sheet.
+				<a
+					href="https://docs.google.com/spreadsheets/d/1ljc0gVIURrKP3qtStGnrcuBCSOE5P_R8jZZz7VQwN8U"
+					>Check it out here</a
+				>!
+			</p>
+		</div>
+		<div class="start">
+			<h1>Common Questions</h1>
+			<h4>Q. Where should I start?</h4>
+			<p>
+				A. The Super-Side is a collection of 250 of the most polished mods from A-Side to E-Side; I
+				highly recommend starting out there!
+			</p>
+			<h4>Q. What do the other sides mean?</h4>
+			<p>
+				A. The different sides under the "Sides" tab correspond to the year those mods were released
+				in. B-Side for 2022, C-Side for 2023, and so on. DLCs are from the current year, and the
+				Catstare sheet contains the GM+ maps.
+			</p>
+			<h4>Q. What counts as a clear?</h4>
+			<p>
+				A1. A clear is a clear, within reason. You can use savestates or toy with variants to
+				practice a room, but you must eventually clear all rooms, front to back, properly. Clears of
+				any date are also accepted!
+			</p>
+			<p>
+				A2. You do not have to full clear maps unless it is listed as mandatory. (You still should
+				try, though!)
+			</p>
+		</div>
+	</div>
+</main>
+
+<style>
+	main {
+		display: grid;
+		gap: 1rem;
+		margin: 1rem 50px;
+		text-align: center;
+
+		@media (width < 1130px) {
+			margin: 1rem 15px;
+		}
+	}
+
+	.questions {
+		display: grid;
+		gap: 1rem;
+	}
+
+	.what-is,
+	.submissions,
+	.start {
+		box-sizing: border-box;
+		width: 75%;
+		margin: auto;
+		padding: 0 1.5rem;
+		border: 1px solid grey;
+		border-radius: 1rem;
+
+		@media (width < 1130px) {
+			width: 100%;
+			padding: 0 1rem;
+		}
+	}
+
+	.start {
+		text-align: left;
+
+		h1 {
+			text-align: center;
+		}
+	}
+</style>

@@ -73,6 +73,7 @@
 <nav id="navbar" class="nav navbar">
 	<ul class="nav-left">
 		<li><a href="/">Home</a></li>
+		<li><a href="/faq">FAQ</a></li>
 		<li>
 			<button class="sides" popovertarget="sides">Sides</button>
 		</li>
@@ -217,6 +218,7 @@
 		Close Sidebar
 	</div>
 	<a class="nav-link" href="/">Home</a>
+	<a class="nav-link" href="/faq">FAQ</a>
 	<div
 		class="dropdown-toggle"
 		tabindex="0"
