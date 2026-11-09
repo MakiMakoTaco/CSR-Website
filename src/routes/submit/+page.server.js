@@ -97,6 +97,8 @@ export const actions = {
 				return fail(400, { error: 'Deaths cannot be less than 0' });
 			} else if (['hours', 'minutes', 'seconds'].includes(dbKey) && value < 0) {
 				return fail(400, { error: 'Time taken cannot be less than 0' });
+			} else if (['minutes', 'seconds'].includes(dbKey) && value > 59) {
+				return fail(400, { error: 'Time taken (minutes, seconds) cannot be greater than 59' });
 			}
 
 			modMap[modId] = { ...modMap[modId], [dbKey]: value || null };
