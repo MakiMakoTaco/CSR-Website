@@ -118,8 +118,8 @@
 </main>
 
 <style>
-	a:visited {
-		color: LinkText;
+	a:is(:link, :visited) {
+		color: light-dark(#0000ee, #9e9eff);
 	}
 
 	main {

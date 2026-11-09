@@ -47,10 +47,9 @@
 						<tr>
 							<th scope="row"
 								><a
-									class={side.name === 'Super-Side' ? '' : 'standard-side'}
+									class={side.name === 'Super-Side' ? 'super-side' : 'standard-side'}
 									href="/sides/{side.name}"
-									style={side.name === 'Super-Side' ? 'color: blueviolet;' : 'color: #a2c4c9;'}
-									>{side.name}</a
+									style={side.name === 'Super-Side' ? 'color: blueviolet;' : ''}>{side.name}</a
 								></th
 							>
 							<td>{side.clearCount}</td>
@@ -66,7 +65,7 @@
 						<tr>
 							<th scope="row"
 								><a
-									class={side.type === 'catstare' ? '' : 'dlc-side'}
+									class={side.type === 'catstare' ? 'catstare-side' : 'dlc-side'}
 									href="/sides/{side.name}"
 									style="color: {side.type === 'catstare'
 										? 'CanvasText'
@@ -236,12 +235,20 @@
 		}
 	}
 
-	table a:visited {
-		color: LinkText;
+	table a:is(:link, :visited) {
+		color: light-dark(#0000ee, #9e9eff);
 	}
 
-	:global(:root:not([data-theme='dark'])) .standard-side {
-		color: color-mix(in srgb, #a2c4c9 70%, black) !important;
+	.super-side:hover {
+		color: plum !important;
+	}
+
+	.standard-side:hover {
+		color: color-mix(in srgb, light-dark(#0000ee, #9e9eff) 50%, CanvasText);
+	}
+
+	.catstare-side:hover {
+		color: grey !important;
 	}
 
 	.dlc-side:hover {
@@ -338,12 +345,12 @@
 			text-decoration: none;
 
 			&:hover {
-				color: color-mix(in srgb, LinkText 75%, CanvasText);
+				color: color-mix(in srgb, light-dark(#0000ee, #9e9eff) 50%, CanvasText);
 			}
 		}
 
 		.player:hover {
-			color: color-mix(in srgb, var(--player-color) 75%, grey) !important;
+			color: color-mix(in srgb, var(--player-color) 50%, grey) !important;
 		}
 
 		.player,

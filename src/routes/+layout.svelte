@@ -690,8 +690,16 @@
 			cursor: pointer;
 		}
 
+		.profile-pic-nav {
+			width: 1em;
+			height: 1em;
+			margin-right: 0.3em;
+			vertical-align: -0.1em;
+		}
+
 		.close-sidebar {
-			padding: 68px 8px 8px 32px;
+			padding: 10px 8px 8px 15px;
+			color: blueviolet;
 			cursor: pointer;
 		}
 
