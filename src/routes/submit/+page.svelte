@@ -159,6 +159,7 @@
 			input.type = useImages ? 'file' : 'text';
 			input.value = useImages ? '' : input.defaultValue;
 			input.placeholder = useImages ? 'Uses tier images' : input.dataset.placeholder;
+			input.multiple = useImages;
 			input.disabled = false;
 
 			const imageKey = document.getElementById(`${modId}-imageKey`);
