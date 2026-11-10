@@ -1,8 +1,7 @@
-export async function load({ locals }) {
-	const sql = locals.sql;
-
-	const recentSubmissions = (
-		await sql`
+async function getRecentSubmissions(locals) {
+	return {
+		recentSubmissions: (
+			await locals.sql`
     SELECT
       json_build_object(
         'player', json_build_object(
@@ -34,7 +33,10 @@ export async function load({ locals }) {
     ORDER BY pp.id DESC
     LIMIT 18
   `
-	).map((row) => row.submission);
+		).map((row) => row.submission)
+	};
+}
 
-	return { recentSubmissions };
+export async function load({ locals }) {
+	return getRecentSubmissions(locals);
 }

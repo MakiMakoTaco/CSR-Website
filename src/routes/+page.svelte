@@ -114,29 +114,34 @@
 						</tr>
 					</thead>
 					<tbody>
-						{#each data.recentSubmissions as submission}
-							<tr>
-								<td align="left"><a href="/mods/{submission.mod.id}">{submission.mod.name}</a></td>
-								<td
-									><a
-										class="player {nameOutline(submission.player.color)}"
-										style="color: #{submission.player.color}; --player-color: #{submission.player
-											.color || '000000'};"
-										href="/players/{submission.player.id}">{submission.player.name}</a
-									></td
-								>
-								<td
-									><div
-										class="tier {submission.mod.tierName.startsWith('Catstare')
-											? 'catstare-tier'
-											: ''}"
-										style="background-color: #{submission.mod.tierColor};"
+						{#await data.recentSubmissions}
+							<tr><td>Loading Submissions...</td></tr>
+						{:then recentSubmissions}
+							{#each recentSubmissions as submission}
+								<tr>
+									<td align="left"><a href="/mods/{submission.mod.id}">{submission.mod.name}</a></td
 									>
-										{submission.mod.tierName}
-									</div></td
-								>
-							</tr>
-						{/each}
+									<td
+										><a
+											class="player {nameOutline(submission.player.color)}"
+											style="color: #{submission.player.color}; --player-color: #{submission.player
+												.color || '000000'};"
+											href="/players/{submission.player.id}">{submission.player.name}</a
+										></td
+									>
+									<td
+										><div
+											class="tier {submission.mod.tierName.startsWith('Catstare')
+												? 'catstare-tier'
+												: ''}"
+											style="background-color: #{submission.mod.tierColor};"
+										>
+											{submission.mod.tierName}
+										</div></td
+									>
+								</tr>
+							{/each}
+						{/await}
 					</tbody>
 				</table>
 			</div>
