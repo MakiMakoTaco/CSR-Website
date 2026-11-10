@@ -166,6 +166,25 @@ export const actions = {
 				mod.proof = `/players/${playerId}/clears/${modId}`;
 				mod.images = formData.getAll(`${mod.imageKey ?? modId}-image`);
 
+				if (mod.imageKey) {
+					mod.images = mod.images.filter((image) => {
+						const fileParts = image.name.split('/');
+
+						return (
+							[2, 3].includes(fileParts.length) &&
+							(fileParts[1].toLowerCase().split('.')[0] === mod.name.toLowerCase() ||
+								mod.name
+									.toLowerCase()
+									.replaceAll(/[<>:/\\|?\*]/g, '')
+									.includes(fileParts[1].toLowerCase().split('.')[0]))
+						);
+					});
+				}
+
+				if (!mod.images || mod.images.length === 0) {
+					continue;
+				}
+
 				if (mod.images.length > 4) {
 					return fail(400, { modId, error: 'has too many images' });
 				}
@@ -274,6 +293,7 @@ export const actions = {
 				await Promise.all(uploads);
 			}
 
+			delete mod.name;
 			delete mod.images;
 			delete mod.imageKey;
 

@@ -154,8 +154,51 @@
 		if (!String(entry.id).startsWith('t')) return;
 
 		document.querySelectorAll(`#${entry.id}-mods [data-column='proof']`).forEach((input) => {
+			input.name = `${input.name.split('-')[0]}${useImages ? '-image' : '-proof'}`;
+			input.type = useImages ? 'file' : 'text';
 			input.value = useImages ? '' : input.defaultValue;
 			input.placeholder = useImages ? 'Uses tier images' : input.dataset.placeholder;
+
+			if (input.disabled && !useImages) {
+				input.disabled = false;
+			}
+		});
+	}
+
+	function autoFillImages(entry, files) {
+		const mods = sides
+			.flatMap((side) => side.tiers)
+			.find((tier) => tier.entry?.id === entry.id)
+			.mods.filter((mod) => !mod.submitting);
+
+		document.querySelectorAll(`#${entry.id}-mods [data-column='proof']`).forEach((input) => {
+			const mod = mods.find((mod) => mod.id === Number(input.name.split('-')[0]));
+
+			if (mod) {
+				for (const file of files) {
+					const fileParts = file.webkitRelativePath.split('/');
+					if (
+						[2, 3].includes(fileParts.length) &&
+						(fileParts[1].toLowerCase().split('.')[0] === mod.name.toLowerCase() ||
+							mod.name
+								.toLowerCase()
+								.replaceAll(/[<>:/\\|?\*]/g, '')
+								.includes(fileParts[1].toLowerCase().split('.')[0]))
+					) {
+						input.type = 'text';
+						input.value = `${fileParts[1]}${fileParts.length === 3 ? '/' : ''}`;
+						input.disabled = true;
+
+						// const imageKey = document.getElementById(`${mod.id}-imageKey`);
+						// imageKey.name = `${mod.id}-image`;
+						// imageKey.type = 'file';
+						// imageKey.files = new File([file], file, {
+						// 	type: file.type,
+						// 	lastModified: file.lastModified
+						// });
+					}
+				}
+			}
 		});
 	}
 
@@ -395,20 +438,40 @@
 											/>
 										</div>
 										<div id="{mod.id}-image" hidden>
-											<input
-												id="{mod.id}-proof"
-												name="{mod.id}-image"
-												type="file"
-												accept="image/webp, image/png, image/jpg"
-												multiple
-											/>
-											<button
-												onclick={(e) => {
-													e.preventDefault();
+											{#if String(mod.id).startsWith('t')}
+												<input
+													id="{mod.id}-proof"
+													name="{mod.id}-image"
+													type="file"
+													webkitdirectory
+													onchange={(e) => {
+														autoFillImages(mod, e.target.files);
+													}}
+												/>
 
-													document.getElementById(`${mod.id}-image`).firstChild.value = '';
-												}}>Reset</button
-											>
+												<button
+													onclick={(e) => {
+														e.preventDefault();
+
+														// remove child mods knowing the file
+													}}>Reset</button
+												>
+											{:else}
+												<input
+													id="{mod.id}-proof"
+													name="{mod.id}-image"
+													type="file"
+													accept="image/webp, image/png, image/jpg"
+													multiple
+												/>
+												<button
+													onclick={(e) => {
+														e.preventDefault();
+
+														document.getElementById(`${mod.id}-image`).firstChild.value = '';
+													}}>Reset</button
+												>
+											{/if}
 										</div>
 									</span>
 									<span id="date">
@@ -552,11 +615,23 @@
 																		data-placeholder={tierMod.clear?.isLocalProof
 																			? 'Uploaded images'
 																			: 'https://imgur.com/a/BaxjPdY'}
+																		onchange={(e) => {
+																			const imageKey = document.getElementById(
+																				`${tierMod.id}-imageKey`
+																			);
+																			if (e.target.files > 0) {
+																				imageKey.name = `${tierMod.id}-imageKey`;
+																			} else {
+																				imageKey.name = `${mod.id}-imageKeyInactive`;
+																			}
+																		}}
 																	/>
+																	<input name="{tierMod.id}-name" value={tierMod.name} hidden />
 																	<input
-																		type="hidden"
+																		id="{tierMod.id}-imageKey"
 																		name="{tierMod.id}-imageKey"
 																		value={mod.id}
+																		hidden
 																	/>
 																	{#if tierMod.cleared}
 																		<input type="hidden" name="{tierMod.id}-existing" value="1" />
