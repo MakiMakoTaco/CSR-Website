@@ -181,9 +181,6 @@ export const actions = {
 					});
 				}
 
-				console.log(mod);
-				continue;
-
 				if (!mod.images || mod.images.length === 0) {
 					continue;
 				}
@@ -328,8 +325,6 @@ export const actions = {
 
 			mods.push(mod);
 		}
-
-		return;
 
 		if (mods.length === 0 && updates.length === 0) {
 			return { success: true, modCount: 0 };
