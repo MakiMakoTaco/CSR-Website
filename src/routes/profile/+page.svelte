@@ -55,7 +55,7 @@
 		<img class="profile-pic" alt="player" src={avatar} />
 		<h1 style="color: {nameColor};">{name}</h1>
 		<p class="about">
-			{#if about}About me: {about}{/if}
+			{#if about}About Me: {about}{/if}
 		</p>
 	</div>
 
@@ -135,6 +135,7 @@
 		}
 		textarea {
 			max-width: 50cqw;
+			font-family: Arial, Helvetica, sans-serif;
 
 			@media (width > 1000px) {
 				max-width: 25cqw;
