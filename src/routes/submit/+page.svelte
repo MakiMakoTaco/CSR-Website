@@ -154,13 +154,16 @@
 		if (!String(entry.id).startsWith('t')) return;
 
 		document.querySelectorAll(`#${entry.id}-mods [data-column='proof']`).forEach((input) => {
-			input.name = `${input.name.split('-')[0]}${useImages ? '-image' : '-proof'}`;
+			const modId = input.name.split('-')[0];
+			input.name = `${modId}-${useImages ? 'image' : 'proof'}`;
 			input.type = useImages ? 'file' : 'text';
 			input.value = useImages ? '' : input.defaultValue;
 			input.placeholder = useImages ? 'Uses tier images' : input.dataset.placeholder;
+			input.disabled = false;
 
-			if (input.disabled && !useImages) {
-				input.disabled = false;
+			const imageKey = document.getElementById(`${modId}-imageKey`);
+			if (!useImages && !imageKey.value) {
+				imageKey.value = entry.id;
 			}
 		});
 	}
@@ -619,10 +622,10 @@
 																			const imageKey = document.getElementById(
 																				`${tierMod.id}-imageKey`
 																			);
-																			if (e.target.files > 0) {
-																				imageKey.name = `${tierMod.id}-imageKey`;
+																			if (e.target.files.length > 0) {
+																				imageKey.value = null;
 																			} else {
-																				imageKey.name = `${mod.id}-imageKeyInactive`;
+																				imageKey.value = mod.id;
 																			}
 																		}}
 																	/>
