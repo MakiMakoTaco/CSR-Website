@@ -173,10 +173,10 @@ export const actions = {
 						return (
 							[2, 3].includes(fileParts.length) &&
 							(fileParts[1].toLowerCase().split('.')[0] === mod.name.toLowerCase() ||
-								mod.name
+								fileParts[1]
 									.toLowerCase()
 									.replaceAll(/[<>:/\\|?\*]/g, '')
-									.includes(fileParts[1].toLowerCase().split('.')[0]))
+									.split('.')[0] === mod.name.toLowerCase().replaceAll(/[<>:/\\|?\*]/g, ''))
 						);
 					});
 				}
@@ -296,6 +296,7 @@ export const actions = {
 			delete mod.name;
 			delete mod.images;
 			delete mod.imageKey;
+			delete mod.imageKeyInactive;
 
 			if (current) {
 				const formats = {
