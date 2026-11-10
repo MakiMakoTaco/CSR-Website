@@ -37,7 +37,10 @@
 				If you would like to attempt having files automatically placed into the correct mod after
 				selecting an entire tier, please make sure that the folder selected follows a file structure
 				of "selectedFolder/modName.png", or "selectedFolder/modName/multipleFiles.png" (or any other
-				accepted file extension).
+				accepted file extension). Any characters that are in the mod name but not allowed in the
+				file name, just leave out. If there's still issues feel free to come <a
+					href="https://discord.gg/rVYhpeRX2u">let us know!</a
+				>
 			</p>
 			<p>
 				The only required data for submissions is the proof, along with the honor pledge. The clear
