@@ -29,6 +29,17 @@
 				even upload video links!
 			</p>
 			<p>
+				When submitting multiple links as proof for a mod, please separate them with a space. If you
+				instead upload images directly, please make sure they are less than 4MB, that there are no
+				more than 4 images per mod and that they are of type .webp, .png or .jp(e)g.
+			</p>
+			<p>
+				If you would like to attempt having files automatically placed into the correct mod after
+				selecting an entire tier, please make sure that the folder selected follows a file structure
+				of "selectedFolder/modName.png", or "selectedFolder/modName/multipleFiles.png" (or any other
+				accepted file extension).
+			</p>
+			<p>
 				The only required data for submissions is the proof, along with the honor pledge. The clear
 				date, death count, time taken, full clear checkbox, and notes section are all totally
 				optional! Feel free to fill them out for your own personal stats!
@@ -45,11 +56,6 @@
 				forgot a line in the code.) If you receive a 500 error, then when you contact a moderator,
 				they may tell you to do something different in the meantime if you don't want to wait for a
 				fix.
-			</p>
-			<p>
-				When submitting multiple links as proof for a mod, please separate them with a space. If you
-				instead upload images directly, please make sure they are less than 4MB and that there are
-				no more than 4 images per mod.
 			</p>
 			<p>
 				The Shrimp sheet is a collection of maps that did not make it onto the main CSR sheet. <a
