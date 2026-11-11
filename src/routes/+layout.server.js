@@ -46,7 +46,7 @@ export async function load({ locals }) {
 		player: locals.player,
 		search: {
 			players: getPlayerSearchData(sql),
-			tiers: getTierSearchData(sql, locals.player.role === 'admin')
+			tiers: getTierSearchData(sql, locals.player?.role === 'admin')
 		}
 	};
 }
