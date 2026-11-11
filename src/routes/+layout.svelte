@@ -542,8 +542,8 @@
 											</div>
 										{/each}
 									</div>
-									<br />
 								{/each}
+								<br />
 							</div>
 						{/each}
 					{/if}
