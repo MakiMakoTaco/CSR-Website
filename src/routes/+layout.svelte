@@ -594,8 +594,6 @@
 		border: 0.5rem color-mix(in srgb, Canvas 10%, plum 70%) solid;
 		border-radius: 1rem;
 
-		z-index: 10;
-
 		&::backdrop {
 			background-color: color-mix(in srgb, Canvas 40%);
 		}
