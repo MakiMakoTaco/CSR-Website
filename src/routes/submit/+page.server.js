@@ -81,7 +81,7 @@ export const actions = {
 					try {
 						const urls = [];
 						value
-							.split(' ')
+							.split(/[ ,]/)
 							.map((link) => link.trim())
 							.filter((link) => link)
 							.forEach((url) => {
@@ -89,6 +89,7 @@ export const actions = {
 							});
 
 						value = urls.join(' ');
+						return;
 					} catch (error) {
 						return fail(400, { modId, error: 'does not have a valid URL as proof' });
 					}

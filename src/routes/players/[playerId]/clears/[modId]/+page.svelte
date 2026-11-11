@@ -32,7 +32,10 @@
 			<p class="hint">Click an image to view it full size</p>
 		{:else if data.proofLink}
 			<p class="empty">
-				This clear uses a link as proof: <a href={data.proofLink}>{data.proofLink}</a>
+				This clear uses {data.proofLink.length === 1 ? 'a link' : 'links'} as proof:
+				{#each data.proofLink as proofLink, index}
+					<a href={proofLink}>{proofLink}</a>{index === data.proofLink.length - 1 ? '' : ', '}
+				{/each}
 			</p>
 		{:else}
 			<p class="empty">Player does not have any images uploaded</p>

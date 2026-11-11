@@ -46,15 +46,13 @@
 			{#each players as player}
 				<tr>
 					<td>{player.name}</td>
-					<td
-						><a href={player.proof} target="_blank">
-							{#if player.is_video}
-								Video
-							{:else}
-								Screenshot
-							{/if}
-						</a></td
-					>
+					<td class="proof">
+						{#each player.proof as proof}
+							<a href={proof.link} target="_blank">
+								{proof.type}
+							</a>
+						{/each}
+					</td>
 					<td>{player.is_fc}</td>
 					<td>{player.public_notes}</td>
 					<td>{player.mod_notes}</td>
@@ -141,5 +139,11 @@
 	td:first-child {
 		text-align: left;
 		overflow-wrap: anywhere;
+	}
+
+	.proof {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, 1fr);
+		gap: 1rem;
 	}
 </style>

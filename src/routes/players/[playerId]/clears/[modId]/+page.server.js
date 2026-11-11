@@ -32,7 +32,7 @@ export async function load({ fetch, params, locals }) {
 	return {
 		playerName: clear.playerName,
 		modName: clear.modName,
-		proofLink: clear.isLocalProof ? null : clear.proof,
+		proofLink: clear.isLocalProof ? null : clear.proof.split(' '),
 		imageUrls
 	};
 }
