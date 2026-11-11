@@ -6,6 +6,60 @@
 
 	let lightMode = $state(true);
 
+	let searchFilter = $state('');
+	let players = $state([]);
+	let sides = $state([]);
+	let tiers = $state([]);
+	let mods = $state([]);
+
+	let searchResults = $derived.by(() => {
+		if (!players || players.length === 0 || !sides || sides.length === 0) {
+			return {
+				players: players.length > 0 ? players : [],
+				sides: sides.length > 0 ? sides : []
+			};
+		}
+
+		const filter = searchFilter.toLowerCase().trim();
+		if (!filter || filter === '') return { players, sides };
+
+		return {
+			players: players.filter((player) => player.name.toLowerCase().includes(filter)),
+			sides: sides
+				.filter(
+					(side) =>
+						side.name.toLowerCase().includes(filter) ||
+						side.tiers.filter(
+							(tier) =>
+								tier.name.toLowerCase().includes(filter) ||
+								tier.mods.filter((mod) => mod.name.toLowerCase().includes(filter)).length > 0
+						).length > 0
+				)
+				.map((side) => {
+					return {
+						...side,
+						tiers: side.tiers
+							.map((tier) => {
+								return {
+									...tier,
+									mods: tier.mods.filter((mod) => mod.name.toLowerCase().includes(filter))
+								};
+							})
+							.filter((tier) => {
+								if (
+									tier.mods.some((mod) => mod.name.toLowerCase().includes(filter)) ||
+									tier.name.toLowerCase().includes(filter)
+								) {
+									return true;
+								} else {
+									return false;
+								}
+							})
+					};
+				})
+		};
+	});
+
 	function toggleLightMode() {
 		lightMode = !lightMode;
 		document.documentElement.dataset.theme = lightMode ? 'light' : 'dark';
@@ -67,6 +121,20 @@
 				}
 			});
 		}
+
+		// document.getElementById('search').addEventListener('toggle', (e) => {
+		// 	console.log('Opening search');
+		// });
+	});
+
+	$effect(async () => {
+		players = await data.search.players;
+		sides = await Promise.all(
+			data.sides.map(async (side) => ({
+				...side,
+				tiers: (await data.search.tiers).filter((tier) => tier.sideId === side.id)
+			}))
+		);
 	});
 </script>
 
@@ -107,6 +175,7 @@
 			<li>
 				<button onclick={toggleLightMode}>{lightMode ? 'Dark Mode' : 'Light Mode'}</button>
 			</li>
+			<li><button popovertarget="search">Search</button></li>
 			<li>
 				<a class="submit" href="/submit">Submit Mods</a>
 			</li>
@@ -372,6 +441,77 @@
 		{/if}
 	</div>
 </div> -->
+	<dialog id="search" class="search" popover>
+		<input type="text" bind:value={searchFilter} />
+		<div class="results">
+			<div class="player-search">
+				{#await searchResults.players}
+					<h3>Players:</h3>
+					Loading Players...
+				{:then players}
+					{#if players?.length > 0}
+						<h3>Players:</h3>
+
+						{#each searchResults.players as player}
+							<div>
+								<a
+									href="/players/{player.id}"
+									style="--color: {player.nameColor ? `#${player.nameColor}` : 'Plum'} !important;"
+									>{player.name}</a
+								>
+							</div>
+						{/each}
+					{/if}
+				{/await}
+			</div>
+			<div class="side-search">
+				{#await searchResults.sides}
+					<h3>Sides:</h3>
+					Loading Sides...
+				{:then sides}
+					{#if sides?.length > 0}
+						<h3>Sides:</h3>
+
+						{#each sides as side}
+							<div>
+								<a
+									href="/sides/{side.name}"
+									style={side.color
+										? `--color: #${side.color}; --hover-color: #${side.colorPlus};`
+										: ''}>{side.name}</a
+								>
+							</div>
+							<div class="tier-search">
+								{#each side.tiers as tier}
+									<div>
+										<a
+											href="/{tier.sideId}#{tier.name}"
+											style={tier.color
+												? `--color: #${tier.color}; --hover-color: #${tier.colorPlus};`
+												: ''}>{tier.name}</a
+										>
+									</div>
+									<div class="mod-search">
+										{#each tier.mods as mod}
+											<div>
+												<a
+													href="/mods/{mod.id}"
+													style={tier.color
+														? `--color: #${tier.color}; --hover-color: #${tier.colorPlus};`
+														: ''}>{mod.name}</a
+												>
+											</div>
+										{/each}
+									</div>
+									<br />
+								{/each}
+							</div>
+						{/each}
+					{/if}
+				{/await}
+			</div>
+		</div>
+	</dialog>
 
 	{@render children()}
 </div>
@@ -434,6 +574,26 @@
 		li {
 			padding: 0.3rem;
 			text-align: center;
+		}
+	}
+
+	.search {
+		min-height: 5lh;
+		max-height: 80%;
+		margin: auto;
+
+		&::backdrop {
+			background-color: color-mix(in srgb, Canvas 40%);
+		}
+
+		a {
+			--color: plum;
+			--hover-color: color-mix(in srgb, var(--color) 90%, black);
+			color: var(--color);
+
+			&:hover {
+				color: var(--hover-color);
+			}
 		}
 	}
 
