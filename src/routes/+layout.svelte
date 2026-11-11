@@ -186,6 +186,7 @@
 			<li>
 				<button
 					onclick={() => {
+						searchFilter = '';
 						search.showModal();
 					}}>Search</button
 				>
@@ -364,9 +365,11 @@
 			tabindex="0"
 			role="button"
 			onclick={() => {
+				searchFilter = '';
 				search.showModal();
 			}}
 			onkeypress={() => {
+				searchFilter = '';
 				search.showModal();
 			}}
 		>
@@ -505,17 +508,23 @@
 									href="/sides/{side.name}"
 									style={side.color
 										? `--color: #${side.color}; --hover-color: #${side.colorPlus};`
-										: ''}>{side.name}</a
+										: ''}
+									onclick={() => {
+										search.close();
+									}}>{side.name}</a
 								>
 							</div>
 							<div class="tier-search">
 								{#each side.tiers as tier}
 									<div>
 										<a
-											href="/{tier.sideId}#{tier.name}"
+											href="/sides/{side.name}#{tier.name}"
 											style={tier.color
 												? `--color: #${tier.color}; --hover-color: #${tier.colorPlus};`
-												: ''}>{tier.name}</a
+												: ''}
+											onclick={() => {
+												search.close();
+											}}>{tier.name}</a
 										>
 									</div>
 									<div class="mod-search">
@@ -525,7 +534,10 @@
 													href="/mods/{mod.id}"
 													style={tier.color
 														? `--color: #${tier.color}; --hover-color: #${tier.colorPlus};`
-														: ''}>{mod.name}</a
+														: ''}
+													onclick={() => {
+														search.close();
+													}}>{mod.name}</a
 												>
 											</div>
 										{/each}
