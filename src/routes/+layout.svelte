@@ -122,9 +122,11 @@
 			});
 		}
 
-		// document.getElementById('search').addEventListener('toggle', (e) => {
-		// 	console.log('Opening search');
-		// });
+		document.getElementById('search').addEventListener('click', (e) => {
+			if (e.target === search) {
+				search.close();
+			}
+		});
 	});
 
 	$effect(async () => {
@@ -175,7 +177,13 @@
 			<li>
 				<button onclick={toggleLightMode}>{lightMode ? 'Dark Mode' : 'Light Mode'}</button>
 			</li>
-			<li><button popovertarget="search">Search</button></li>
+			<li>
+				<button
+					onclick={() => {
+						search.showModal();
+					}}>Search</button
+				>
+			</li>
 			<li>
 				<a class="submit" href="/submit">Submit Mods</a>
 			</li>
@@ -441,7 +449,7 @@
 		{/if}
 	</div>
 </div> -->
-	<dialog id="search" class="search" popover>
+	<dialog id="search" class="search">
 		<input type="text" bind:value={searchFilter} />
 		<div class="results">
 			<div class="player-search">
@@ -581,9 +589,22 @@
 		min-height: 5lh;
 		max-height: 80%;
 		margin: auto;
+		padding: 1rem;
+
+		border: 0.5rem color-mix(in srgb, Canvas 10%, plum 70%) solid;
+		border-radius: 1rem;
+
+		z-index: 10;
 
 		&::backdrop {
 			background-color: color-mix(in srgb, Canvas 40%);
+		}
+
+		input {
+			display: block;
+			width: fit-content;
+			margin: 1rem auto;
+			font-size: 26px;
 		}
 
 		a {
