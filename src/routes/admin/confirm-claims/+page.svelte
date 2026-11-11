@@ -3,14 +3,16 @@
 
 	let { data } = $props();
 
-	let pending = $state(false);
-	let confirmedPlayer = $state();
+	let errorMessage = $state();
 </script>
 
+{#if errorMessage}
+	{@html errorMessage}
+{/if}
 {#if !data.pendingPlayers || data.pendingPlayers.length < 1}
 	No players to confirm
 {:else}
-	{#each data.pendingPlayers as player}
+	{#each data.pendingPlayers as player (data.pendingPlayers.current)}
 		<div class="claim">
 			<div class="current-player">
 				Discord ID: {player.current.discordId}
@@ -20,26 +22,28 @@
 			</div>
 
 			<button
-				onclick={async () => {
+				onclick={async (e) => {
 					try {
-						this.disabled = true;
+						e.target.disabled = true;
 
 						const response = await fetch('/admin/confirm-claims', {
 							method: 'POST',
 							body: JSON.stringify({ current: player.current, requested: player.requested })
 						});
 
-						try {
-							const { success } = await response.json();
+						const { success, error } = await response.json();
 
-							if (success) {
-								const pendingPlayers = data.pendingPlayers.filter(
-									(pendingPlayer) => pendingPlayer !== player
-								);
+						if (success) {
+							errorMessage = null;
+							const pendingPlayers = data.pendingPlayers.filter(
+								(pendingPlayer) => pendingPlayer.current.id !== player.current.id
+							);
 
-								data = { ...data, pendingPlayers };
-							}
-						} catch (error) {}
+							data = { ...data, pendingPlayers };
+						} else if (error) {
+							console.error(error);
+							errorMessage = error;
+						}
 					} catch (error) {
 						console.log(error);
 					}
