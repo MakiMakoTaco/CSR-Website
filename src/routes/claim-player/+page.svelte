@@ -19,13 +19,21 @@
 </script>
 
 <main>
-	{#if form?.success}
+	{#if data.requestedPlayer}
+		You've already requested a claim for the player {data.requestedPlayer.name}, please remind a
+		moderator on the Discord to confirm this, or continue waiting.
+	{:else if form?.success}
 		<div class="success-message">
 			<p>Player claim has been sent, feel free to notify a mod in the Discord server</p>
 			<!-- , feel free to ping a mod with a screenshot of this page</p> -->
 			<!-- <div class="player-info">
 				Player with the discord ID of {data.player.discordId} wants to claim {selectedPlayer?.name}
 			</div> -->
+		</div>
+	{:else if form?.error}
+		<div class="error">
+			<span>{form.error}</span>
+			<p>Please contact a moderator on the Discord if someone has stolen your player</p>
 		</div>
 	{:else}
 		<div class="claim-container">

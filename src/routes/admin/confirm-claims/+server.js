@@ -12,8 +12,6 @@ export async function POST({ request, locals }) {
 		error(400, { error: 'Player IDs are the same' });
 	}
 
-	console.log('Updating player');
-
 	await sql`
     UPDATE
       players
@@ -26,8 +24,6 @@ export async function POST({ request, locals }) {
     WHERE id = ${requested.id}
   `;
 
-	console.log('Updating session');
-
 	await sql`
     UPDATE
       session
@@ -35,15 +31,32 @@ export async function POST({ request, locals }) {
     WHERE player_id = ${current.id}
   `;
 
-	console.log('Deleting old player');
-
 	await sql`
     DELETE FROM
       players
     WHERE id = ${current.id}
   `;
 
-	console.log('Successful, returning');
+	return Response.json({ success: true });
+}
+
+export async function DELETE({ url, locals }) {
+	if (!locals.player?.role === 'admin') {
+		error(403);
+	}
+
+	const currentPlayerId = url.searchParams.get('current-player-id');
+	const requestedPlayerId = url.searchParams.get('requested-player-id');
+
+	const sql = locals.sql;
+
+	await sql`
+    DELETE FROM
+      player_claims pc
+    WHERE
+      current_player_id = ${currentPlayerId}
+      AND requested_player_id = ${requestedPlayerId}
+  `;
 
 	return Response.json({ success: true });
 }

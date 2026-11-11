@@ -14,10 +14,27 @@ export async function load({ locals }) {
 	}
 
 	const sql = locals.sql;
+	const playerId = locals.player.id;
+
+	const requestedPlayer = (
+		await sql`
+		SELECT
+			p.name
+		FROM player_claims pc
+		JOIN players p
+			ON p.id = pc.requested_player_id
+		WHERE pc.current_player_id = ${playerId}
+	`
+	)[0];
+
+	if (requestedPlayer?.name) {
+		return { playerList: [], requestedPlayer };
+	}
 
 	const playerList = await sql`
-    SELECT *
-    FROM players
+    SELECT
+			*
+    FROM players p
     WHERE
 			discord_id IS NULL
 			AND claimed = false
@@ -40,6 +57,24 @@ export const actions = {
 		const selectedPlayerId = (await event.request.formData()).get('selected_player_id');
 
 		const playerClaim = { currentPlayerId: playerId, requestedPlayerId: selectedPlayerId };
+
+		const requestedPlayerClaimed = (
+			await sql`
+			SELECT
+				id,
+				discord_id,
+				claimed
+			FROM players
+			WHERE id = ${playerClaim.requestedPlayerId}
+		`
+		)[0];
+
+		if (
+			!requestedPlayerClaimed ||
+			(requestedPlayerClaimed.discordId && requestedPlayerClaimed.claimed)
+		) {
+			return fail(400, { error: 'Requested player has already been claimed' });
+		}
 
 		await sql`
 			INSERT INTO

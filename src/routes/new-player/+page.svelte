@@ -9,8 +9,8 @@
 				>Claim an existing player from the Google Sheets</button
 			>
 		</div>
-		<div class="new-player">
+		<!-- <div class="new-player">
 			<button onclick={goto('/profile')}>Create a new player</button>
-		</div>
+		</div> -->
 	</div>
 </main>

@@ -1,4 +1,6 @@
 <script>
+	import { form } from '$app/server';
+
 	let { data } = $props();
 
 	let pending = $state(false);
@@ -18,20 +20,46 @@
 			</div>
 
 			<button
-				disabled={confirmedPlayer?.current.discordId === player.current.discordId}
 				onclick={async () => {
 					try {
-						confirmedPlayer = player;
-						pending = true;
+						this.disabled = true;
 
 						const response = await fetch('/admin/confirm-claims', {
 							method: 'POST',
 							body: JSON.stringify({ current: player.current, requested: player.requested })
 						});
+
+						try {
+							const { success } = await response.json();
+
+							if (success) {
+								const pendingPlayers = data.pendingPlayers.filter(
+									(pendingPlayer) => pendingPlayer !== player
+								);
+
+								data = { ...data, pendingPlayers };
+							}
+						} catch (error) {}
 					} catch (error) {
 						console.log(error);
 					}
 				}}>Confirm Player</button
+			>
+			<button
+				onclick={async () => {
+					await fetch(
+						`/admin/confirm-claims?current-player-id=${player.current.id}&requested-player-id=${player.requested.id}`,
+						{
+							method: 'DELETE'
+						}
+					);
+
+					const pendingPlayers = data.pendingPlayers.filter(
+						(pendingPlayer) => pendingPlayer !== player
+					);
+
+					data = { ...data, pendingPlayers };
+				}}>Ignore Claim</button
 			>
 		</div>
 	{/each}
