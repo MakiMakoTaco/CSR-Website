@@ -122,7 +122,7 @@
 			});
 		}
 
-		document.getElementById('search').addEventListener('click', (e) => {
+		search.addEventListener('click', (e) => {
 			if (e.target === search) {
 				search.close();
 			}
@@ -137,6 +137,12 @@
 				tiers: (await data.search.tiers).filter((tier) => tier.sideId === side.id)
 			}))
 		);
+
+		search.querySelectorAll('a').forEach((link) => {
+			link.addEventListener('click', (e) => {
+				search.close();
+			});
+		});
 	});
 </script>
 
