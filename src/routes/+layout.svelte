@@ -359,6 +359,19 @@
 		>
 			{lightMode ? 'Dark Mode' : 'Light Mode'}
 		</div>
+		<div
+			class="search-toggle"
+			tabindex="0"
+			role="button"
+			onclick={() => {
+				search.showModal();
+			}}
+			onkeypress={() => {
+				search.showModal();
+			}}
+		>
+			Search
+		</div>
 		<a class="submit nav-link" href="/submit">Submit Mods</a>
 		{#if data?.player?.name}
 			{#if data.player.role}
@@ -594,6 +607,9 @@
 	.search {
 		min-height: 5lh;
 		max-height: 80%;
+		max-width: 80vw;
+		overflow-x: hidden;
+		overscroll-behavior: contain;
 		margin: auto;
 		padding: 1rem;
 
@@ -607,6 +623,7 @@
 		input {
 			display: block;
 			width: fit-content;
+			max-width: 80%;
 			margin: 1rem auto;
 			font-size: 26px;
 		}
@@ -865,9 +882,11 @@
 		overflow-x: hidden;
 		background-color: Canvas;
 		transition: 0.5s;
+		overscroll-behavior: contain;
 
 		a,
-		.theme-toggle {
+		.theme-toggle,
+		.search-toggle {
 			padding: 8px 8px 8px 32px;
 			text-decoration: none;
 			font-size: 25px;
@@ -876,7 +895,8 @@
 			transition: 0.3s;
 		}
 
-		.theme-toggle {
+		.theme-toggle,
+		.search-toggle {
 			cursor: pointer;
 		}
 
