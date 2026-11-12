@@ -382,7 +382,8 @@
 		grid-template-columns: repeat(3, 1fr);
 
 		@media (width < 1000px) {
-			grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+			grid-template-columns: minmax(0, 1fr) auto 4.5em;
+			column-gap: 0.75rem;
 		}
 
 		border: 1px solid grey;
@@ -404,6 +405,12 @@
 			}
 		}
 
+		&:has(.cleared) .download {
+			@media (width < 1000px) {
+				align-self: center;
+			}
+		}
+
 		.clears {
 			grid-column: 3;
 
@@ -412,6 +419,9 @@
 
 			@media (width < 1000px) {
 				display: flex;
+				flex-wrap: wrap;
+				justify-content: center;
+				column-gap: 0.5em;
 			}
 		}
 	}
