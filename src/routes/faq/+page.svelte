@@ -49,9 +49,9 @@
 			</p>
 			<p>
 				You might notice that when submitting mods, you can submit for mods you've already beaten.
-				Currently, sending a submission to the already beaten mod will just replace whatever fields
-				you fill out, along with setting an "update at" timestamp. You can also edit your own clears
-				directly from the link to your profile in settings!
+				This will update any filled in fields, but is recommened to use the <a
+					href="/profile/edit-clears">edit clears</a
+				> page instead
 			</p>
 			<p>
 				If you encounter any issues when submitting please contact a mod or go to the Discord's help
@@ -96,7 +96,7 @@
 		<h1>Credits</h1>
 		<table>
 			<tbody>
-			    <tr>
+				<tr>
 					<td>Initial Design</td>
 					<td>touhoe, Sienna</td>
 				</tr>
