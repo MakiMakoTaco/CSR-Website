@@ -26,7 +26,11 @@
 		<div class="player-submission">
 			<h2>Your submission:</h2>
 			{#if playerSubmission.proof}
-				<a href={playerSubmission.proof}>{playerSubmission.proof}</a>
+				{#each playerSubmission.proof as proof, index}
+					<a href={proof.link} target="_blank">
+						{proof.type}{playerSubmission.proof.length > 1 ? ` ${index + 1}` : ''}
+					</a>
+				{/each}
 			{:else}
 				<span class="no-submission">None (for now!)</span>
 			{/if}
@@ -47,9 +51,9 @@
 				<tr>
 					<td>{player.name}</td>
 					<td class="proof">
-						{#each player.proof as proof}
+						{#each player.proof as proof, index}
 							<a href={proof.link} target="_blank">
-								{proof.type}
+								{proof.type}{player.proof.length > 1 ? ` ${index + 1}` : ''}
 							</a>
 						{/each}
 					</td>
