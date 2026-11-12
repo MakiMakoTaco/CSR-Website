@@ -711,8 +711,8 @@
 
 		position: sticky;
 
-		display: grid;
-		grid-template-columns: 1fr auto 1fr;
+		display: flex;
+		justify-content: space-between;
 		align-items: center;
 
 		background: url(/assets/navbar/ticket.png);
@@ -755,21 +755,14 @@
 		> ul {
 			display: flex;
 			align-items: center;
-			gap: max(0px, 8.2vw - 120px);
 			margin: 0;
 			padding: 0;
-
-			@media (width < 1300px) {
-				gap: max(0px, 8.9vw - 120px);
-			}
-		}
-
-		> .nav-right {
-			justify-content: flex-end;
 		}
 
 		li {
 			list-style: none;
+			text-align: center;
+			white-space: nowrap;
 
 			&:hover {
 				anchor-name: --hovered-link;
@@ -779,8 +772,30 @@
 		a,
 		button {
 			display: block;
-			padding: 1rem;
+			padding: 1rem clamp(0.35rem, 1.6vw - 0.6rem, 1.25rem);
 			font-family: Arial, Helvetica, sans-serif;
+		}
+	}
+
+	nav:has(.nav-right > li:nth-child(5)) li {
+		@media (width < 1190px) {
+			white-space: normal;
+
+			> a,
+			> button {
+				width: min-content;
+			}
+		}
+	}
+
+	nav:has(.nav-right > li:nth-child(6)) li {
+		@media (width < 1400px) {
+			white-space: normal;
+
+			> a,
+			> button {
+				width: min-content;
+			}
 		}
 	}
 
@@ -790,11 +805,7 @@
 	}
 
 	.nav-center li {
-		margin: 0 5vw;
-
-		@media (width < 1300px) {
-			margin: 0 1.5vw;
-		}
+		margin: 0 1rem;
 	}
 
 	.nav-right a img {
