@@ -764,6 +764,10 @@
 			text-align: center;
 			white-space: nowrap;
 
+			@media (width < 1190px) {
+				white-space: normal;
+			}
+
 			&:hover {
 				anchor-name: --hovered-link;
 			}
@@ -774,16 +778,10 @@
 			display: block;
 			padding: 1rem clamp(0.35rem, 1.6vw - 0.6rem, 1.25rem);
 			font-family: Arial, Helvetica, sans-serif;
-		}
-	}
 
-	nav:has(.nav-right > li:nth-child(5)) li {
-		@media (width < 1190px) {
-			white-space: normal;
-
-			> a,
-			> button {
+			@media (width < 1190px) {
 				width: min-content;
+				padding-inline: 0.7rem;
 			}
 		}
 	}
@@ -795,6 +793,7 @@
 			> a,
 			> button {
 				width: min-content;
+				padding-inline: min(0.7rem, 1.5vw - 5px);
 			}
 		}
 	}
