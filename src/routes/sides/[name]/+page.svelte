@@ -392,6 +392,7 @@
 		@media (width < 1000px) {
 			grid-template-columns: minmax(0, 1fr) auto 4.5em;
 			column-gap: 0.75rem;
+			align-items: center;
 		}
 
 		border: 1px solid grey;
@@ -410,12 +411,6 @@
 				&:hover {
 					color: var(--hover-color);
 				}
-			}
-		}
-
-		&:has(.cleared) .download {
-			@media (width < 1000px) {
-				align-self: center;
 			}
 		}
 
