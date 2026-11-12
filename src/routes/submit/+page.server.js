@@ -39,14 +39,17 @@ function validateImages(images, modId) {
 	}
 
 	for (const image of images) {
-		if (image.size === 0) {
+		if (!(image.size > 0)) {
 			throw new Error('has no valid proof', { cause: modId });
 		}
 
 		if (!allowedTypes.includes(image.type)) {
-			throw new Error('File must be of type WebP (under 130KB) or PNG/JPEG (under 4MB)', {
-				cause: modId
-			});
+			throw new Error(
+				`File must be of type WebP (under 130KB) or PNG/JPEG (under 4MB), but is instead ${image.type} of size ${image.size}`,
+				{
+					cause: modId
+				}
+			);
 		}
 
 		if (image.size > 1000 * 1000 * 4) {
@@ -182,7 +185,6 @@ export async function load({ locals, parent }) {
 
 export const actions = {
 	default: async ({ request, url, locals, platform }) => {
-		performance.mark('Start submission');
 		const sql = locals.sql;
 
 		const formData = await request.formData();
@@ -276,7 +278,7 @@ export const actions = {
 				return fail(400, { modId, error: 'has no proof entry.' });
 			}
 
-			if (!images.every((image) => image.size === 0)) {
+			if (!mod.proof) {
 				try {
 					validateImages(images, modId);
 				} catch (error) {
@@ -644,7 +646,6 @@ export const actions = {
 			`;
 		}
 
-		console.log(performance.measure('Submission time', 'Start submission'));
 		return { success: true, modCount: mods.length + updates.length };
 	}
 };
