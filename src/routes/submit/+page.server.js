@@ -89,7 +89,6 @@ export const actions = {
 							});
 
 						value = urls.join(' ');
-						return;
 					} catch (error) {
 						return fail(400, { modId, error: 'does not have a valid URL as proof' });
 					}
