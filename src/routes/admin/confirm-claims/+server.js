@@ -1,7 +1,7 @@
 import { error } from '@sveltejs/kit';
 
 export async function POST({ request, locals }) {
-	if (!locals.player?.role === 'admin') {
+	if (!locals.player?.role) {
 		error(403);
 	}
 
@@ -41,7 +41,7 @@ export async function POST({ request, locals }) {
 }
 
 export async function DELETE({ url, locals }) {
-	if (!locals.player?.role === 'admin') {
+	if (!locals.player?.role) {
 		error(403);
 	}
 

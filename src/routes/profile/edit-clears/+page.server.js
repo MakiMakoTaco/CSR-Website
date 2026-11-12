@@ -85,6 +85,7 @@ export const actions = {
 				proof = proof
 					.split(' ')
 					.filter((link) => link)
+					.map((link) => (/^https?:\/\//i.test(link) ? link : `https://${link}`))
 					.map((link) => new URL(link).href)
 					.join(' ');
 			} catch (error) {

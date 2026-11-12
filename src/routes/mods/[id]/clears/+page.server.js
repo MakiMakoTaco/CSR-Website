@@ -7,7 +7,7 @@ export async function load({ url, params, locals }) {
 	const videoCheck = new RegExp(['youtube.com', 'youtu.be', 'twitch.tv'].join('|'));
 	players.forEach((player, index) => {
 		player.proof = player.isLocalProof
-			? { link: `/players/${player.id}/clears/${params.id}`, type: 'Screenshot' }
+			? [{ link: `/players/${player.id}/clears/${params.id}`, type: 'Screenshot' }]
 			: player.proof.split(' ').map((proof) => {
 					return {
 						link: proof,

@@ -12,7 +12,7 @@
 {#if !data.pendingPlayers || data.pendingPlayers.length < 1}
 	No players to confirm
 {:else}
-	{#each data.pendingPlayers as player (data.pendingPlayers.current)}
+	{#each data.pendingPlayers as player (player.current.id)}
 		<div class="claim">
 			<div class="current-player">
 				Discord ID: {player.current.discordId}

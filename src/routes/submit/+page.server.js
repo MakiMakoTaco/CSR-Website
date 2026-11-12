@@ -182,6 +182,7 @@ export async function load({ locals, parent }) {
 
 export const actions = {
 	default: async ({ request, url, locals, platform }) => {
+		performance.mark('Start submission');
 		const sql = locals.sql;
 
 		const formData = await request.formData();
@@ -204,6 +205,7 @@ export const actions = {
 							.split(/[ ,]/)
 							.map((link) => link.trim())
 							.filter((link) => link)
+							.map((link) => (/^https?:\/\//i.test(link) ? link : `https://${link}`))
 							.forEach((url) => {
 								urls.push(new URL(url).href);
 							});
@@ -270,6 +272,10 @@ export const actions = {
 					})
 				: formData.getAll(`${modId}-image`);
 
+			if (!mod.proof && !current && images.every((image) => image.size === 0)) {
+				return fail(400, { modId, error: 'has no proof entry.' });
+			}
+
 			if (!images.every((image) => image.size === 0)) {
 				try {
 					validateImages(images, modId);
@@ -290,7 +296,7 @@ export const actions = {
 
 		const promises = await Promise.all(modPromises);
 		promises.forEach((promise) => {
-			switch (promise.type) {
+			switch (promise?.type) {
 				case 'update':
 					updates.push({ id: promise.id, changes: promise.changes });
 					break;

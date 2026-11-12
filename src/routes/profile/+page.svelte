@@ -55,7 +55,7 @@
 		<img class="profile-pic" alt="player" src={avatar} />
 		<h1 style="color: {nameColor};">{name}</h1>
 		<p class="about">
-			{#if about}About Me: {about}{/if}
+			{#if about}{about}{/if}
 		</p>
 	</div>
 
