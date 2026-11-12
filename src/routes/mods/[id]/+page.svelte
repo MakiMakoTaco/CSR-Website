@@ -23,9 +23,15 @@
 	<title>{mod.name} - CSR</title>
 </svelte:head>
 
-<button class="back" onclick={() => (location = `/sides/${mod.sideName}`)}
-	>Return to {mod.sideName}</button
->
+{#if page.url.searchParams.has('edit')}
+	<button class="back" onclick={() => (location = `/admin/edit-side/${mod.sideName}`)}
+		>Return to Editing {mod.sideName}</button
+	>
+{:else}
+	<button class="back" onclick={() => (location = `/sides/${mod.sideName}`)}
+		>Return to {mod.sideName}</button
+	>
+{/if}
 {#if page.url.searchParams.get('player')}
 	<button
 		class="back return"

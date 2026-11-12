@@ -72,7 +72,7 @@
 							<div>
 								<a
 									id="mod"
-									href="/mods/{mod.id}"
+									href="/mods/{mod.id}?edit"
 									style="text-decoration: none; color: #{tier.color ?? 'ffffff'};">{mod.name}</a
 								>
 								{#if mod.notes}
@@ -112,6 +112,7 @@
 									{/each}
 								</select>
 								<textarea name="notes" value={mod.notes ?? ''} id="{mod.id}-notes"></textarea>
+								<input type="text" name="page" value={mod.page ?? ''} placeholder="Map link" />
 								<input
 									type="text"
 									name="manualLink"

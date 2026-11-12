@@ -11,10 +11,12 @@ async function getData(locals, id) {
 	if (tiers.length === 0) return tiers;
 
 	const mods = await sql`
-		SELECT *
-		FROM mods
-		WHERE tier_id IN ${sql(tiers.map((tier) => tier.id))}
-		ORDER BY UPPER(name) ASC
+		SELECT m.*, md.page
+		FROM mods m
+		JOIN mod_data md
+			ON md.id = m.mod_data_id
+		WHERE m.tier_id IN ${sql(tiers.map((tier) => tier.id))}
+		ORDER BY UPPER(m.name) ASC
 	`;
 
 	for (let i = 0; i < tiers.length; i++) {
@@ -57,9 +59,11 @@ export const actions = {
 
 		const mod = (
 			await sql`
-			SELECT *
-			FROM mods
-			WHERE id = ${modId}
+			SELECT m.*, md.page
+			FROM mods m
+			JOIN mod_data md
+				ON md.id = m.mod_data_id
+			WHERE m.id = ${modId}
 		`
 		)[0];
 		if (!mod) {
@@ -82,11 +86,33 @@ export const actions = {
 
 		if (Object.keys(updates).length === 0) return;
 
-		await sql`
-			UPDATE mods
-			SET ${sql(updates)}
-			WHERE id = ${modId}
-		`;
+		const modDataUpdates = {};
+		for (const key in updates) {
+			if (findUpdateTable(key) === 'modData') {
+				modDataUpdates[key] = updates[key];
+				delete updates[key];
+			}
+		}
+
+		if (modDataUpdates.page === '') {
+			return fail(400, { error: 'Map link cannot be empty' });
+		}
+
+		if (Object.keys(updates).length > 0) {
+			await sql`
+				UPDATE mods
+				SET ${sql(updates)}
+				WHERE id = ${modId}
+			`;
+		}
+
+		if (Object.keys(modDataUpdates).length > 0) {
+			await sql`
+				UPDATE mod_data
+				SET ${sql(modDataUpdates)}
+				WHERE id = ${mod.modDataId}
+			`;
+		}
 
 		return { success: true };
 	}
