@@ -276,6 +276,8 @@ export const actions = {
 				return fail(400, { modId, error: 'has no proof entry.' });
 			}
 
+			if (images.every((image) => image.size === 0)) continue;
+
 			if (!images.every((image) => image.size === 0)) {
 				try {
 					validateImages(images, modId);
