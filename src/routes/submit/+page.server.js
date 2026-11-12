@@ -1,9 +1,4 @@
 import { env } from '$env/dynamic/private';
-import {
-	DISCORD_BOT_TOKEN,
-	SIGHTENGINE_API_USER,
-	SIGHTENGINE_API_SECRET
-} from '$env/static/private';
 import { error, fail, redirect } from '@sveltejs/kit';
 
 import { getSideByName, getSubmitData } from '$lib/functions/getSides.js';
@@ -29,6 +24,132 @@ async function getData(sql, parent, playerId) {
 	});
 
 	return sides;
+}
+
+function validateImages(images, modId) {
+	const allowedTypes = ['image/webp', 'image/png', 'image/jpeg', 'image/jpg'];
+
+	if (!images || images.length === 0) {
+		return null;
+	}
+
+	if (images.length > 4) {
+		throw new Error('has too many images', { cause: modId });
+	}
+
+	for (const image of images) {
+		if (image.size === 0) {
+			throw new Error('has no valid proof', { cause: modId });
+		}
+
+		if (!allowedTypes.includes(image.type)) {
+			throw new Error('File must be of type WebP (under 130KB) or PNG/JPEG (under 4MB)', {
+				cause: modId
+			});
+		}
+
+		if (image.size > 1000 * 1000 * 4) {
+			throw new Error('File must be smaller than 4MB', { cause: modId });
+		}
+
+		if (image.type === 'image/webp' && image.size > 1000 * 130) {
+			throw new Error('WebP files must be smaller than 130KB', { cause: modId });
+		}
+	}
+}
+
+async function checkModProofs(mod, current, images, playerId, platform) {
+	const modId = mod.modId;
+	const folderName = `${playerId}/${modId}`;
+	let newImages = false;
+	delete mod.existing;
+
+	mod.playerId = playerId;
+	mod.modId = modId;
+	mod.cleared = true;
+
+	const { hours, minutes, seconds } = mod;
+	delete mod.hours;
+	delete mod.minutes;
+	delete mod.seconds;
+	mod.timeTaken =
+		hours || minutes || seconds
+			? (Number(hours ?? 0) * 60 + Number(minutes ?? 0)) * 60 + Number(seconds ?? 0)
+			: null;
+	mod.isFc = mod.isFc ? true : null;
+	mod.isPrivate = mod.isPrivate ? true : false;
+
+	if (mod.proof) {
+		mod.isLocalProof = false;
+		await deleteImages(platform, folderName);
+	} else if (current && images.every((image) => image.size === 0)) {
+		mod.proof = current.proof;
+		mod.isLocalProof = current.isLocalProof;
+	} else {
+		newImages = true;
+		mod.isLocalProof = true;
+		mod.proof = `/players/${playerId}/clears/${modId}`;
+		mod.images = images;
+
+		await deleteImages(platform, folderName);
+
+		const uploads = mod.images.map(async (image, index) => {
+			let bytes;
+
+			if (image.type !== 'image/webp') {
+				const transformed = (
+					await platform.env.IMAGES.input(image.stream()).output({ format: 'image/webp' })
+				).response();
+
+				bytes = await transformed.arrayBuffer();
+			} else {
+				bytes = await image.arrayBuffer();
+			}
+
+			const fileName = `${folderName}/${index + 1}.webp`;
+			await platform.env.R2.put(fileName, bytes, {
+				httpMetadata: { contentType: 'image/webp' }
+			});
+		});
+
+		await Promise.all(uploads);
+	}
+
+	delete mod.name;
+	delete mod.images;
+	delete mod.imageKey;
+
+	if (current) {
+		const formats = {
+			proof: (value) => value ?? null,
+			isLocalProof: Boolean,
+			clearedDate: (value) => (value ? new Date(value).toISOString().slice(0, 10) : null),
+			deaths: (value) => (value == null ? null : Number(value)),
+			timeTaken: (value) => (value == null ? null : Number(value)),
+			isFc: Boolean,
+			publicNotes: (value) => value ?? null,
+			isPrivate: Boolean
+		};
+
+		const changes = {};
+		for (const [key, format] of Object.entries(formats)) {
+			if (format(mod[key]) !== format(current[key]) || (key === 'proof' && newImages)) {
+				changes[key] = mod[key];
+			}
+		}
+
+		console.log('Finished', changes);
+
+		if (Object.keys(changes).length > 0) {
+			return { type: 'update', id: current.id, changes };
+		}
+
+		return null;
+	}
+
+	console.log('Finished');
+
+	return { type: 'insert', mod };
 }
 
 function rankName(tierName, sideName, appendSideName, plus = false) {
@@ -71,10 +192,12 @@ export const actions = {
 
 		const mods = [];
 		const modMap = {};
+		const imageKeys = new Set();
 		for (let [key, value] of formData) {
 			const [modId, dbKey] = key.split('-');
 
 			if (dbKey === 'image') continue;
+			if (dbKey === 'imageKey' && value) imageKeys.add(value);
 
 			if (dbKey === 'proof') {
 				if (value) {
@@ -104,7 +227,9 @@ export const actions = {
 			modMap[modId] = { ...modMap[modId], [dbKey]: value || null };
 		}
 
+		const tierImages = new Map();
 		for (const entryId of Object.keys(modMap).filter((key) => key.startsWith('t'))) {
+			tierImages.set(entryId, formData.getAll(`${entryId}-image`));
 			delete modMap[entryId];
 		}
 
@@ -128,203 +253,55 @@ export const actions = {
 		);
 		const updates = [];
 
-		const allowedTypes = ['image/webp', 'image/png', 'image/jpeg', 'image/jpg'];
+		const modPromises = [];
+		const imageFails = [];
 		for (const modId in modMap) {
-			const mod = modMap[modId];
-			const folderName = `${playerId}/${modId}`;
+			const mod = { ...modMap[modId], modId };
 			const current = existingClears.get(modId);
-			let newImages = false;
-			delete mod.existing;
-
-			mod.playerId = playerId;
-			mod.modId = modId;
-			mod.cleared = true;
-
-			const { hours, minutes, seconds } = mod;
-			delete mod.hours;
-			delete mod.minutes;
-			delete mod.seconds;
-			mod.timeTaken =
-				hours || minutes || seconds
-					? (Number(hours ?? 0) * 60 + Number(minutes ?? 0)) * 60 + Number(seconds ?? 0)
-					: null;
-			mod.isFc = mod.isFc ? true : null;
-			mod.isPrivate = mod.isPrivate ? true : false;
-
-			if (mod.proof) {
-				mod.isLocalProof = false;
-				await deleteImages(platform, folderName);
-			} else if (
-				current &&
-				formData.getAll(`${mod.imageKey ?? modId}-image`).every((image) => image.size === 0)
-			) {
-				mod.proof = current.proof;
-				mod.isLocalProof = current.isLocalProof;
-			} else {
-				newImages = true;
-				mod.isLocalProof = true;
-				mod.proof = `/players/${playerId}/clears/${modId}`;
-				mod.images = formData.getAll(`${mod.imageKey ?? modId}-image`);
-
-				if (mod.imageKey) {
-					mod.images = mod.images.filter((image) => {
+			const images = mod.imageKey
+				? tierImages.get(mod.imageKey).filter((image) => {
 						const fileParts = image.name.split('/');
 
 						return (
 							[2, 3].includes(fileParts.length) &&
-							(fileParts[1].toLowerCase().split('.')[0] === mod.name.toLowerCase() ||
+							(fileParts[1].toLowerCase().split(/\.[^.]*$/)[0] === mod.name.toLowerCase() ||
 								fileParts[1]
 									.toLowerCase()
 									.replaceAll(/[<>:/\\|?\*]/g, '')
-									.split('.')[0] === mod.name.toLowerCase().replaceAll(/[<>:/\\|?\*]/g, ''))
+									.split('.')[0] === mod.name.toLowerCase().replaceAll(/[<>:/\\|?\*\.]/g, ''))
 						);
-					});
+					})
+				: formData.getAll(`${modId}-image`);
+
+			if (!images.every((image) => image.size === 0)) {
+				try {
+					validateImages(images, modId);
+				} catch (error) {
+					return fail(
+						400,
+						error.cause ? { modId: error.cause, error: error.message } : { error: error.message }
+					);
 				}
-
-				if (!mod.images || mod.images.length === 0) {
-					continue;
-				}
-
-				if (mod.images.length > 4) {
-					return fail(400, { modId, error: 'has too many images' });
-				}
-
-				for (const image of mod.images) {
-					if (image.size === 0) {
-						return fail(400, { error: `${modId} has no valid proof` });
-					}
-
-					if (!allowedTypes.includes(image.type)) {
-						return fail(400, {
-							error: 'File must be of type WebP (under 130KB) or PNG/JPEG (under 4MB)'
-						});
-					}
-
-					if (image.size > 1000 * 1000 * 4) {
-						return fail(400, {
-							error: 'File must be smaller than 4MB'
-						});
-					}
-
-					if (image.type === 'image/webp' && image.size > 1000 * 130) {
-						return fail(400, {
-							error: 'WebP files must be smaller than 130KB'
-						});
-					}
-				}
-
-				// const sightengineData = new FormData();
-				// mod.images.forEach((image) => {
-				// 	sightengineData.append('media[]', image);
-				// });
-				// sightengineData.append('models', 'nudity-2.1,people-counting,type');
-				// sightengineData.append('api_user', SIGHTENGINE_API_USER);
-				// sightengineData.append('api_secret', SIGHTENGINE_API_SECRET);
-
-				// const response = await fetch('https://api.sightengine.com/1.0/check.json', {
-				// 	method: 'POST',
-				// 	body: sightengineData
-				// });
-
-				// const sightengineBody = await response.json();
-				// if (sightengineBody.status === 'failure') {
-				// 	console.error(sightengineBody.error);
-				// 	return fail(400, {
-				// 		error: 'Sightengine error'
-				// 	});
-				// }
-				// if (mod.images.length > 1) {
-				// 	for (const imageResult of sightengineBody.data) {
-				// 		if (
-				// 			imageResult.nudity.none < 0.95 ||
-				// 			imageResult.nudity.suggestive_classes.cleavage_categories.none < 0.95 ||
-				// 			imageResult.nudity.suggestive_classes.male_chest_categories.none < 0.95 ||
-				// 			imageResult.nudity.mildly_suggestive > 0.05 ||
-				// 			imageResult.nudity.suggestive > 0.03 ||
-				// 			imageResult.nudity.very_suggestive !== 0.001 ||
-				// 			imageResult.nudity.sexual_activity !== 0.001 ||
-				// 			imageResult.nudity.sexual_display !== 0.001 ||
-				// 			imageResult['people-counting']['0'] < 0.95 ||
-				// 			imageResult.type.illustration < 0.95
-				// 		) {
-				// 			return fail(422, {
-				// 				error: `Image "${imageResult.media.uri}" failed moderation checks`
-				// 			});
-				// 		}
-				// 	}
-				// } else if (
-				// 	sightengineBody.nudity.none < 0.95 ||
-				// 	sightengineBody.nudity.suggestive_classes.cleavage_categories.none < 0.95 ||
-				// 	sightengineBody.nudity.suggestive_classes.male_chest_categories.none < 0.95 ||
-				// 	sightengineBody.nudity.mildly_suggestive > 0.05 ||
-				// 	sightengineBody.nudity.suggestive > 0.03 ||
-				// 	sightengineBody.nudity.very_suggestive !== 0.001 ||
-				// 	sightengineBody.nudity.sexual_activity !== 0.001 ||
-				// 	sightengineBody.nudity.sexual_display !== 0.001 ||
-				// 	sightengineBody['people-counting']['0'] < 0.95 ||
-				// 	sightengineBody.type.illustration < 0.95
-				// ) {
-				// 	return fail(422, {
-				// 		error: `Image "${sightengineBody.media.uri}" failed moderation checks`
-				// 	});
-				// }
-
-				await deleteImages(platform, folderName);
-
-				const uploads = mod.images.map(async (image, index) => {
-					let bytes;
-
-					if (image.type !== 'image/webp') {
-						const transformed = (
-							await platform.env.IMAGES.input(image.stream()).output({ format: 'image/webp' })
-						).response();
-
-						bytes = await transformed.arrayBuffer();
-					} else {
-						bytes = await image.arrayBuffer();
-					}
-
-					const fileName = `${folderName}/${index + 1}.webp`;
-					await platform.env.R2.put(fileName, bytes, {
-						httpMetadata: { contentType: 'image/webp' }
-					});
-				});
-
-				await Promise.all(uploads);
 			}
 
-			delete mod.name;
-			delete mod.images;
-			delete mod.imageKey;
-
-			if (current) {
-				const formats = {
-					proof: (value) => value ?? null,
-					isLocalProof: Boolean,
-					clearedDate: (value) => (value ? new Date(value).toISOString().slice(0, 10) : null),
-					deaths: (value) => (value == null ? null : Number(value)),
-					timeTaken: (value) => (value == null ? null : Number(value)),
-					isFc: Boolean,
-					publicNotes: (value) => value ?? null,
-					isPrivate: Boolean
-				};
-
-				const changes = {};
-				for (const [key, format] of Object.entries(formats)) {
-					if (format(mod[key]) !== format(current[key]) || (key === 'proof' && newImages)) {
-						changes[key] = mod[key];
-					}
-				}
-
-				if (Object.keys(changes).length > 0) {
-					updates.push({ id: current.id, changes });
-				}
-
-				continue;
-			}
-
-			mods.push(mod);
+			modPromises.push(
+				new Promise((resolve) => {
+					resolve(checkModProofs(mod, current, images, playerId, platform));
+				})
+			);
 		}
+
+		const promises = await Promise.all(modPromises);
+		promises.forEach((promise) => {
+			switch (promise.type) {
+				case 'update':
+					updates.push({ id: promise.id, changes: promise.changes });
+					break;
+				case 'insert':
+					mods.push(promise.mod);
+					break;
+			}
+		});
 
 		if (mods.length === 0 && updates.length === 0) {
 			return { success: true, modCount: 0 };
@@ -664,6 +641,7 @@ export const actions = {
 			`;
 		}
 
+		console.log(performance.measure('Submission time', 'Start submission'));
 		return { success: true, modCount: mods.length + updates.length };
 	}
 };
