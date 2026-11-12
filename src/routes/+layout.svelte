@@ -71,6 +71,15 @@
 		return (r * 299 + g * 587 + b * 114) / 1000 > 210 ? 'light-dlc' : '';
 	}
 
+	function nameOutline(color) {
+		const [r, g, b] = [0, 2, 4].map((i) => parseInt((color ?? '000000').slice(i, i + 2), 16));
+		const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+
+		if (brightness < 55) return 'dark-name';
+		if (brightness > 205) return 'light-name';
+		return '';
+	}
+
 	function postitionDropdown(id) {
 		const anchor = event.currentTarget;
 		const menu = document.getElementById(id);
@@ -486,6 +495,7 @@
 							<div>
 								<a
 									href="/players/{player.id}"
+									class={player.nameColor ? nameOutline(player.nameColor) : ''}
 									style="--color: {player.nameColor ? `#${player.nameColor}` : 'Plum'} !important;"
 									>{player.name}</a
 								>
@@ -651,6 +661,30 @@
 		}
 	}
 
+	:global(:root[data-theme='dark']) .dark-name {
+		text-shadow:
+			0 0 1px lightgrey,
+			0 0 1px lightgrey,
+			0 0 1px lightgrey,
+			0 0 1px lightgrey,
+			0 0 1px lightgrey,
+			0 0 1px lightgrey,
+			0 0 1px lightgrey,
+			0 0 1px lightgrey;
+	}
+
+	:global(:root:not([data-theme='dark'])) .light-name {
+		text-shadow:
+			0 0 1px dimgrey,
+			0 0 1px dimgrey,
+			0 0 1px dimgrey,
+			0 0 1px dimgrey,
+			0 0 1px dimgrey,
+			0 0 1px dimgrey,
+			0 0 1px dimgrey,
+			0 0 1px dimgrey;
+	}
+
 	.sidebar {
 		display: none;
 		width: fit-content;
@@ -668,6 +702,7 @@
 	}
 
 	nav {
+		anchor-name: --navbar;
 		inset: 0;
 		padding: 15px 2.5vw 15px 2.7vw;
 		border-color: Canvas;
@@ -676,8 +711,8 @@
 
 		position: sticky;
 
-		display: flex;
-		justify-content: space-between;
+		display: grid;
+		grid-template-columns: 1fr auto 1fr;
 		align-items: center;
 
 		background: url(/assets/navbar/ticket.png);
@@ -718,7 +753,19 @@
 		}
 
 		> ul {
-			display: contents;
+			display: flex;
+			align-items: center;
+			gap: max(0px, 8.2vw - 120px);
+			margin: 0;
+			padding: 0;
+
+			@media (width < 1300px) {
+				gap: max(0px, 8.9vw - 120px);
+			}
+		}
+
+		> .nav-right {
+			justify-content: flex-end;
 		}
 
 		li {
@@ -743,7 +790,11 @@
 	}
 
 	.nav-center li {
-		margin: 0 1.5vw;
+		margin: 0 5vw;
+
+		@media (width < 1300px) {
+			margin: 0 1.5vw;
+		}
 	}
 
 	.nav-right a img {

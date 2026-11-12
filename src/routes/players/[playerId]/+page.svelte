@@ -10,6 +10,15 @@
 	let search = $state('');
 	let sort = $state('recent');
 
+	function nameOutline(color) {
+		const [r, g, b] = [0, 2, 4].map((i) => parseInt((color ?? '000000').slice(i, i + 2), 16));
+		const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+
+		if (brightness < 55) return 'dark-name';
+		if (brightness > 205) return 'light-name';
+		return '';
+	}
+
 	let groups = $derived.by(() => {
 		const terms = search.toLowerCase().trim();
 		const clears = data.clears.filter(
@@ -60,13 +69,16 @@
 	{#if data.player.avatar}
 		<img alt="player profile" src={data.player.avatar} />
 	{/if}
-	<h1 style="color: {`#${data.player.nameColor}` ?? 'CanvasText'};">
+	<h1
+		class={data.player.nameColor ? nameOutline(data.player.nameColor) : ''}
+		style="color: {data.player.nameColor ? `#${data.player.nameColor}` : 'CanvasText'};"
+	>
 		{data.player.name}
 	</h1>
 
 	{#if data.player.about}
 		<p>
-			About me: {data.player.about}
+			{data.player.about}
 		</p>
 	{/if}
 </div>
@@ -212,6 +224,30 @@
 
 	.mod-name a {
 		text-decoration: none;
+	}
+
+	:global(:root[data-theme='dark']) .dark-name {
+		text-shadow:
+			0 0 1px lightgrey,
+			0 0 1px lightgrey,
+			0 0 1px lightgrey,
+			0 0 1px lightgrey,
+			0 0 1px lightgrey,
+			0 0 1px lightgrey,
+			0 0 1px lightgrey,
+			0 0 1px lightgrey;
+	}
+
+	:global(:root:not([data-theme='dark'])) .light-name {
+		text-shadow:
+			0 0 1px dimgrey,
+			0 0 1px dimgrey,
+			0 0 1px dimgrey,
+			0 0 1px dimgrey,
+			0 0 1px dimgrey,
+			0 0 1px dimgrey,
+			0 0 1px dimgrey,
+			0 0 1px dimgrey;
 	}
 
 	.player-header {

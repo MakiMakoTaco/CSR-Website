@@ -110,6 +110,17 @@
 			.sort((a, b) => (b.name.toLowerCase() === filter) - (a.name.toLowerCase() === filter));
 	});
 
+	let modListItems = $derived(
+		searchFilter.trim()
+			? [...filteredTiers, ...filteredMods]
+			: sides.flatMap((side) =>
+					side.tiers.flatMap((tier) => [
+						...(tier.entry && !tier.entry.submitting && tier.mods.length > 0 ? [tier.entry] : []),
+						...tier.mods.filter((mod) => !mod.submitting)
+					])
+				)
+	);
+
 	let submittingEntries = $derived(
 		sides.flatMap((side) =>
 			side.tiers.flatMap((tier) => [
@@ -206,6 +217,13 @@
 		});
 	}
 
+	let errorClosed = $state(false);
+
+	$effect(() => {
+		form;
+		errorClosed = false;
+	});
+
 	let failedMod = $derived.by(() => {
 		if (!form?.error || !sides || sides.length <= 0) return;
 
@@ -237,17 +255,22 @@
 		<div class="toast">
 			{form.modCount > 0
 				? `Successfully submitted for ${form.modCount} mod${form.modCount > 1 ? 's' : ''}`
-				: 'No changes to submit'}
+				: 'No changes to existing clears submitted.'}
 		</div>
 	{/if}
 	{#await sides}
 		Fetching mods...
 	{:then sides}
-		{#if form?.error}
-			<p class="error">
-				{failedMod?.fullName}
-				{@html form.error}
-			</p>
+		{#if form?.error && !errorClosed}
+			<div class="error">
+				<button class="close-error" aria-label="Close" onclick={() => (errorClosed = true)}
+					>✕</button
+				>
+				<p>
+					{failedMod?.fullName}
+					{@html form.error}
+				</p>
+			</div>
 		{/if}
 		<div class="mod-search-container">
 			<div class="mod-search-border">
@@ -300,40 +323,39 @@
 					</span>
 				</div>
 
-				{#if displayMods || !modsAdded}
+				{#if sides.length === 0}
+					<div class="loading">Loading...</div>
+				{:else if displayMods || !modsAdded}
 					<div class="mod-list">
-						{#each filteredTiers as entry}
-							<div>
-								<span class="mod-search-name tier-entry">{entry.fullName}</span>
-								<button
-									class="add-mod"
-									onclick={() => {
-										entry.submitting = true;
+						{#each modListItems as mod}
+							{#if String(mod.id).startsWith('t')}
+								<div>
+									<span class="mod-search-name tier-entry">{mod.fullName}</span>
+									<button
+										class="add-mod"
+										onclick={() => {
+											mod.submitting = true;
 
-										searchFilter = '';
-										displayMods = false;
-									}}>Add tier</button
-								>
-							</div>
+											searchFilter = '';
+											displayMods = false;
+										}}>Add tier</button
+									>
+								</div>
+							{:else if !mod.hidden}
+								<div>
+									<span class="mod-search-name" style="color: #{mod.color};">{mod.fullName}</span>
+									<button
+										class="add-mod"
+										onclick={async () => {
+											mod.submitting = true;
+
+											searchFilter = '';
+											displayMods = false;
+										}}>Add mod</button
+									>
+								</div>
+							{/if}
 						{/each}
-						{#await filteredMods then mods}
-							{#each mods as mod}
-								{#if !mod.hidden}
-									<div>
-										<span class="mod-search-name" style="color: #{mod.color};">{mod.fullName}</span>
-										<button
-											class="add-mod"
-											onclick={async () => {
-												mod.submitting = true;
-
-												searchFilter = '';
-												displayMods = false;
-											}}>Add mod</button
-										>
-									</div>
-								{/if}
-							{/each}
-						{/await}
 					</div>
 				{/if}
 			</div>
@@ -395,6 +417,7 @@
 											onclick={() => {
 												event.preventDefault();
 												mod.submitting = false;
+												mod.useImages = false;
 											}}>{String(mod.id).startsWith('t') ? 'Remove tier' : 'Remove mod'}</button
 										>
 									</h2>
@@ -407,28 +430,30 @@
 										<label for="{mod.id}-proof">Proof</label>
 										<span class="proof-toggles">
 											<button
-												class="proof-toggle active"
+												class="proof-toggle"
+												class:active={!mod.useImages}
 												onclick={(e) => {
 													e.preventDefault();
+													if (!mod.useImages) return;
 
 													document.getElementById(`${mod.id}-url`).hidden = false;
 													document.getElementById(`${mod.id}-image`).hidden = true;
 
-													e.currentTarget.classList.add('active');
-													e.currentTarget.nextElementSibling.classList.remove('active');
+													mod.useImages = false;
 													setTierProofMode(mod, false);
 												}}>Use Link</button
 											>
 											<button
 												class="proof-toggle"
+												class:active={mod.useImages}
 												onclick={(e) => {
 													e.preventDefault();
+													if (mod.useImages) return;
 
 													document.getElementById(`${mod.id}-url`).hidden = true;
 													document.getElementById(`${mod.id}-image`).hidden = false;
 
-													e.currentTarget.classList.add('active');
-													e.currentTarget.previousElementSibling.classList.remove('active');
+													mod.useImages = true;
 													setTierProofMode(mod, true);
 												}}>Use Image</button
 											>
@@ -780,6 +805,47 @@
 		}
 	}
 
+	.error {
+		position: fixed;
+		z-index: 1;
+		top: 100px;
+		top: anchor(--navbar bottom, 100px);
+		left: 50%;
+		translate: -50%;
+		width: max-content;
+		max-width: min(700px, 90vw);
+		box-sizing: border-box;
+		margin-top: 0.5rem;
+		padding: 0.75rem 2.5rem 0.75rem 1rem;
+		border: 2px solid pink;
+		border-radius: 1rem;
+		background-color: Canvas;
+
+		@media (width < 1000px) {
+			top: 2.5rem;
+		}
+
+		p {
+			margin: 0;
+		}
+	}
+
+	.close-error {
+		position: absolute;
+		top: 0.4rem;
+		right: 0.6rem;
+		padding: 0 4px;
+		font-size: 16px;
+		background: none;
+		border: none;
+		color: grey;
+		cursor: pointer;
+
+		&:hover {
+			color: CanvasText;
+		}
+	}
+
 	.mod-search-container {
 		display: grid;
 
@@ -834,6 +900,14 @@
 						max-width: calc(100% - 40px);
 					}
 				}
+			}
+
+			.loading {
+				width: fit-content;
+				grid-template-columns: 1fr;
+				padding: 0.5rem 1rem;
+				border: 1px solid grey;
+				border-radius: 1rem;
 			}
 
 			.mod-list {
