@@ -1,4 +1,5 @@
 import { env } from '$env/dynamic/private';
+import { DISCORD_BOT_TOKEN } from '$env/static/private';
 import { error, fail, redirect } from '@sveltejs/kit';
 
 import { getSideByName, getSubmitData } from '$lib/functions/getSides.js';
@@ -138,16 +139,12 @@ async function checkModProofs(mod, current, images, playerId, platform) {
 			}
 		}
 
-		console.log('Finished', changes);
-
 		if (Object.keys(changes).length > 0) {
 			return { type: 'update', id: current.id, changes };
 		}
 
 		return null;
 	}
-
-	console.log('Finished');
 
 	return { type: 'insert', mod };
 }
