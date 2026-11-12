@@ -942,7 +942,7 @@
 		background: Canvas;
 		justify-self: left;
 		margin: 3px 0 0 7px;
-		padding: 6px 7px 2px;
+		padding: 4px 7px;
 	}
 
 	.nav-sidebar {
