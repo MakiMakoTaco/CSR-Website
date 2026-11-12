@@ -12,7 +12,7 @@
 {#if !data.pendingPlayers || data.pendingPlayers.length < 1}
 	No players to confirm
 {:else}
-	{#each data.pendingPlayers as player (player.current.id)}
+	{#each data.pendingPlayers as player}
 		<div class="claim">
 			<div class="current-player">
 				Discord ID: {player.current.discordId}
@@ -40,6 +40,8 @@
 							);
 
 							data = { ...data, pendingPlayers };
+
+							e.target.disabled = false;
 						} else if (error) {
 							console.error(error);
 							errorMessage = error;
