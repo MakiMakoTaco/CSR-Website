@@ -47,7 +47,7 @@
 
 <main class={page.params.name === 'Catstare' ? 'catstare' : ''}>
 	{#await data.side}
-		Loading side data...
+		<div class="loading">Loading...</div>
 	{:then side}
 		{#if side}
 			<nav>
@@ -277,6 +277,14 @@
 	main {
 		display: grid;
 		justify-content: center;
+	}
+
+	.loading {
+		width: fit-content;
+		margin-top: 1rem;
+		padding: 0.5rem 1rem;
+		border: 1px solid grey;
+		border-radius: 1rem;
 	}
 
 	h1 {
