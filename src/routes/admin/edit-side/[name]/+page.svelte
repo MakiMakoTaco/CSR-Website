@@ -16,7 +16,7 @@
 	<title>Editing {side.name} - CSR</title>
 </svelte:head>
 
-<main>
+<main class={page.params.name === 'Catstare' ? 'catstare' : ''}>
 	<div class="content">
 		<nav>
 			<button onclick={() => (location = '#')}><h3>{side.name}</h3></button>
@@ -176,6 +176,13 @@
 
 	h3 {
 		margin-bottom: 0;
+	}
+
+	.catstare .content,
+	.catstare nav {
+		color-scheme: dark;
+		background-color: Canvas;
+		color: CanvasText;
 	}
 
 	.content {
