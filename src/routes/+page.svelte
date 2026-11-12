@@ -136,7 +136,9 @@
 												: ''}"
 											style="background-color: #{submission.mod.tierColor};"
 										>
-											{submission.mod.tierName}
+											{submission.mod.tierName.startsWith('Catstare')
+												? 'Catstare'
+												: submission.mod.tierName}
 										</div></td
 									>
 								</tr>
