@@ -92,6 +92,29 @@
 			</p>
 		</div>
 	</div>
+	<div class="credits">
+		<h1>Credits</h1>
+		<table>
+			<tbody>
+				<tr>
+					<td>Backend & Frontend</td>
+					<td>Zelda</td>
+				</tr>
+				<tr>
+					<td>Updates & Maintenance</td>
+					<td>Zelda & touhoe</td>
+				</tr>
+				<tr>
+					<td>Testing & Feedback</td>
+					<td>CSR Discord Server</td>
+				</tr>
+				<tr>
+					<td>Font</td>
+					<td>Arial</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
 </main>
 
 <style>
@@ -113,7 +136,8 @@
 
 	.what-is,
 	.submissions,
-	.start {
+	.start,
+	.credits {
 		box-sizing: border-box;
 		width: 75%;
 		margin: auto;
@@ -124,6 +148,28 @@
 		@media (width < 1130px) {
 			width: 100%;
 			padding: 0 1rem;
+		}
+	}
+
+	.credits {
+		padding-bottom: 1rem;
+
+		table {
+			width: 100%;
+			border-collapse: collapse;
+			text-align: left;
+		}
+
+		td {
+			width: 50%;
+			padding: 0.75rem 1.5rem;
+			border-bottom: 1px solid color-mix(in srgb, grey 60%, transparent);
+		}
+
+		@media (width < 1130px) {
+			td {
+				padding: 0.75rem 0.5rem;
+			}
 		}
 	}
 
