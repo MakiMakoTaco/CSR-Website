@@ -178,6 +178,11 @@
 			border-bottom: 1px solid color-mix(in srgb, grey 60%, transparent);
 		}
 
+		tr:last-child td {
+			padding-bottom: 0;
+			border-bottom: 0;
+		}
+
 		@media (width < 1130px) {
 			td {
 				padding: 0.75rem 0.5rem;
