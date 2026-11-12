@@ -776,7 +776,7 @@
 		a,
 		button {
 			display: block;
-			padding: 1rem clamp(0.35rem, 1.6vw - 0.6rem, 1.25rem);
+			padding: 1rem clamp(0.35rem, 2vw - 0.9rem, 1.5rem);
 			font-family: Arial, Helvetica, sans-serif;
 
 			@media (width < 1190px) {
@@ -787,7 +787,7 @@
 	}
 
 	nav:has(.nav-right > li:nth-child(6)) li {
-		@media (width < 1400px) {
+		@media (width < 1440px) {
 			white-space: normal;
 
 			> a,
