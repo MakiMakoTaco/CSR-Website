@@ -60,6 +60,7 @@
 	</div>
 
 	<div class="update-player">
+		<h1>Settings</h1>
 		<button class="reset-avatar" onclick={() => (location = '/login/discord')}>Reset Avatar</button>
 		<form method="POST" action="?/update">
 			<div class="form-field">
@@ -120,6 +121,11 @@
 		padding: 1rem;
 		border: 1px solid grey;
 		border-radius: 1rem;
+
+		h1 {
+			margin-top: 0;
+			text-align: center;
+		}
 	}
 
 	.form-field {
