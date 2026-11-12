@@ -96,13 +96,21 @@
 		<h1>Credits</h1>
 		<table>
 			<tbody>
+			    <tr>
+					<td>Initial Design</td>
+					<td>touhoe, Sienna</td>
+				</tr>
 				<tr>
 					<td>Backend & Frontend</td>
 					<td>Zelda</td>
 				</tr>
 				<tr>
+					<td>Curation</td>
+					<td>touhoe, Pazkallan</td>
+				</tr>
+				<tr>
 					<td>Updates & Maintenance</td>
-					<td>Zelda & touhoe</td>
+					<td>Pazkallan, Zelda, touhoe</td>
 				</tr>
 				<tr>
 					<td>Testing & Feedback</td>
@@ -111,6 +119,10 @@
 				<tr>
 					<td>Font</td>
 					<td>Arial</td>
+				</tr>
+				<tr>
+					<td>Inspiration</td>
+					<td>Fangame Skill Rating</td>
 				</tr>
 			</tbody>
 		</table>
