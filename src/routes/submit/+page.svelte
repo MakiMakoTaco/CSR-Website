@@ -183,11 +183,11 @@
 					const fileParts = file.webkitRelativePath.split('/');
 					if (
 						[2, 3].includes(fileParts.length) &&
-						(fileParts[1].toLowerCase().split('.')[0] === mod.name.toLowerCase() ||
-							mod.name
+						(fileParts[1].toLowerCase().split(/\.[^.]*$/)[0] === mod.name.toLowerCase() ||
+							fileParts[1]
 								.toLowerCase()
 								.replaceAll(/[<>:/\\|?\*]/g, '')
-								.includes(fileParts[1].toLowerCase().split('.')[0]))
+								.split('.')[0] === mod.name.toLowerCase().replaceAll(/[<>:/\\|?\*\.]/g, ''))
 					) {
 						input.type = 'text';
 						input.value = `${fileParts[1]}${fileParts.length === 3 ? '/' : ''}`;
