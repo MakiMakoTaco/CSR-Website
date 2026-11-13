@@ -111,14 +111,16 @@
 		await sides
 			.filter((side) => !side.archived)
 			.forEach((side) =>
-				side.tiers.forEach((tier) => tier.mods.forEach((mod) => uniqueMods.set(mod.name, mod.id)))
+				side.tiers.forEach((tier) =>
+					tier.mods.forEach((mod) => {
+						if (!mod.cleared) {
+							uniqueMods.set(mod.name, mod.id);
+						}
+					})
+				)
 			);
 
-		console.log(uniqueMods);
-
-		const randomModId = Math.floor(Math.random() * uniqueMods.size);
-
-		return randomModId;
+		return Math.floor(Math.random() * uniqueMods.size);
 	}
 
 	onMount(() => {
