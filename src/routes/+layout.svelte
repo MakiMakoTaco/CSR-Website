@@ -1,4 +1,5 @@
 <script>
+	import { goto } from '$app/navigation';
 	import { page, updated } from '$app/state';
 	import { onMount } from 'svelte';
 
@@ -9,7 +10,6 @@
 	let searchFilter = $state('');
 	let players = $state([]);
 	let sides = $state([]);
-	let tiers = $state([]);
 	let mods = $state([]);
 
 	let searchResults = $derived.by(() => {
@@ -104,6 +104,21 @@
 
 	function flipDropdown(id) {
 		document.getElementById(id).hidden = !document.getElementById(id).hidden;
+	}
+
+	async function randomMod() {
+		const uniqueMods = new Map();
+		await sides
+			.filter((side) => !side.archived)
+			.forEach((side) =>
+				side.tiers.forEach((tier) => tier.mods.forEach((mod) => uniqueMods.set(mod.name, mod.id)))
+			);
+
+		console.log(uniqueMods);
+
+		const randomModId = Math.floor(Math.random() * uniqueMods.size);
+
+		return randomModId;
 	}
 
 	onMount(() => {
@@ -481,7 +496,17 @@
 	</div>
 </div> -->
 	<dialog id="search" class="search">
-		<input type="text" bind:value={searchFilter} />
+		<div class="input-container">
+			<input type="text" bind:value={searchFilter} />
+			<button
+				onclick={async () => {
+					const modId = await randomMod();
+
+					goto(`/mods/${modId}`);
+					search.close();
+				}}>Random mod</button
+			>
+		</div>
 		<div class="results">
 			<div class="player-search">
 				{#await searchResults.players}
@@ -640,6 +665,17 @@
 
 		&::backdrop {
 			background-color: color-mix(in srgb, Canvas 40%);
+		}
+
+		.input-container {
+			display: grid;
+			grid-auto-flow: column;
+
+			button {
+				margin: 0.7rem 0;
+				background-color: #2b2a33;
+				border-radius: 1rem;
+			}
 		}
 
 		input {
