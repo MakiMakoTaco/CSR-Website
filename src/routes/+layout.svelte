@@ -670,11 +670,19 @@
 		}
 
 		.input-container {
-			display: grid;
-			grid-auto-flow: column;
+			@media (width > 1000px) {
+				display: grid;
+				grid-auto-flow: column;
+
+				button {
+					margin: 0.7rem 0;
+				}
+			}
+
+			text-align: center;
 
 			button {
-				margin: 0.7rem 0;
+				padding: 1rem;
 				background-color: #2b2a33;
 				border-radius: 1rem;
 			}
