@@ -1,6 +1,6 @@
 <script>
 	import { page } from '$app/state';
-	const id = page.params.id;
+	const id = $derived(page.params.id);
 
 	function formatBytes(bytes, decimals = 2) {
 		if (!+bytes) return '0 Bytes';
