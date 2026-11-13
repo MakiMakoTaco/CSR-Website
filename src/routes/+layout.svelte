@@ -107,20 +107,20 @@
 	}
 
 	async function randomMod() {
-		const uniqueMods = new Map();
+		const uniqueMods = [];
 		await sides
 			.filter((side) => !side.archived)
 			.forEach((side) =>
 				side.tiers.forEach((tier) =>
 					tier.mods.forEach((mod) => {
-						if (!mod.cleared) {
-							uniqueMods.set(mod.name, mod.id);
+						if (!mod.cleared && uniqueMods.filter((uniqueMod) => uniqueMod.name !== mod.name)) {
+							uniqueMods.push({ name: mod.name, id: mod.id });
 						}
 					})
 				)
 			);
 
-		return Math.floor(Math.random() * uniqueMods.size);
+		return uniqueMods[Math.floor(Math.random() * uniqueMods.length)].id;
 	}
 
 	onMount(() => {
