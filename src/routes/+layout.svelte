@@ -113,14 +113,17 @@
 			.forEach((side) =>
 				side.tiers.forEach((tier) =>
 					tier.mods.forEach((mod) => {
-						if (!mod.cleared && !uniqueMods.some((uniqueMod) => uniqueMod.name === mod.name)) {
+						if (
+							(!mod.cleared || data.player?.randomUncleared === false) &&
+							!uniqueMods.some((uniqueMod) => uniqueMod.name === mod.name)
+						) {
 							uniqueMods.push({ name: mod.name, id: mod.id });
 						}
 					})
 				)
 			);
 
-		return uniqueMods[Math.floor(Math.random() * uniqueMods.length)].id;
+		return uniqueMods[Math.floor(Math.random() * uniqueMods.length)]?.id;
 	}
 
 	onMount(() => {
@@ -497,6 +500,12 @@
 			<button
 				onclick={async () => {
 					const modId = await randomMod();
+
+					if (!modId) {
+						location =
+							'https://docs.google.com/spreadsheets/d/1ljc0gVIURrKP3qtStGnrcuBCSOE5P_R8jZZz7VQwN8U/edit?usp=sharing';
+						return;
+					}
 
 					goto(`/mods/${modId}`);
 					search.close();

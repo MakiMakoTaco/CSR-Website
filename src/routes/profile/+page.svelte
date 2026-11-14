@@ -88,6 +88,17 @@
 					status, and personal notes!
 				</p>
 			</div>
+			<div class="private-stats">
+				<label>
+					<input
+						type="checkbox"
+						name="randomUncleared"
+						checked={data.player.randomUncleared ?? true}
+					/>
+					Random Mod: Uncleared Only
+				</label>
+				<p>The Random mod button will only pick mods you haven't cleared yet!</p>
+			</div>
 
 			<div class="form-buttons">
 				<button>Update Profile</button>

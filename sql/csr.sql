@@ -394,7 +394,8 @@ CREATE TABLE public.players (
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone,
     claimed boolean DEFAULT false NOT NULL,
-    private_stats boolean DEFAULT false NOT NULL
+    private_stats boolean DEFAULT false NOT NULL,
+    random_uncleared boolean DEFAULT true NOT NULL
 );
 
 

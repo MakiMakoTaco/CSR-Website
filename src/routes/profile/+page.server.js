@@ -23,7 +23,7 @@ export const actions = {
 		let update = false;
 		let newData = {};
 		for (let [key, value] of data) {
-			if (key === 'privateStats') continue;
+			if (key === 'privateStats' || key === 'randomUncleared') continue;
 
 			if (key === 'nameColor' && value !== '') {
 				const validHex = value.match(/^#?(?<hex>[0-9A-F]{6})$/i);
@@ -55,6 +55,12 @@ export const actions = {
 		const privateStats = data.has('privateStats');
 		if (privateStats !== (player.privateStats ?? false)) {
 			newData.privateStats = privateStats;
+			update = true;
+		}
+
+		const randomUncleared = data.has('randomUncleared');
+		if (randomUncleared !== (player.randomUncleared ?? true)) {
+			newData.randomUncleared = randomUncleared;
 			update = true;
 		}
 
