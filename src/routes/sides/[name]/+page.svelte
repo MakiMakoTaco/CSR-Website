@@ -1,6 +1,6 @@
 <script>
 	import { page } from '$app/state';
-	import { onMount } from 'svelte';
+	import { onMount, tick } from 'svelte';
 	import { exportSide } from '$lib/functions/exportSide.js';
 
 	let { data } = $props();
@@ -20,6 +20,16 @@
 
 		scrollTo({ top: tier.offsetTop - navbar.offsetHeight - 1 });
 	}
+
+	$effect(async () => {
+		const side = await data.side;
+		await side?.tiers;
+		await tick();
+
+		if (page.url.hash) {
+			scroll(decodeURIComponent(page.url.hash.slice(1)));
+		}
+	});
 
 	onMount(() => {
 		document.addEventListener('scroll', (e) => {

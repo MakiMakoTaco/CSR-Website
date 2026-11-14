@@ -337,7 +337,9 @@
 						{#each modListItems as mod}
 							{#if String(mod.id).startsWith('t')}
 								<div>
-									<span class="mod-search-name tier-entry">{mod.fullName}</span>
+									<span class="mod-search-name tier-entry"
+										><a href={mod.href} target="_blank">{mod.fullName}</a></span
+									>
 									<button
 										class="add-mod"
 										onclick={() => {
@@ -350,7 +352,9 @@
 								</div>
 							{:else if !mod.hidden}
 								<div>
-									<span class="mod-search-name" style="color: #{mod.color};">{mod.fullName}</span>
+									<span class="mod-search-name" style="color: #{mod.color};"
+										><a href="/mods/{mod.id}" target="_blank">{mod.fullName}</a></span
+									>
 									<button
 										class="add-mod"
 										onclick={async () => {
@@ -656,7 +660,9 @@
 													<tbody>
 														{#each tierMods(mod) as tierMod (tierMod.id)}
 															<tr>
-																<td class="tier-mod-name">{tierMod.name}</td>
+																<td class="tier-mod-name">
+																	<a href="/mods/{tierMod.id}" target="_blank">{tierMod.name}</a>
+																</td>
 																<td>
 																	<input
 																		name="{tierMod.id}-proof"
@@ -1062,6 +1068,16 @@
 		text-align: left;
 	}
 
+	.mod-search-name a,
+	.tier-mod-name a,
+	.mod-name h2 a {
+		color: inherit;
+
+		&:hover {
+			color: color-mix(in srgb, currentColor 50%, grey);
+		}
+	}
+
 	.add-mod {
 		justify-self: center;
 	}
@@ -1201,10 +1217,6 @@
 			@media (width >= 1000px) {
 				grid-column: 2;
 				margin: 0;
-			}
-
-			a {
-				color: inherit;
 			}
 		}
 

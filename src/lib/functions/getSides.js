@@ -169,6 +169,7 @@ export async function getSubmitData(sql, name, playerId) {
 			id: `t${tier.id}`,
 			name: fullName,
 			fullName: `${fullName} (Full Tier)`,
+			href: `/sides/${side.name}#${encodeURIComponent(tier.name)}`,
 			matches: [...fullName.split(' '), ...tier.name.split(' '), side.name],
 			submitting: false
 		};
