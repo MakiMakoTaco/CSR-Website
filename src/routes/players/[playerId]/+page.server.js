@@ -79,8 +79,6 @@ async function getPlayerRoles(sql, playerId) {
 		}
 	}
 
-	console.log(roles);
-
 	return roles.sort((a, b) => {
 		if (a.sideName.includes('-Side') && b.sideName.includes('-Side')) {
 			return b.index - a.index;
