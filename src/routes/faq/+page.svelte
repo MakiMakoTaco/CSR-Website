@@ -29,7 +29,18 @@
 				even upload video links!
 			</p>
 			<p>
-				When submitting multiple links as proof for a mod, please separate them with a space. If you
+				The only required data for submissions is the proof, along with the honor pledge. The clear
+				date, death count, time taken, full clear checkbox, and notes section are all totally
+				optional! Feel free to fill them out for your own personal stats!
+			</p>
+			<p>
+				You might notice that when submitting mods, you can submit for mods you've already beaten.
+				This will update any filled in fields, but is recommended to use the <a
+					href="/profile/edit-clears">edit clears</a
+				> page instead!
+			</p>
+			<p>
+				When submitting multiple links as proof for a mod, please use the plus button. If you
 				instead upload images directly, please make sure they are less than 4MB, that there are no
 				more than 4 images per mod and that they are of type .webp, .png or .jp(e)g.
 			</p>
@@ -43,17 +54,6 @@
 				>
 			</p>
 			<p>
-				The only required data for submissions is the proof, along with the honor pledge. The clear
-				date, death count, time taken, full clear checkbox, and notes section are all totally
-				optional! Feel free to fill them out for your own personal stats!
-			</p>
-			<p>
-				You might notice that when submitting mods, you can submit for mods you've already beaten.
-				This will update any filled in fields, but is recommened to use the <a
-					href="/profile/edit-clears">edit clears</a
-				> page instead
-			</p>
-			<p>
 				If you encounter any issues when submitting please contact a mod or go to the Discord's help
 				channel. If you receive a 4xx error, this will be fixed as soon as possible (we likely just
 				forgot a line in the code.) If you receive a 500 error, then when you contact a moderator,
@@ -61,7 +61,8 @@
 				fix.
 			</p>
 			<p>
-				The Shrimp sheet is a collection of maps that did not make it onto the main CSR sheet. <a
+				The Celestial Shrimp Rating spreadsheet is a collection of maps that did not make it onto
+				the main CSR sheet. <a
 					href="https://docs.google.com/spreadsheets/d/1ljc0gVIURrKP3qtStGnrcuBCSOE5P_R8jZZz7VQwN8U"
 					>Check it out here</a
 				>!

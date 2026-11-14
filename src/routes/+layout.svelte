@@ -113,7 +113,7 @@
 			.forEach((side) =>
 				side.tiers.forEach((tier) =>
 					tier.mods.forEach((mod) => {
-						if (!mod.cleared && uniqueMods.filter((uniqueMod) => uniqueMod.name !== mod.name)) {
+						if (!mod.cleared && !uniqueMods.some((uniqueMod) => uniqueMod.name === mod.name)) {
 							uniqueMods.push({ name: mod.name, id: mod.id });
 						}
 					})
@@ -679,7 +679,7 @@
 
 			button {
 				padding: 1rem;
-				background-color: #2b2a33;
+				background-color: #e5e5e5;
 				border-radius: 1rem;
 			}
 		}
@@ -701,6 +701,11 @@
 				color: var(--hover-color);
 			}
 		}
+	}
+
+	:global(:root[data-theme='dark']) .search .input-container button {
+		background-color: #2b2a33;
+		color: plum;
 	}
 
 	:global(:root[data-theme='dark']) .dark-name {

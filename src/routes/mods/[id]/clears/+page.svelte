@@ -49,7 +49,7 @@
 		<tbody>
 			{#each players as player}
 				<tr>
-					<td>{player.name}</td>
+					<td><a href="/players/{player.id}">{player.name}</a></td>
 					<td class="proof">
 						{#each player.proof as proof, index}
 							<a href={proof.link} target="_blank">
@@ -97,12 +97,16 @@
 		flex-wrap: wrap;
 		justify-content: center;
 		align-items: baseline;
-		gap: 0 1rem;
+		gap: 0;
 		padding: 0.5rem;
 		overflow-wrap: anywhere;
 
 		h2 {
 			margin: 0.5rem 0;
+
+			&::after {
+				content: '\00a0';
+			}
 		}
 
 		.no-submission {
@@ -110,8 +114,12 @@
 		}
 
 		a {
-			position: relative;
-			top: -0.16em;
+			font-size: 1.5em;
+			font-weight: bold;
+		}
+
+		a + a {
+			margin-left: 1rem;
 		}
 	}
 
