@@ -345,7 +345,7 @@
 
 											searchFilter = '';
 											displayMods = false;
-										}}>Add tier</button
+										}}>Add Tier</button
 									>
 								</div>
 							{:else if !mod.hidden}
@@ -358,7 +358,7 @@
 
 											searchFilter = '';
 											displayMods = false;
-										}}>Add mod</button
+										}}>Add Mod</button
 									>
 								</div>
 							{/if}
@@ -419,15 +419,20 @@
 							<div class="submission">
 								<div class="mod-name">
 									<h2 style="color: #{mod.color};">
-										{mod.fullName}
-										<button
-											onclick={() => {
-												event.preventDefault();
-												mod.submitting = false;
-												mod.useImages = false;
-											}}>{String(mod.id).startsWith('t') ? 'Remove tier' : 'Remove mod'}</button
-										>
+										{#if String(mod.id).startsWith('t')}
+											{mod.fullName}
+										{:else}
+											<a href="/mods/{mod.id}" target="_blank">{mod.fullName}</a>
+										{/if}
 									</h2>
+									<button
+										class="remove-entry"
+										onclick={() => {
+											event.preventDefault();
+											mod.submitting = false;
+											mod.useImages = false;
+										}}>{String(mod.id).startsWith('t') ? 'Remove Tier' : 'Remove Mod'}</button
+									>
 								</div>
 								<div class="mod-data">
 									{#if String(mod.id).startsWith('t')}
@@ -1181,13 +1186,42 @@
 		justify-self: center;
 		text-align: center;
 
+		@media (width >= 1000px) {
+			display: grid;
+			grid-template-columns: 1fr auto 1fr;
+			align-items: center;
+			justify-self: stretch;
+			padding: 9px 0 16.8px;
+		}
+
 		h2 {
 			margin-top: 0.375em;
 			margin-bottom: 0.7em;
+
+			@media (width >= 1000px) {
+				grid-column: 2;
+				margin: 0;
+			}
+
+			a {
+				color: inherit;
+			}
 		}
 
-		button {
-			vertical-align: 0.3em;
+		.remove-entry {
+			@media (width >= 1000px) {
+				grid-column: 3;
+				justify-self: end;
+				position: relative;
+				top: -1.5px;
+				margin-right: 7px;
+				padding: 5px 14px;
+				font-size: 18px;
+			}
+
+			@media (width < 1000px) {
+				margin-bottom: 0.7em;
+			}
 		}
 	}
 
