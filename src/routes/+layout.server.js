@@ -41,7 +41,7 @@ async function getTierSearchData(sql, player) {
 				ON
 					pp.mod_id = m.id
 					AND pp.cleared = true
-					AND pp.player_id = ${player.id}
+					AND pp.player_id = ${player?.id ?? null}
 			GROUP BY m.id, pp.cleared
 		) m ON m.tier_id = t.id
 		${!player?.role ? sql`WHERE NOT t.side_id IN (SELECT id FROM sides s WHERE s.is_private = true)` : sql``}

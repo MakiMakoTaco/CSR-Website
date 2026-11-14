@@ -217,6 +217,8 @@ export const actions = {
 						return fail(400, { modId, error: 'does not have a valid URL as proof' });
 					}
 				}
+
+				value = [modMap[modId]?.proof, value].filter((link) => link).join(' ');
 			} else if (dbKey === 'deaths' && value < 0) {
 				return fail(400, { error: 'Deaths cannot be less than 0' });
 			} else if (['hours', 'minutes', 'seconds'].includes(dbKey) && value < 0) {
