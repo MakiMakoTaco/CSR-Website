@@ -163,12 +163,6 @@
 				tiers: (await data.search.tiers).filter((tier) => tier.sideId === side.id)
 			}))
 		);
-
-		search.querySelectorAll('a').forEach((link) => {
-			link.addEventListener('click', (e) => {
-				search.close();
-			});
-		});
 	});
 </script>
 
@@ -524,7 +518,9 @@
 									href="/players/{player.id}"
 									class={player.nameColor ? nameOutline(player.nameColor) : ''}
 									style="--color: {player.nameColor ? `#${player.nameColor}` : 'Plum'} !important;"
-									>{player.name}</a
+									onclick={() => {
+												search.close();
+											}}>{player.name}</a
 								>
 							</div>
 						{/each}
