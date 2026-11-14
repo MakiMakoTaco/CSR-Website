@@ -1214,9 +1214,9 @@
 				justify-self: end;
 				position: relative;
 				top: -1.5px;
-				margin-right: 7px;
-				padding: 5px 14px;
-				font-size: 18px;
+				margin: -2px 6px -1px 0;
+				padding: 4.5px 12px 2.5px;
+				font-size: 17px;
 			}
 
 			@media (width < 1000px) {
