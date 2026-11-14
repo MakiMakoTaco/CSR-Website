@@ -15,6 +15,7 @@ async function getPlayerRoles(sql, playerId) {
 			tp.color,
 			tp.color_plus,
 			t.clears_for_rank,
+			tp.side_index,
 			COUNT(m.id)::int AS mod_count,
 			COUNT(pp.id)::int AS clears
 		FROM sides s
@@ -49,7 +50,9 @@ async function getPlayerRoles(sql, playerId) {
 			name: `${tier.name}${plus ? '+' : ''}${tier.appendSideName ? ` ${tier.sideName}` : ''}`,
 			color: plus ? tier.colorPlus : tier.color,
 			plus,
-			catstare: tier.name.startsWith('Catstare')
+			catstare: tier.name.startsWith('Catstare'),
+			sideName: tier.sideName,
+			index: tier.sideIndex
 		});
 	}
 
@@ -61,14 +64,51 @@ async function getPlayerRoles(sql, playerId) {
 			roles.push({
 				name: `${side.sideName}${plus ? '+' : ''}`,
 				color: plus ? side.sideColorPlus : side.sideColor,
-				plus
+				plus,
+				sideName: side.sideName,
+				index: side.sideIndex
 			});
 		} else if (side.shoutoutOnClear && side.modCount > 0 && side.clears >= side.modCount) {
-			roles.push({ name: `The Frog ${side.sideName}`, color: '93c47d', plus: true });
+			roles.push({
+				name: `The Frog ${side.sideName}`,
+				color: '93c47d',
+				plus: true,
+				sideName: side.sideName,
+				index: 10
+			});
 		}
 	}
 
-	return roles;
+	console.log(roles);
+
+	return roles.sort((a, b) => {
+		if (a.sideName.includes('-Side') && b.sideName.includes('-Side')) {
+			return b.index - a.index;
+		} else if (a.sideName.includes('DLC') && b.sideName.includes('DLC')) {
+			const numberA = Number(a.sideName.split(' ')[1]);
+			const numberB = Number(b.sideName.split(' ')[1]);
+
+			if (numberA !== numberB) {
+				return numberA - numberB;
+			} else {
+				return b.index - a.index;
+			}
+		} else if (a.sideName.includes('Catstare')) {
+			if (!b.sideName.includes('DLC')) {
+				return 1;
+			} else {
+				return -1;
+			}
+		} else if (b.sideName.includes('Catstare')) {
+			if (!a.sideName.includes('DLC')) {
+				return -1;
+			} else {
+				return 1;
+			}
+		}
+
+		return 0;
+	});
 }
 
 export async function load({ params, locals }) {
