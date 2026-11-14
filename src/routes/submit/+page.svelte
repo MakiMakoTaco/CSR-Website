@@ -145,11 +145,18 @@
 		if (!String(entry.id).startsWith('t')) return;
 
 		const source = event.currentTarget;
+		const value =
+			column === 'proof'
+				? [...document.getElementsByName(`${entry.id}-proof`)]
+						.map((input) => input.value.trim())
+						.filter((link) => link)
+						.join(' ')
+				: source.value;
 		document.querySelectorAll(`#${entry.id}-mods [data-column='${column}']`).forEach((input) => {
 			if (input.type === 'checkbox') {
 				input.checked = source.checked;
 			} else {
-				input.value = source.value;
+				input.value = value;
 			}
 		});
 	}
@@ -458,13 +465,25 @@
 												}}>Use Image</button
 											>
 										</span>
-										<div id="{mod.id}-url">
-											<input
-												id="{mod.id}-proof"
-												name="{mod.id}-proof"
-												oninput={(e) => fillColumn(mod, 'proof', e)}
-												placeholder="https://imgur.com/a/BaxjPdY"
-											/>
+										<div id="{mod.id}-url" class="proof-links">
+											{#each { length: mod.linkCount ?? 1 }, index}
+												<input
+													id={index === 0 ? `${mod.id}-proof` : undefined}
+													name="{mod.id}-proof"
+													oninput={(e) => fillColumn(mod, 'proof', e)}
+													placeholder="https://imgur.com/a/BaxjPdY"
+												/>
+												{#if index === 0}
+													<button
+														class="add-link"
+														aria-label="Add link"
+														onclick={(e) => {
+															e.preventDefault();
+															mod.linkCount = (mod.linkCount ?? 1) + 1;
+														}}>+</button
+													>
+												{/if}
+											{/each}
 										</div>
 										<div id="{mod.id}-image" hidden>
 											{#if String(mod.id).startsWith('t')}
@@ -765,7 +784,7 @@
 									const image = document.getElementById(`${mod.id}-image`);
 
 									if (url.hidden) {
-										url.firstChild.value = '';
+										url.querySelectorAll('input').forEach((input) => (input.value = ''));
 									} else {
 										image.firstChild.value = '';
 									}
@@ -1085,6 +1104,20 @@
 			@media (width >= 1000px) {
 				margin-top: -8px;
 			}
+		}
+	}
+
+	.proof-links {
+		grid-template-columns: auto auto;
+		align-items: center;
+		gap: 5px;
+
+		&:not([hidden]) {
+			display: grid;
+		}
+
+		input {
+			grid-column: 1;
 		}
 	}
 
