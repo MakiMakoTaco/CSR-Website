@@ -261,34 +261,37 @@ export const actions = {
 		for (const modId in modMap) {
 			const mod = { ...modMap[modId], modId };
 			const current = existingClears.get(modId);
-			const images = mod.imageKey
-				? tierImages.get(mod.imageKey).filter((image) => {
-						const fileParts = image.name.split('/');
+			const images = mod.proof ? null :  mod.imageKey
+					? tierImages.get(mod.imageKey).filter((image) => {
+							const fileParts = image.name?.split('/') ?? null;
 
-						return (
-							[2, 3].includes(fileParts.length) &&
-							(fileParts[1].toLowerCase().split(/\.[^.]*$/)[0] === mod.name.toLowerCase() ||
-								fileParts[1]
-									.toLowerCase()
-									.replaceAll(/[<>:/\\|?\*]/g, '')
-									.split('.')[0] === mod.name.toLowerCase().replaceAll(/[<>:/\\|?\*\.]/g, ''))
-						);
-					})
-				: formData.getAll(`${modId}-image`);
+							if(!fileParts) return null
+	
+							return (
+								[2, 3].includes(fileParts.length) &&
+								(fileParts[1].toLowerCase().split(/\.[^.]*$/)[0] === mod.name.toLowerCase() ||
+									fileParts[1]
+										.toLowerCase()
+										.replaceAll(/[<>:/\\|?\*]/g, '')
+										.split('.')[0] === mod.name.toLowerCase().replaceAll(/[<>:/\\|?\*\.]/g, ''))
+							);
+						})
+					: formData.getAll(`${modId}-image`);
 
-			if (!mod.proof && !current && images.every((image) => image.size === 0)) {
-				return fail(400, { modId, error: 'has no proof entry.' });
-			}
-
-			if (!mod.proof) {
-				try {
-					validateImages(images, modId);
-				} catch (error) {
-					return fail(
-						400,
-						error.cause ? { modId: error.cause, error: error.message } : { error: error.message }
-					);
+			if(!mod.proof) {				
+				if (!current && (!mod.images || images.every((image) => image.size === 0))) {
+					return fail(400, { modId, error: 'has no proof entry.' });
 				}
+	
+					try {
+						validateImages(images, modId);
+					} catch (error) {
+						return fail(
+							400,
+							error.cause ? { modId: error.cause, error: error.message } : { error: error.message }
+						);
+					}
+				
 			}
 
 			modPromises.push(
