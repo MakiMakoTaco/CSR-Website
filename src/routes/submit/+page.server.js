@@ -261,12 +261,14 @@ export const actions = {
 		for (const modId in modMap) {
 			const mod = { ...modMap[modId], modId };
 			const current = existingClears.get(modId);
-			const images = mod.proof ? null :  mod.imageKey
+			const images = mod.proof
+				? null
+				: mod.imageKey
 					? tierImages.get(mod.imageKey).filter((image) => {
 							const fileParts = image.name?.split('/') ?? null;
 
-							if(!fileParts) return null
-	
+							if (!fileParts) return null;
+
 							return (
 								[2, 3].includes(fileParts.length) &&
 								(fileParts[1].toLowerCase().split(/\.[^.]*$/)[0] === mod.name.toLowerCase() ||
@@ -278,20 +280,19 @@ export const actions = {
 						})
 					: formData.getAll(`${modId}-image`);
 
-			if(!mod.proof) {				
-				if (!current && (!mod.images || images.every((image) => image.size === 0))) {
+			if (!mod.proof) {
+				if (!current && (!images || images.every((image) => image.size === 0))) {
 					return fail(400, { modId, error: 'has no proof entry.' });
 				}
-	
-					try {
-						validateImages(images, modId);
-					} catch (error) {
-						return fail(
-							400,
-							error.cause ? { modId: error.cause, error: error.message } : { error: error.message }
-						);
-					}
-				
+
+				try {
+					validateImages(images, modId);
+				} catch (error) {
+					return fail(
+						400,
+						error.cause ? { modId: error.cause, error: error.message } : { error: error.message }
+					);
+				}
 			}
 
 			modPromises.push(
