@@ -421,14 +421,12 @@ export const actions = {
 			if (side.rankPlus) continue;
 
 			for (const tier of side.tiers) {
-				console.log(tier);
 				if (!tier.clearsForRank || tier.clearsForRank <= 0 || tier.rankPlus) continue;
 
 				const shoutoutCheck = {
 					clear: tier.clears >= tier.clearsForRank,
 					clearPlus: tier.clears >= tier.modCount
 				};
-				console.log(shoutoutCheck);
 
 				if (shoutoutCheck.clearPlus || (!tier.rank && shoutoutCheck.clear)) {
 					updatedRanks.push({
@@ -451,10 +449,7 @@ export const actions = {
 					}
 				});
 
-				if (!roles.clear || !roles.clearPlus) {
-					console.log(roles);
-					continue;
-				}
+				if (!roles.clear || !roles.clearPlus) continue;
 
 				shoutoutRoles.push({ rank: tier.rank, roles, shoutoutCheck });
 			}
@@ -503,8 +498,6 @@ export const actions = {
 
 		if (!updatedRanks || updatedRanks.length === 0)
 			return { success: true, modCount: mods.length + updates.length };
-
-		console.log(updatedRanks);
 
 		await sql`
 				INSERT INTO
