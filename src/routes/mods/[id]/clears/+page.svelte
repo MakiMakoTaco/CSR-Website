@@ -57,9 +57,9 @@
 							</a>
 						{/each}
 					</td>
-					<td>{player.is_fc}</td>
-					<td>{player.public_notes}</td>
-					<td>{player.mod_notes}</td>
+					<td>{player.isFc ? 'Yes' : ''}</td>
+					<td>{player.publicNotes}</td>
+					<td>{player.modNotes}</td>
 				</tr>
 			{/each}
 		</tbody>
