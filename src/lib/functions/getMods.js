@@ -5,6 +5,8 @@ export async function getMinModData(sql, modId) {
 		await sql`
 		SELECT
 			m.name,
+			tp.color,
+			tp.color_plus,
 			m.manual_link,
 			md.description,
 			md.id AS mod_data_id,
@@ -26,13 +28,12 @@ export async function getMinModData(sql, modId) {
 		FROM mods m
 		JOIN mod_data md
 			ON md.id = m.mod_data_id
+		JOIN tiers t
+			ON t.id = m.tier_id
+		JOIN tier_presets tp
+			ON tp.id = t.preset_id
 		JOIN sides s
-			ON s.id = (
-				SELECT
-					side_id
-				FROM tiers t
-				WHERE t.id = m.tier_id
-			)
+			ON s.id = t.side_id
 		LEFT JOIN contributors c
 			ON c.id = md.submitter_id
 		CROSS JOIN LATERAL (

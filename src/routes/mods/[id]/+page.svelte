@@ -42,7 +42,12 @@
 <main>
 	<div class="title">
 		<h1>
-			<a href={mod.page} target="_blank">
+			<a
+				class="mod-name"
+				href={mod.page}
+				target="_blank"
+				style="color: #{mod.color}; --hover-color: #{mod.colorPlus};"
+			>
 				{mod.name}
 			</a>
 			{#if submitter}
@@ -188,6 +193,14 @@
 
 	.title {
 		grid-area: title;
+
+		.mod-name {
+			--hover-color: color-mix(in srgb, light-dark(#0000ee, #9e9eff) 50%, CanvasText);
+
+			&:hover {
+				color: var(--hover-color) !important;
+			}
+		}
 	}
 
 	.description {
