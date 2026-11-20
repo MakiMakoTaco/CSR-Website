@@ -167,15 +167,18 @@
 		class="media-roll"
 		closedby="any"
 		onclose={(e) => {
-			for (const child of this.children) {
+			const element = e.target;
+
+			for (const child of element.children) {
 				child.hidden = true;
 			}
 		}}
 		onkeydown={(e) => {
 			if (!['ArrowLeft', 'ArrowRight'].includes(e.key)) return;
 
+			const element = e.target;
 			let currentActive;
-			for (const child of this.children) {
+			for (const child of element.children) {
 				if (!child.hidden) {
 					currentActive = Number(child.id.split('-')[1]);
 					child.hidden = true;
@@ -185,17 +188,17 @@
 			switch (e.key) {
 				case 'ArrowLeft':
 					if (currentActive === 0) {
-						this.children[this.children.length - 1].hidden = false;
+						element.children[element.children.length - 1].hidden = false;
 					} else {
-						this.children[currentActive - 1].hidden = false;
+						element.children[currentActive - 1].hidden = false;
 					}
 
 					break;
 				case 'ArrowRight':
-					if (currentActive === this.children.length - 1) {
-						this.children[0].hidden = false;
+					if (currentActive === element.children.length - 1) {
+						element.children[0].hidden = false;
 					} else {
-						this.children[currentActive + 1].hidden = false;
+						element.children[currentActive + 1].hidden = false;
 					}
 					break;
 			}
