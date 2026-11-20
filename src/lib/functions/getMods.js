@@ -12,6 +12,7 @@ export async function getMinModData(sql, modId) {
 			md.id AS mod_data_id,
 			md.page,
 			md.gb_name,
+			to_json(md.media) AS media,
 			s.name AS side_name,
 			CASE
 				WHEN c.id IS NULL THEN
@@ -38,8 +39,8 @@ export async function getMinModData(sql, modId) {
 			ON c.id = md.submitter_id
 		CROSS JOIN LATERAL (
 			SELECT
-				json_agg(
-					json_build_object(
+				jsonb_agg(
+					jsonb_build_object(
 						'id', cg.id,
 						'name', cg.name,
 						'authors', (
@@ -63,8 +64,8 @@ export async function getMinModData(sql, modId) {
 		) AS cgs
 		CROSS JOIN LATERAL (
 			SELECT
-				json_agg(
-					json_build_object(
+				jsonb_agg(
+					jsonb_build_object(
 						'index', dl.order_index,
 						'name', dl.file_name,
 						'size', dl.file_size,

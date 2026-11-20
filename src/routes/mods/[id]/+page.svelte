@@ -70,56 +70,67 @@
 	</div>
 	<div class="description">{data.mod.description}</div>
 
-	<div class="downloads">
-		{#if mod.children && mod.children.length > 0}
-			<div class="children">
-				{#each mod.children as child}
-					<span>
-						<a href="/mod-data/{child.id}">{child.gbName}</a>
-						<a href={child.download?.everest.everestUrl}>Quick Install</a>
-					</span>
+	<div class="data">
+		<div class="downloads">
+			{#if mod.children && mod.children.length > 0}
+				<div class="children">
+					{#each mod.children as child}
+						<span>
+							<a href="/mod-data/{child.id}">{child.gbName}</a>
+							<a href={child.download?.everest.everestUrl}>Quick Install</a>
+						</span>
+					{/each}
+				</div>
+			{:else}
+				<div class="download-links">
+					<table>
+						<caption>Download Links</caption>
+						<thead>
+							<tr>
+								<th>Everest</th>
+								<th>Manual</th>
+								<th>File Size</th>
+							</tr>
+						</thead>
+						<tbody>
+							{#each mod.downloads as download}
+								<tr>
+									<td>
+										{#if download.everest}
+											<a href={download.everest}>Download</a>
+										{:else}
+											No Everest link available
+										{/if}
+									</td>
+									<td>
+										{#if download.manual}
+											<a href={download.manual}>{download.name}</a>
+										{:else}
+											No link available
+										{/if}
+									</td>
+									<td>{formatBytes(download.size)}</td>
+								</tr>
+							{/each}
+							{#if mod.manualLink}
+								<tr>
+									<td></td>
+									<td><a href={mod.manualLink}>Google Drive</a></td>
+									<td></td>
+								</tr>
+							{/if}
+						</tbody>
+					</table>
+				</div>
+			{/if}
+		</div>
+		{#if mod.media}
+			<div class="media">
+				{#each mod.media as media}
+					<a href={media}>
+						<img src={media} alt="preview media" />
+					</a>
 				{/each}
-			</div>
-		{:else}
-			<div class="download-links">
-				<table>
-					<caption>Download Links</caption>
-					<thead>
-						<tr>
-							<th>Everest</th>
-							<th>Manual</th>
-							<th>File Size</th>
-						</tr>
-					</thead>
-					<tbody>
-						{#each mod.downloads as download}
-							<tr>
-								<td>
-									{#if download.everest}
-										<a href={download.everest}>Download</a>
-									{:else}
-										No Everest link available
-									{/if}
-								</td>
-								<td>
-									{#if download.manual}
-										<a href={download.manual}>{download.name}</a>
-									{:else}
-										No link available
-									{/if}
-								</td>
-								<td>{formatBytes(download.size)}</td>
-							</tr>
-						{/each}
-						{#if mod.manualLink}
-							<tr>
-								<td></td>
-								<td><a href={mod.manualLink}>Google Drive</a></td>
-								<td></td>
-							</tr>
-						{/if}
-					</tbody>
-				</table>
 			</div>
 		{/if}
 	</div>
@@ -158,7 +169,7 @@
 		grid-template-areas:
 			'title title'
 			'description description'
-			'downloads credits';
+			'data credits';
 		grid-template-columns: 1fr 1fr;
 
 		justify-content: center;
@@ -171,7 +182,7 @@
 		}
 
 		@media (width < 790px) {
-			grid-template-areas: 'title' 'description' 'downloads' 'credits';
+			grid-template-areas: 'title' 'description' 'data' 'credits';
 			grid-template-columns: minmax(0, 1fr);
 		}
 
@@ -208,8 +219,8 @@
 		border-bottom: 1px solid color-mix(in srgb, grey 60%, transparent);
 	}
 
-	.downloads {
-		grid-area: downloads;
+	.data {
+		grid-area: data;
 		align-self: stretch;
 		padding: 0;
 		overflow: hidden;
@@ -218,6 +229,28 @@
 		@media (width < 790px) {
 			border-right: 0;
 			border-bottom: 1px solid color-mix(in srgb, grey 60%, transparent);
+		}
+
+		.media {
+			display: flex;
+			flex-wrap: wrap;
+			justify-content: center;
+			gap: 1rem;
+			padding: 1rem;
+
+			> * {
+				flex-basis: calc(50% - 1rem);
+			}
+
+			a {
+				width: min(480px, 100%);
+			}
+
+			img {
+				display: block;
+				width: 100%;
+				border-radius: 0.5rem;
+			}
 		}
 	}
 
