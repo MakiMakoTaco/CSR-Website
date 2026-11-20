@@ -126,10 +126,18 @@
 		</div>
 		{#if mod.media}
 			<div class="media">
-				{#each mod.media as media}
-					<a href={media}>
+				{#each mod.media as media, index}
+					<button
+						onclick={() => {
+							const media = document.getElementById('media');
+							console.log(media);
+
+							media.showModal();
+							media.children[index].hidden = false;
+						}}
+					>
 						<img src={media} alt="preview media" />
-					</a>
+					</button>
 				{/each}
 			</div>
 		{/if}
@@ -152,6 +160,54 @@
 		{/each}
 	</div>
 </main>
+
+{#if mod.media}
+	<dialog
+		id="media"
+		class="media-roll"
+		closedby="any"
+		onclose={(e) => {
+			for (const child of this.children) {
+				child.hidden = true;
+			}
+		}}
+		onkeydown={(e) => {
+			if (!['ArrowLeft', 'ArrowRight'].includes(e.key)) return;
+
+			let currentActive;
+			for (const child of this.children) {
+				if (!child.hidden) {
+					currentActive = Number(child.id.split('-')[1]);
+					child.hidden = true;
+				}
+			}
+
+			switch (e.key) {
+				case 'ArrowLeft':
+					if (currentActive === 0) {
+						this.children[this.children.length - 1].hidden = false;
+					} else {
+						this.children[currentActive - 1].hidden = false;
+					}
+
+					break;
+				case 'ArrowRight':
+					if (currentActive === this.children.length - 1) {
+						this.children[0].hidden = false;
+					} else {
+						this.children[currentActive + 1].hidden = false;
+					}
+					break;
+			}
+		}}
+	>
+		{#each mod.media as media, index}
+			<div id="media-{index}" class="focused-media" hidden>
+				<img src={media} alt="full screen preview media" />
+			</div>
+		{/each}
+	</dialog>
+{/if}
 
 <style>
 	a:is(:link, :visited) {
@@ -242,8 +298,10 @@
 				flex-basis: calc(50% - 1rem);
 			}
 
-			a {
+			button {
 				width: min(480px, 100%);
+				background: none;
+				border: none;
 			}
 
 			img {
@@ -251,6 +309,15 @@
 				width: 100%;
 				border-radius: 0.5rem;
 			}
+		}
+	}
+
+	.media-roll {
+		width: 80%;
+		height: min(fit-content, 100%);
+
+		img {
+			width: 100%;
 		}
 	}
 
