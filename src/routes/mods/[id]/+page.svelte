@@ -1,5 +1,7 @@
 <script>
 	import { page } from '$app/state';
+	import { onMount } from 'svelte';
+	import { preventDefault } from 'svelte/legacy';
 	const id = $derived(page.params.id);
 
 	function formatBytes(bytes, decimals = 2) {
@@ -172,6 +174,11 @@
 			for (const child of element.children) {
 				child.hidden = true;
 			}
+		}}
+		ontouchend={(e) => {
+			e.preventDefault();
+
+			if (e.target === media) media.close();
 		}}
 		onkeydown={(e) => {
 			if (!['ArrowLeft', 'ArrowRight'].includes(e.key)) return;
