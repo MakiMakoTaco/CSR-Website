@@ -1,5 +1,6 @@
 <script>
 	import { page } from '$app/state';
+	import { goto } from '$app/navigation';
 	import { onMount, tick } from 'svelte';
 	import { exportSide } from '$lib/functions/exportSide.js';
 
@@ -12,6 +13,25 @@
 	function lightDlc(color) {
 		const [r, g, b] = [0, 2, 4].map((i) => parseInt((color ?? '000000').slice(i, i + 2), 16));
 		return (r * 299 + g * 587 + b * 114) / 1000 > 210 ? 'light-dlc' : '';
+	}
+
+	function randomMods(mods) {
+		const uniqueMods = [];
+		mods.forEach((mod) => {
+			if (
+				(!mod.cleared || data.player?.randomUncleared === false) &&
+				!uniqueMods.some((uniqueMod) => uniqueMod.name === mod.name)
+			) {
+				uniqueMods.push({ name: mod.name, id: mod.id });
+			}
+		});
+
+		return uniqueMods;
+	}
+
+	function randomMod(mods) {
+		const uniqueMods = randomMods(mods);
+		goto(`/mods/${uniqueMods[Math.floor(Math.random() * uniqueMods.length)].id}`);
 	}
 
 	function scroll(id) {
@@ -77,6 +97,11 @@
 				{/await}
 			</nav>
 			<div class="content">
+				<button
+					class="random"
+					disabled={randomMods(side.tiers.flatMap((tier) => tier.mods)).length === 0}
+					onclick={() => randomMod(side.tiers.flatMap((tier) => tier.mods))}>Random</button
+				>
 				<button class="export" onclick={() => exportSide(side, data.player?.name)}>Export</button>
 				<h1
 					class={lightDlc(side.color)}
@@ -106,6 +131,11 @@
 							class="tier {tier.name === 'Catstare' ? 'catstare-tier' : ''}"
 							style="--tier-color: #{tier.color}; --hover-color: #{tier.colorPlus}"
 						>
+							<button
+								class="random tier-random"
+								disabled={randomMods(tier.mods).length === 0}
+								onclick={() => randomMod(tier.mods)}>Random</button
+							>
 							<div id={tier.name} class="tier-name">
 								{#if side.showTierNames}
 									<h2 style="color: #{tier.color};">
@@ -330,6 +360,33 @@
 		margin-bottom: -0.75rem;
 	}
 
+	.random {
+		all: revert;
+		width: fit-content;
+		grid-row: 1;
+		grid-column: 1;
+		justify-self: start;
+		align-self: end;
+		margin-left: 20px;
+		margin-bottom: -0.75rem;
+	}
+
+	.tier-random {
+		position: absolute;
+		top: 1rem;
+		left: 1rem;
+		margin: 0;
+
+		@media (width < 1000px) {
+			position: static;
+			margin: 0.75rem 0 0 0.75rem;
+
+			+ .tier-name h2 {
+				margin-top: 0.25rem;
+			}
+		}
+	}
+
 	.side {
 		margin: 10px;
 		border: 1px solid var(--side-color);
@@ -341,6 +398,7 @@
 	}
 
 	.tier {
+		position: relative;
 		margin: 10px;
 		border: 1px solid var(--tier-color);
 		border-radius: 1rem;
