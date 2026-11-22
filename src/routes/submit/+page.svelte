@@ -205,7 +205,21 @@
 							fileParts[1]
 								.toLowerCase()
 								.replaceAll(/[<>:/\\|?\*]/g, '')
-								.split('.')[0] === mod.name.toLowerCase().replaceAll(/[<>:/\\|?\*\.]/g, ''))
+								.split('.')[0]
+								.trim() ===
+								mod.name
+									.toLowerCase()
+									.replaceAll(/[<>:/\\|?\*\.]/g, '')
+									.trim() ||
+							fileParts[1]
+								.toLowerCase()
+								.replaceAll(/[<>:/\\|?\*]/g, '')
+								.split('.')[0]
+								.trim() ===
+								mod.name
+									.toLowerCase()
+									.replaceAll(/([<>:/\\|?\*\.])?(\(.+\))/g, '')
+									.trim())
 					) {
 						input.type = 'text';
 						input.value = `${fileParts[1]}${fileParts.length === 3 ? '/' : ''}`;

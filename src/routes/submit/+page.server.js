@@ -275,7 +275,21 @@ export const actions = {
 									fileParts[1]
 										.toLowerCase()
 										.replaceAll(/[<>:/\\|?\*]/g, '')
-										.split('.')[0] === mod.name.toLowerCase().replaceAll(/[<>:/\\|?\*\.]/g, ''))
+										.split('.')[0]
+										.trim() ===
+										mod.name
+											.toLowerCase()
+											.replaceAll(/[<>:/\\|?\*\.]/g, '')
+											.trim() ||
+									fileParts[1]
+										.toLowerCase()
+										.replaceAll(/[<>:/\\|?\*]/g, '')
+										.split('.')[0]
+										.trim() ===
+										mod.name
+											.toLowerCase()
+											.replaceAll(/([<>:/\\|?\*\.])?(\(.+\))/g, '')
+											.trim())
 							);
 						})
 					: formData.getAll(`${modId}-image`);
