@@ -281,6 +281,13 @@ export const actions = {
 					: formData.getAll(`${modId}-image`);
 
 			if (!mod.proof) {
+				if (
+					mod.imageKey?.startsWith('t') &&
+					(!images || images.every((image) => image.size === 0))
+				) {
+					continue;
+				}
+
 				if (!current && (!images || images.every((image) => image.size === 0))) {
 					return fail(400, { modId, error: 'has no proof entry.' });
 				}
