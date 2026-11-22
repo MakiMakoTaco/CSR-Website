@@ -272,7 +272,10 @@
 	<div popover id="sides" class="sides-dropdown" role="menu" tabindex="0">
 		{#each data.sides.filter((side) => side.type === 'standard') as side}
 			<li class="dropdown-items">
-				<a href="/sides/{side.name}" onclick={() => sides.togglePopover()}>{side.name}</a>
+				<a
+					href="/sides/{side.name}"
+					onclick={() => document.getElementById('sides').togglePopover()}>{side.name}</a
+				>
 			</li>
 		{/each}
 	</div>
@@ -283,7 +286,7 @@
 				<a
 					class={lightDlc(side.color)}
 					href="/sides/{side.name}"
-					onclick={() => dlc.togglePopover()}
+					onclick={() => document.getElementById('dlc').togglePopover()}
 					style="--hover-color: #{side.colorPlus}; --dlc-color: #{side.color}; color: #{side.color};"
 					>{side.name}</a
 				>
@@ -298,7 +301,7 @@
 					<a
 						class={lightDlc(side.color)}
 						href="/sides/{side.name}"
-						onclick={archived.togglePopover()}
+						onclick={() => document.getElementById('archived').togglePopover()}
 						style="--hover-color: #{side.colorPlus}; --dlc-color: #{side.color}; color: #{side.color};"
 						>{side.name}</a
 					>
@@ -528,8 +531,8 @@
 									class={player.nameColor ? nameOutline(player.nameColor) : ''}
 									style="--color: {player.nameColor ? `#${player.nameColor}` : 'Plum'} !important;"
 									onclick={() => {
-												search.close();
-											}}>{player.name}</a
+										search.close();
+									}}>{player.name}</a
 								>
 							</div>
 						{/each}

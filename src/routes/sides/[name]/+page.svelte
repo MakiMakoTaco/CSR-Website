@@ -34,13 +34,6 @@
 		goto(`/mods/${uniqueMods[Math.floor(Math.random() * uniqueMods.length)].id}`);
 	}
 
-	function scroll(id) {
-		const navbar = document.getElementById('navbar');
-		const tier = document.getElementById(id);
-
-		scrollTo({ top: tier.offsetTop - navbar.offsetHeight - 1 });
-	}
-
 	$effect(async () => {
 		const side = await data.side;
 		await side?.tiers;
@@ -90,7 +83,10 @@
 								tier
 							)};"
 							onclick={() => {
-								scroll(tier.name);
+								const navbar = document.getElementById('navbar');
+								const tierElement = document.getElementById(tier.name);
+
+								tierElement.scrollIntoView();
 							}}>{tier.name.replace(/^Catstare: /, '')}</button
 						>
 					{/each}
@@ -128,15 +124,17 @@
 				{#if side.showTierNames}
 					{#each side.tiers as tier}
 						<div
+							id={tier.name}
 							class="tier {tier.name === 'Catstare' ? 'catstare-tier' : ''}"
-							style="--tier-color: #{tier.color}; --hover-color: #{tier.colorPlus}"
+							style="--navbar-height: {document.getElementById('navbar')
+								.offsetHeight}px; --tier-color: #{tier.color}; --hover-color: #{tier.colorPlus};"
 						>
 							<button
 								class="random tier-random"
 								disabled={randomMods(tier.mods).length === 0}
 								onclick={() => randomMod(tier.mods)}>Random</button
 							>
-							<div id={tier.name} class="tier-name">
+							<div class="tier-name">
 								{#if side.showTierNames}
 									<h2 style="color: #{tier.color};">
 										{tier.name.replace(/^Catstare: /, '')}{#if data.player}:
@@ -205,7 +203,8 @@
 							<div
 								id={tier.name}
 								class="mod-container"
-								style="--tier-color: #{tier.color}; --hover-color: #{tier.colorPlus};"
+								style="--navbar-height: {document.getElementById('navbar')
+									.offsetHeight}px; --tier-color: #{tier.color}; --hover-color: #{tier.colorPlus};"
 							>
 								{#each tier.mods as mod}
 									<div class="mod-info">
@@ -402,6 +401,12 @@
 		margin: 10px;
 		border: 1px solid var(--tier-color);
 		border-radius: 1rem;
+	}
+
+	.tier,
+	.mod-container {
+		--navbar-height: 0px;
+		scroll-margin-top: var(--navbar-height);
 	}
 
 	.catstare-tier {
