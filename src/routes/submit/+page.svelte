@@ -386,10 +386,6 @@
 			</div>
 		</div>
 
-		{#if submitting}
-			Submitting mods...
-		{/if}
-
 		<br />
 		{#if submittingEntries.length > 0}
 			<form
@@ -817,6 +813,10 @@
 							}}
 							disabled={submitting}>Submit</button
 						>
+
+						{#if submitting}
+							Submitting mods...
+						{/if}
 					</div>
 				</div>
 			</form>
