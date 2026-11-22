@@ -103,11 +103,13 @@
 									>{clear.name}</a
 								>
 								<small>
-									{#if clear.tierName.startsWith('Catstare')}
-										Catstare
-									{:else}
-										{clear.tierName}{sort === 'recent' ? ` - ${clear.sideName}` : ''}
-									{/if}
+									<span class="tier" style="background-color: #{clear.tierColor};">
+										{#if clear.tierName.startsWith('Catstare')}
+											Catstare
+										{:else}
+											{clear.tierName}{sort === 'recent' ? ` - ${clear.sideName}` : ''}
+										{/if}
+									</span>
 									{#if clear.clearedDate}
 										| Cleared {formatDate(clear.clearedDate)}
 									{/if}
@@ -347,6 +349,14 @@
 
 		small {
 			color: grey;
+
+			span {
+				padding: 1px 7px;
+				font-size: 12px;
+				color: #555555;
+				border-radius: 20px;
+				vertical-align: 0.1em;
+			}
 		}
 	}
 
